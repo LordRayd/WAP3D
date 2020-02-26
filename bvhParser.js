@@ -2,6 +2,40 @@ var scene
 var renderer
 var camera
 
+var framerateTimeReference
+var currentScreenFrameTime = 0.01667
+
+
+/**
+ * Permet de récupérer le frame time en secondes
+ * approximatif de la page à l'instant T
+ */
+function updateFrameTime() {
+
+    if (!framerateTimeReference) {
+        framerateTimeReference = Date.now();
+    } else {
+        let delta = (Date.now() - framerateTimeReference) / 1000;
+        framerateTimeReference = Date.now();
+        currentScreenFrameTime = delta;
+    }
+}
+
+/**
+ * permet d'obtenir le frame time (inverse du framerate) global du bvh
+ * @param {*} strArray 
+ */
+function getFrameTime(strArray) {
+    let floatRegex = /[+-]?\d+(\.\d+)?/g
+    for (let i of strArray) {
+        if (i.search("Frame Time:") != -1) {
+            return parseFloat(i.match(floatRegex)[0])
+        }
+    }
+    console.log("getFrameTime failed")
+    return -1
+}
+
 function associateBVH() {
     let files = this.files;
     if (files.length === 0) {
@@ -13,6 +47,9 @@ function associateBVH() {
     reader.onload = function (event) {
 
         let bvhStringArray = event.target.result.split('\n')
+
+        let fileFrameTime = getFrameTime(bvhStringArray)
+
         let root = BVHImport.readBvh(bvhStringArray);
 
         let animation = BVHImport.toTHREE(root);
@@ -36,15 +73,21 @@ function associateBVH() {
 
         //permet de gérer les timings d'animations asynchrones entre eux et avec le framerate
         mixer = new THREE.AnimationMixer(mesh);
-        mixer.timeScale = 2
+        
 
         mixer.clipAction(animation.clip).play()
 
         let c = false
         function animate() {
+
+            //TODO
+            mixer.timeScale = currentScreenFrameTime / fileFrameTime
+
+            updateFrameTime()
+
             if (c == false) {
                 skeletonHelper.material.linewidth += 0.2
-                if (skeletonHelper.material.linewidth >= 10) {
+                if (skeletonHelper.material.linewidth >= 5) {
                     c = true
                 }
 
@@ -57,11 +100,9 @@ function associateBVH() {
             }
             requestAnimationFrame(animate)
             renderer.render(scene, camera)
-            mixer.update(0.008333)
+            mixer.update(fileFrameTime)
         }
         animate()
-
-
     };
     reader.readAsText(files[0]);
 
