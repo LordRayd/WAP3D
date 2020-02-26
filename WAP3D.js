@@ -1,6 +1,7 @@
 var scene
 var renderer
 var camera
+var mouseControls
 
 var framerateTimeReference
 var currentScreenFrameTime = 0.01667
@@ -42,6 +43,10 @@ function initialisePlayer() {
 
     let referenceGrid = new THREE.GridHelper(1000, 50);
     scene.add(referenceGrid);
+
+    mouseControls = new THREE.TrackballControls(camera, renderer.domElement)
+    mouseControls.keys = [17, 83, 16]//ctrl (rotate); scroll (dezoom); shift(translate)
+
 
     renderer.render(scene, camera)
 }

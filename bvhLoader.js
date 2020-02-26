@@ -17,6 +17,7 @@ function getBvhFrameTime(strArray) {
     return -1
 }
 
+
 /**
  * Sélectionne, associe et lance un bvh dans le lecteur
  */
@@ -31,13 +32,9 @@ function associateBVH() {
     reader.onload = function (event) {
 
         let bvhStringArray = event.target.result.split('\n')
-
         let fileFrameTime = getBvhFrameTime(bvhStringArray)
-
         let root = BVHImport.readBvh(bvhStringArray);
-
         let animation = BVHImport.toTHREE(root);
-        console.log(animation)
 
         // nouvelle mesh pour représenter le squelette
         let geometry = new THREE.BufferGeometry();
@@ -66,7 +63,7 @@ function associateBVH() {
 
             if (c == false) {
                 skeletonHelper.material.linewidth += 0.2
-                if (skeletonHelper.material.linewidth >= 5) {
+                if (skeletonHelper.material.linewidth >= 4) {
                     c = true
                 }
             }
@@ -79,6 +76,7 @@ function associateBVH() {
             requestAnimationFrame(animate)
             renderer.render(scene, camera)
             mixer.update(fileFrameTime)
+            mouseControls.update()
         }
         animate()
     };
