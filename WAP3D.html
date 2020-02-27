@@ -4,12 +4,12 @@
 <head>
     <meta charset='utf-8'>
     <title>WAP3D</title>
-    <link rel="stylesheet" type="text/css" href="WAP3D.css">
-    <script src="./externalSources/BVHImport.js"></script>
-    <script src="./externalSources/three.js"></script>
-    <script src="WAP3D.js"></script>
-    <script src="bvhLoader.js"></script>
-    <script src="./externalSources/three.js-master/examples/js/controls/TrackballControls.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/WAP3D.css">
+    <script src="./ressources/externalSources/BVHImport.js"></script>
+    <script src="./ressources/externalSources/three.js-master/build/three.js"></script>
+    <script src="./js/WAP3D.js"></script>
+    <script src="./js/bvhLoader.js"></script>
+    <script src="./ressources/externalSources/three.js-master/examples/js/controls/TrackballControls.js"></script>
 </head>
 
 <body onload="initialisePlayer()">
@@ -21,9 +21,9 @@
             <!-- À voir comment on gère les proportion de la caméra et du render dans le js -->
         </div>
         <div id="control">
-            <div id="play"><img src="play-button.svg"></div>
+            <div id="play"><img src="./images/play-button.svg"></div>
             <input id="time-slider" type="range">
-            <div id="replay"><img src="./replay.svg"></div>
+            <div id="replay"><img src="./images/replay.svg"></div>
         </div>
     </div>
     
