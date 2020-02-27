@@ -1,4 +1,4 @@
-//scene,  et renderer et camera sont défini dans WAP3D.js
+//scene, renderer et camera sont défini dans WAP3D.js
 //framerateTimeReference et currentScreenFrameTime sont défini dans WAP3D.js
 //updateFrameTime() et initialisePlayer() sont défini dans WAP3D.js
 
@@ -21,7 +21,7 @@ function getBvhFrameTime(strArray) {
  * Sélectionne, associe et lance un bvh dans le lecteur
  */
 function associateBVH() {
-    let files = this.files;
+    let files = this.files; // Le this désigne le contexte courant !
     if (files.length === 0) {
         console.log('No file is selected');
         return;
@@ -57,5 +57,14 @@ function associateBVH() {
 
         bvhAnimationsArray.push([skeletonHelper, mixer, fileFrameTime])
     };
-    reader.readAsText(files[0]);
+
+    let i = 0
+    let waitForDoneInterval = setInterval(function(){
+        if(reader.readyState === 2 || reader.readyState === 0){
+            reader.readAsText(files[i]); // Async
+            i++
+            if(i === files.length) clearInterval(waitForDoneInterval)
+        }
+    }, 5);
+
 }
