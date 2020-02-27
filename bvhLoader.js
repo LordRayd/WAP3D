@@ -17,7 +17,6 @@ function getBvhFrameTime(strArray) {
     return -1
 }
 
-
 /**
  * Sélectionne, associe et lance un bvh dans le lecteur
  */
@@ -46,39 +45,17 @@ function associateBVH() {
         mesh.bind(animation.skeleton);
 
         // figure finale
-        skeletonHelper = new THREE.SkeletonHelper(mesh);
-        skeletonHelper.material.linewidth = 1;
+        let skeletonHelper = new THREE.SkeletonHelper(mesh);
+        skeletonHelper.material.linewidth = 2;
 
         scene.add(skeletonHelper);
         scene.add(mesh);
 
         //permet de gérer les timings d'animations asynchrones entre eux et avec le framerate
-        mixer = new THREE.AnimationMixer(mesh);
+        let mixer = new THREE.AnimationMixer(mesh);
         mixer.clipAction(animation.clip).play()
 
-        let c = false
-        function animate() {
-            mixer.timeScale = currentScreenFrameTime / fileFrameTime
-            updateFrameTime()
-
-            if (c == false) {
-                skeletonHelper.material.linewidth += 0.2
-                if (skeletonHelper.material.linewidth >= 4) {
-                    c = true
-                }
-            }
-            if (c == true) {
-                skeletonHelper.material.linewidth -= 0.2
-                if (skeletonHelper.material.linewidth <= 0.05) {
-                    c = false
-                }
-            }
-            requestAnimationFrame(animate)
-            renderer.render(scene, camera)
-            mixer.update(fileFrameTime)
-            mouseControls.update()
-        }
-        animate()
+        bvhAnimationsArray.push([skeletonHelper, mixer, fileFrameTime])
     };
     reader.readAsText(files[0]);
 }

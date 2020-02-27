@@ -6,12 +6,36 @@ var mouseControls
 var framerateTimeReference
 var currentScreenFrameTime = 0.01667
 
+// [ [SkeletonHelper, AnimationMixer, frameTime], [SkeletonHelper, AnimationMixer, frameTime], ...]
+var bvhAnimationsArray = []
+
 /**
- * Permet de récupérer le frame time en secondes
- * approximatif de la page à l'instant T
+ * TODO
+ * problème: comment gérer la barre quand il y'a plusieurs animations ?
+ */
+function advanceTimeBar() {
+    console.log(":)")
+}
+
+/**
+ * TODO 
+ */
+function clickOnPlayAction() {
+    console.log(":)")
+}
+
+/**
+ * TODO
+ */
+function clickOnReplayAction() {
+    console.log(":)")
+}
+
+/**
+ * Permet de récupérer le frame time du navigateur en secondes
+ * Estimation approximative à l'instant T
  */
 function updateFrameTime() {
-
     if (!framerateTimeReference) {
         framerateTimeReference = Date.now();
     } else {
@@ -23,7 +47,9 @@ function updateFrameTime() {
 
 
 /**
- * Créé et lance le player avec uniquement une grille de reférence
+ * Initialise le lecteur avec une grille de référence
+ * Joue les animations quand elles existent
+ * Initialise les interactions à la souris et au clavier
  */
 function initialisePlayer() {
 
@@ -47,6 +73,31 @@ function initialisePlayer() {
     mouseControls = new THREE.TrackballControls(camera, renderer.domElement)
     mouseControls.keys = [17, 83, 16]//ctrl (rotate); scroll (dezoom); shift(translate)
 
+    let c = false
+    function animate() {
+        bvhAnimationsArray.forEach(bvh => {
+            bvh[1].timeScale = currentScreenFrameTime / bvh[2]
+            bvh[1].update(bvh[2])
+            /*
+            if (c == false) {
+                bvh[0].material.linewidth += 0.2
+                if (bvh[0].material.linewidth >= 4) {
+                    c = true
+                }
+            }
+            if (c == true) {
+                bvh[0].material.linewidth -= 0.2
+                if (bvh[0].material.linewidth <= 0.05) {
+                    c = false
+                }
+            }
+            */
+        });
 
-    renderer.render(scene, camera)
+        requestAnimationFrame(animate)
+        updateFrameTime()
+        renderer.render(scene, camera)
+        mouseControls.update()
+    }
+    animate()
 }
