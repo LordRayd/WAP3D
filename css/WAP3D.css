@@ -1,34 +1,47 @@
-body{
+body {
     background-color: gray;
 }
 
-#container{
+#container {
     margin-left: auto;
     margin-right: auto;
     width: 90vw;
     height: 49vw;
 }
 
+
 /*les images font la taille des buttons dans lequelles elles se trouvent */
-img{
-    width: 100%; 
+
+img {
+    width: 100%;
     height: 100%;
 }
 
-#player{
+#player {
+    position: relative;
     margin-left: auto;
     margin-right: auto;
     width: 90%;
     height: 95%;
 }
 
-#control{
+#messagePlayer {
+    color: white;
+    right: 0;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    margin-top: 28.125%;
+    /* 9/16 * 50% (du au scaling du player par rapport à la page) */
+    margin-Left: 50%;
+}
+
+#control {
     margin-left: auto;
     margin-right: auto;
     height: 5%;
     width: 90%;
 }
-
 
 #play {
     float: left;

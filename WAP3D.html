@@ -5,6 +5,7 @@
     <meta charset='utf-8'>
     <title>WAP3D</title>
     <link rel="stylesheet" type="text/css" href="./css/WAP3D.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script src="./ressources/externalSources/BVHImport.js"></script>
     <script src="./ressources/externalSources/three.js-master/build/three.js"></script>
     <script src="./js/WAP3D.js"></script>
@@ -12,10 +13,11 @@
     <script src="./ressources/externalSources/three.js-master/examples/js/controls/TrackballControls.js"></script>
 </head>
 
-<body onload="initialisePlayer()">
+<body>
     <input id="fileSelector" type="file" multiple="multiple" accept=".bvh">
     <div id="container">
         <div id="player">
+            <div id="messagePlayer">Chargement en cours</div>
             <!-- canvas ici -->
             <!-- en javascript créer le canvas et lui donner un ID -->
             <!-- À voir comment on gère les proportion de la caméra et du render dans le js -->
@@ -26,7 +28,7 @@
             <div id="replay"><img src="./images/replay.svg"></div>
         </div>
     </div>
-    
+
 
 </body>
 
