@@ -3,6 +3,14 @@
 ## Présentation
 WAP3D est un projet dont le but est d'afficher des scènes définie par des fichiers .bvh ou .fbx dans un player. Ce player devra être capable d'afficher des informations relatives à des objets de la scène séléctionnés par l'utilisateur à la souris.
 
+## Utilisation (temporaire)
+- Cliquer sur le bouton "Browse..." en haut à gauche de la page pour séléctionner UN SEUL (temporaire) fichier BVH
+- Plusieur fichiers BVH peuvent être chargé et animé dans le lecteur
+- Maintenir la touche: 
+    - ctrl pour faire une rotation de la scène à l'aide de la souris
+    - shift pour faire une translation de la scène à l'aide de la souris
+- Utiliser le scroll de la souris pour dézoomer la scène
+
 ## Charte de code
 
 - Général :
