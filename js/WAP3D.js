@@ -4,6 +4,7 @@ var currentScreenFrameTime = 0.01667
 
 // [ [SkeletonHelper, AnimationMixer, frameTime], [SkeletonHelper, AnimationMixer, frameTime], ...]
 var bvhAnimationsArray = []
+const initialCameraPosition = 150
 
 /**
  * problème: comment gérer la barre quand il y'a plusieurs animations ?
@@ -57,9 +58,8 @@ $(function initialisePlayer() {
     window.onresize = _ => { renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight) }
 
     camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 1000)
-    camera.position.z = 150
-    camera.position.y = 150
-    camera.lookAt(0, 150, 0)
+    camera.position.z = initialCameraPosition
+    camera.position.y = initialCameraPosition
 
     let referenceGrid = new THREE.GridHelper(1000, 50);
     scene.add(referenceGrid);

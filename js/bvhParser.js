@@ -1,5 +1,6 @@
-class BVHParser {
+const pelvisYReference = initialCameraPosition / 2
 
+class BVHParser {
     constructor(bvhFileContent) {
         if (!bvhFileContent) {
             throw "expected arg 1 : bvh files content "
@@ -84,7 +85,7 @@ class BVHParser {
     /**  */
     _associateFramesToHierarchy(lines, nbFrames, frameTime, bonesHierarchy) {
         let rad = Math.PI / 180
-
+        let that = this
         for (let i = 0; i < nbFrames; i++) {
             associateFramesToHierarchyRec(lines.shift().trim().split(/[\s]+/), frameTime * i, bonesHierarchy)
         }
@@ -107,6 +108,9 @@ class BVHParser {
                             keyFrame.position.x = channelValue
                             break
                         case "Yposition":
+                            if (timeOfFrame == 0) {
+                                that.sizeFactor = pelvisYReference / channelValue
+                            }
                             keyFrame.position.y = channelValue
                             break
                         case "Zposition":
@@ -189,7 +193,7 @@ class BVHParser {
         return new THREE.AnimationClip("animation", -1, tracks)
     }
 
-    /** */
+    /**  */
     _flattenHierarchy(bonesHierarchy) {
         return flattenHierarchyRec(bonesHierarchy, [])
 
@@ -217,14 +221,19 @@ class BVHParser {
         return this.nbFrames
     }
 
-    /** */
+    /**  */
     getAnimation() {
         return this.animation
     }
 
-    /** */
+    /**  */
     getBonesHierarchy() {
         return this.bonesHierarchy
+    }
+
+    /**  */
+    getSizeFactor() {
+        return this.sizeFactor
     }
 }
 
@@ -234,6 +243,7 @@ class rotationQuaternion {
     z = 0
     w = 1
 
+    /**  */
     setxyzFromAxisAngle(ax, ay, az, angle) {
         let halfAngle = angle * 0.5
         let sinHalfAngle = Math.sin(halfAngle)
@@ -244,9 +254,9 @@ class rotationQuaternion {
         this.w = Math.cos(halfAngle)
     }
 
+    /**  */
     multiply(quatB) {
         let quatA = {...this }
-
         this.x = quatA.x * quatB.w + quatA.w * quatB.x + quatA.y * quatB.z - quatA.z * quatB.y
         this.y = quatA.y * quatB.w + quatA.w * quatB.y + quatA.z * quatB.x - quatA.x * quatB.z
         this.z = quatA.z * quatB.w + quatA.w * quatB.z + quatA.x * quatB.y - quatA.y * quatB.x

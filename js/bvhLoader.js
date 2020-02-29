@@ -17,7 +17,7 @@ function associateBVH() {
         let reader = new FileReader();
 
         reader.onload = function(event) {
-            var bvhFile = new BVHParser(event.target.result)
+            let bvhFile = new BVHParser(event.target.result)
             let animation = bvhFile.getAnimation()
 
             // nouvelle mesh pour représenter le squelette
@@ -28,6 +28,11 @@ function associateBVH() {
             // bind du squelette
             mesh.add(animation.skeleton.bones[0]);
             mesh.bind(animation.skeleton);
+
+            mesh.scale.x = bvhFile.getSizeFactor()
+            mesh.scale.y = bvhFile.getSizeFactor()
+            mesh.scale.z = bvhFile.getSizeFactor()
+            console.debug(mesh.scale)
 
             // figure finale
             let skeletonHelper = new THREE.SkeletonHelper(mesh);
