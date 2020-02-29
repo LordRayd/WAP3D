@@ -1,8 +1,8 @@
 var scene, renderer, camera, mouseControls
-
 var framerateTimeReference
 var currentScreenFrameTime = 0.01667
-    // [ [SkeletonHelper, AnimationMixer, frameTime], [SkeletonHelper, AnimationMixer, frameTime], ...]
+
+// [ [SkeletonHelper, AnimationMixer, frameTime], [SkeletonHelper, AnimationMixer, frameTime], ...]
 var bvhAnimationsArray = []
 
 /**
@@ -71,10 +71,9 @@ $(function initialisePlayer() {
 })
 
 function animate() {
-    //requestAnimationFrame(animate)
     if (getLoadingState() !== "loading") {
         requestAnimationFrame(animate)
-        $("#messagePlayer").hide("")
+        $("#messagePlayer").hide()
         mouseControls.update()
         if (getLoadingState() === "loaded") {
             bvhAnimationsArray.forEach(bvh => {
@@ -89,6 +88,6 @@ function animate() {
     renderer.render(scene, camera)
 }
 
-function testCallBack() {
+function fileLoadedCallBack() {
     requestAnimationFrame(animate)
 }
