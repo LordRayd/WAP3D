@@ -64,8 +64,22 @@ $(function initialisePlayer() {
     let referenceGrid = new THREE.GridHelper(1000, 50);
     scene.add(referenceGrid);
 
-    mouseControls = new THREE.TrackballControls(camera, renderer.domElement)
-    mouseControls.keys = [17, 83, 16] //[ctrl, scroll, shift] -> [rotate, dezoom, translate]
+    mouseControls = new THREE.OrbitControls(camera, renderer.domElement)
+    mouseControls.enableKeys = true
+    mouseControls.rotateSpeed = 0.3
+    mouseControls.keyPanSpeed = 25
+    mouseControls.screenSpacePanning = false // Défini si le translate se fait par rapport à (X,Z) ou par rapport à la caméra
+    mouseControls.mouseButtons ={
+        LEFT: THREE.MOUSE.ROTATE, //rotate
+        MIDDLE: THREE.MOUSE.DOLLY, //zoom
+        RIGHT: null
+    }
+    mouseControls.keys ={
+        LEFT: 81,
+        UP: 90,
+        RIGHT: 68,
+        BOTTOM: 83
+    }
 
     animate()
 })
