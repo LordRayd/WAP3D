@@ -10,21 +10,21 @@ const initialCameraPosition = 150
  * problème: comment gérer la barre quand il y'a plusieurs animations ?
  */
 function advanceTimeBar() {
-    // TODO
+  // TODO
 }
 
 /**
  * TODO 
  */
 function clickOnPlayAction() {
-    // TODO
+  // TODO
 }
 
 /**
  * TODO
  */
 function clickOnReplayAction() {
-    // TODO
+  // TODO
 }
 
 /**
@@ -32,13 +32,13 @@ function clickOnReplayAction() {
  * Estimation approximative à l'instant T
  */
 function updateFrameTime() {
-    if (!framerateTimeReference) {
-        framerateTimeReference = Date.now();
-    } else {
-        let delta = (Date.now() - framerateTimeReference) / 1000;
-        framerateTimeReference = Date.now();
-        currentScreenFrameTime = delta;
-    }
+  if (!framerateTimeReference) {
+    framerateTimeReference = Date.now();
+  } else {
+    let delta = (Date.now() - framerateTimeReference) / 1000;
+    framerateTimeReference = Date.now();
+    currentScreenFrameTime = delta;
+  }
 }
 
 
@@ -48,26 +48,38 @@ function updateFrameTime() {
  * Initialise les interactions à la souris et au clavier
  */
 $(function initialisePlayer() {
-    $('#fileSelector').bind("change", associateBVH)
+  scene = new THREE.Scene()
 
-    scene = new THREE.Scene()
+  renderer = new THREE.WebGLRenderer({ antialias: true })
+  renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
+  $("#player").append(renderer.domElement)
+  window.onresize = _ => { renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight) }
 
-    renderer = new THREE.WebGLRenderer({ antialias: true })
-    renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
-    $("#player").append(renderer.domElement)
-    window.onresize = _ => { renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight) }
+  camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 1000)
+  camera.position.z = initialCameraPosition
+  camera.position.y = initialCameraPosition
 
-    camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 1000)
-    camera.position.z = initialCameraPosition
-    camera.position.y = initialCameraPosition
+  let referenceGrid = new THREE.GridHelper(1000, 50);
+  scene.add(referenceGrid);
 
-    let referenceGrid = new THREE.GridHelper(1000, 50);
-    scene.add(referenceGrid);
+  mouseControls = new THREE.OrbitControls(camera, renderer.domElement)
+  mouseControls.enableKeys = true
+  mouseControls.rotateSpeed = 0.3
+  mouseControls.keyPanSpeed = 25
+  mouseControls.screenSpacePanning = true // Défini si le translate se fait par rapport à (X,Z) ou par rapport à la caméra
+  mouseControls.mouseButtons ={
+      LEFT: THREE.MOUSE.ROTATE, //rotate
+      MIDDLE: THREE.MOUSE.DOLLY, //zoom
+      RIGHT: null
+  }
+  mouseControls.keys ={
+      LEFT: 81,   //q
+      UP: 90,     //z
+      RIGHT: 68,  //d
+      BOTTOM: 83  //s
+  }
 
-    mouseControls = new THREE.TrackballControls(camera, renderer.domElement)
-    mouseControls.keys = [17, 83, 16] //[ctrl, scroll, shift] -> [rotate, dezoom, translate]
-
-    animate()
+  animate()
 })
 
 function animate() {
@@ -88,6 +100,20 @@ function animate() {
     renderer.render(scene, camera)
 }
 
+/** TODO */
 function fileLoadedCallBack() {
-    requestAnimationFrame(animate)
+  requestAnimationFrame(animate)
+  $('#fileSelector').one("change", associateBVH)
 }
+
+/** TODO */
+$(function inputEventManager() {
+
+  $('#fileSelector').one("change", associateBVH)
+
+  $(document).keydown(function(test) {
+    if (test.originalEvent.key.toUpperCase() === "SHIFT") {
+      mouseControls.screenSpacePanning = !mouseControls.screenSpacePanning
+    }
+  })
+})

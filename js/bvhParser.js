@@ -11,7 +11,7 @@ class BVHParser {
         }
     }
 
-    /**  */
+    /** TODO */
     _readBvh(bvhAsLinesArray) {
         let lines = bvhAsLinesArray.map(_ => _.slice())
         if (lines.shift().trim().toUpperCase() != "HIERARCHY") {
@@ -35,7 +35,7 @@ class BVHParser {
         }
     }
 
-    /**  */
+    /** TODO */
     _readHierarchySection(lines, list) {
         let firstLine = lines.shift().trim();
         let bonesHierarchy = readHierarchySectionRec(lines, firstLine, list)
@@ -82,7 +82,7 @@ class BVHParser {
         }
     }
 
-    /**  */
+    /** TODO */
     _associateFramesToHierarchy(lines, nbFrames, frameTime, bonesHierarchy) {
         let rad = Math.PI / 180
         let that = this
@@ -138,7 +138,7 @@ class BVHParser {
         }
     }
 
-    /**  */
+    /** TODO */
     _bvhBonesHierarchyToTHREEBonesAndAnimationClip(bonesHierarchy) {
         let THREEBones = bvhThreeHierarchyToTHREEBonesRec(bonesHierarchy, []).threeBone
 
@@ -147,7 +147,7 @@ class BVHParser {
             clip: this._bvhBonesHierarchyToTHREEAnimation(bonesHierarchy)
         }
 
-        /**  */
+        /** TODO */
         function bvhThreeHierarchyToTHREEBonesRec(currBone, threeHierarchy) {
             let bone = new THREE.Bone()
             threeHierarchy.push(bone)
@@ -162,7 +162,7 @@ class BVHParser {
         }
     }
 
-    /**  */
+    /** TODO */
     _bvhBonesHierarchyToTHREEAnimation(bonesHierarchy) {
         let flatBonesHierachy = this._flattenHierarchy(bonesHierarchy)
         let tracks = []
@@ -193,11 +193,11 @@ class BVHParser {
         return new THREE.AnimationClip("animation", -1, tracks)
     }
 
-    /**  */
+    /** TODO */
     _flattenHierarchy(bonesHierarchy) {
         return flattenHierarchyRec(bonesHierarchy, [])
 
-        /**  */
+        /** TODO */
         function flattenHierarchyRec(currBone, flatHierachyList) {
             flatHierachyList.push(currBone);
             if (currBone.type !== "ENDSITE") {
@@ -209,29 +209,29 @@ class BVHParser {
         }
     }
 
-    /**  */
+    /** TODO */
     getFrameTime() {
         console.debug("frameTime: ", this.frameTime)
         return this.frameTime
     }
 
-    /**  */
+    /** TODO */
     getNbFrames() {
         console.debug("nbFrames: ", this.nbFrames)
         return this.nbFrames
     }
 
-    /**  */
+    /** TODO */
     getAnimation() {
         return this.animation
     }
 
-    /**  */
+    /** TODO */
     getBonesHierarchy() {
         return this.bonesHierarchy
     }
 
-    /**  */
+    /** TODO */
     getSizeFactor() {
         return this.sizeFactor
     }
@@ -243,7 +243,7 @@ class rotationQuaternion {
     z = 0
     w = 1
 
-    /**  */
+    /** TODO */
     setxyzFromAxisAngle(ax, ay, az, angle) {
         let halfAngle = angle * 0.5
         let sinHalfAngle = Math.sin(halfAngle)
@@ -254,7 +254,7 @@ class rotationQuaternion {
         this.w = Math.cos(halfAngle)
     }
 
-    /**  */
+    /** TODO */
     multiply(quatB) {
         let quatA = {...this }
         this.x = quatA.x * quatB.w + quatA.w * quatB.x + quatA.y * quatB.z - quatA.z * quatB.y
