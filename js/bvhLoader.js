@@ -9,6 +9,16 @@ progressBar.append('<div id="currProgress"></div>')
 
 
 /**
+ * TODO
+ * initialisation par UUID 
+ * pour permettre de supprimer des éléments du tab sans perte d'ordre ?
+ */
+function addBVHToObjectList(uuid_){
+    $("#bvhList").append('<div id="' + uuid_ + '" class="object">coucou</div>')
+}
+
+
+/**
  * Sélectionne, associe et lance un bvh dans le lecteur
  */
 function associateBVH(filesToLoad, scene, bvhAnimationsArray) {
@@ -53,6 +63,7 @@ function associateBVH(filesToLoad, scene, bvhAnimationsArray) {
             mixer.clipAction(animation.clip).play()
 
             bvhAnimationsArray.push([skeletonHelper, mixer, bvhFile.getFrameTime()])
+            addBVHToObjectList(skeletonHelper.uuid)
         };
 
         let fileIndex = 0

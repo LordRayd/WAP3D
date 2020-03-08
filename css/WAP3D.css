@@ -29,6 +29,14 @@ img {
 
 .objectList{
     width: 90%;
+    height: 45%;
+    overflow: scroll;
+    margin-left: 2%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    border-color: gray;
+    border-style: hidden hidden hidden solid;
+    border-width: 1px;
 }
 
 .objectList div.title{
@@ -44,7 +52,7 @@ img {
     background-color: red;
     width: 10px;
     height: 10px;
-    margin-top: 50%;
+    top: 50%;
     position: relative;
     float: right;
 }

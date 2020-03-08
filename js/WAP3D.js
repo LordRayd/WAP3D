@@ -149,18 +149,21 @@ function clickOnReplayAction() {
 function closeObjectListAction() {
 
     $("#objectSelector").animate({
-        width: '5%'
+        width: '2%',
+        marginRight: '0.5%'
     }, {
         duration: 100
     })
 
     $("#player").animate({
-        width: '84%'
+        width: '87.5%'
     }, {
         duration: 100,
         progress: updateRendererSize,
         complete: _ => $("#closeOpenButton").one("click", openObjectListAction)
     })
+
+    $("#objectSelector").children().not("#closeOpenButton").fadeOut(100)
 
     $("#messagePlayer").animate({
         width: '84%'
@@ -188,6 +191,8 @@ function openObjectListAction() {
         progress: updateRendererSize,
         complete: _ => $("#closeOpenButton").one("click", closeObjectListAction)
     })
+
+    $("#objectSelector").children().not("#closeOpenButton").fadeIn(100)
 
     $("#messagePlayer").animate({
         width: '59%'
