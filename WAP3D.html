@@ -15,13 +15,26 @@
 </head>
 
 <body>
-  <input id="fileSelector" type="file" multiple="multiple" accept=".bvh">
   <div id="container">
+    <div id="objectSelector">
+      <input id="fileSelector" type="file" multiple="multiple" accept=".bvh">
+      <div id="closeOpenButton">
+        <!--TODO mettre image-->
+      </div>
+      <!--TODO-->
+
+      <div class="objectList" id="bvhList">
+        <!--TODO-->
+
+        <div class="title">BVH</div>
+        <div class="object">exemple 1</div>
+        <div class="object">exemple 2</div>
+      </div>
+    </div>
     <div id="player">
       <div id="messagePlayer">Chargement en cours</div>
       <!-- canvas ici -->
       <!-- en javascript créer le canvas et lui donner un ID -->
-      <!-- À voir comment on gère les proportion de la caméra et du render dans le js -->
     </div>
     <div id="control">
       <div id="play"><img src="./images/play-button.svg"></div>
@@ -30,4 +43,5 @@
     </div>
   </div>
 </body>
+
 </html>
