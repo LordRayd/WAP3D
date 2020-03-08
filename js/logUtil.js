@@ -1,5 +1,5 @@
 { /** LOG console */
-    console.DEBUG_MODE = true
+    console.DEBUG_MODE = false
     console.INFO_MODE = true
 
     console.debug = function() {
