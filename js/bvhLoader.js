@@ -20,6 +20,7 @@ function associateBVH(filesToLoad, scene, bvhAnimationsArray) {
     } else {
         console.info('Start loading ', nbFileToLoad, ' files');
         $("#messagePlayer").text("Chargement en cours : " + nbFileToLoad + " fichiers.")
+        let nbLoadedFiles = 0
         let reader = new FileReader();
 
         reader.onload = function(event) {
@@ -52,11 +53,12 @@ function associateBVH(filesToLoad, scene, bvhAnimationsArray) {
             let mixer = new THREE.AnimationMixer(mesh);
             mixer.clipAction(animation.clip).play()
 
-            bvhAnimationsArray.push([skeletonHelper, mixer, bvhFile.getFrameTime()])
+            bvhAnimationsArray.push([skeletonHelper, mixer, bvhFile.getFrameTime(), bvhFile.getNbFrames()])
+            nbLoadedFiles += 1
         };
 
         let fileIndex = 0
-        let controlDiv = $("#control")
+        let controlDiv = $("#control") // sauvegarde de la div dans son état actuel
         let loadingPercentage = "0%"
         let waitForDoneInterval = setInterval(function() {
             if (reader.readyState === 2 || reader.readyState === 0) {
@@ -71,10 +73,16 @@ function associateBVH(filesToLoad, scene, bvhAnimationsArray) {
                 reader.readAsText(files[fileIndex]); // Async
                 fileIndex += 1
                 if (fileIndex === nbFileToLoad) {
-                    $("#progressBar").replaceWith(controlDiv)
                     clearInterval(waitForDoneInterval)
-                    bvhFilesloadingState = "loaded"
-                    fileLoadedCallBack()
+                    // Attente du chargement total des ficheir avant de rendre la main
+                    let waitForLoadedFileInArray = setInterval(_ => {
+                        if (nbLoadedFiles === nbFileToLoad) {
+                            $("#progressBar").replaceWith(controlDiv)
+                            clearInterval(waitForLoadedFileInArray)
+                            bvhFilesloadingState = "loaded"
+                            fileLoadedCallBack()
+                        }
+                    }, 10)
                 }
             }
         }, 5);
