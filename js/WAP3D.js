@@ -5,6 +5,8 @@ let playAnimation = true
     // [ [SkeletonHelper, AnimationMixer, frameTime], [SkeletonHelper, AnimationMixer, frameTime], ...]
 let bvhAnimationsArray = []
 const initialCameraPosition = 150
+let pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
+let playDiv = $('<div><img src="./images/play_button.svg"></div>')
 
 /**
  * Permet de récupérer le frame time du navigateur en secondes
@@ -133,6 +135,11 @@ function inputEventManager() {
  */
 function clickOnPlayAction() {
     playAnimation = !playAnimation
+    if (playAnimation == false) {
+        $("#play").children().replaceWith(pauseDiv)
+    } else {
+        $("#play").children().replaceWith(playDiv)
+    }
 }
 
 /**
