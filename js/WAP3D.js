@@ -2,7 +2,7 @@ let scene, renderer, camera, mouseControls
 let framerateTimeReference = -1
 let currentScreenFrameTime = 0.01667
 let playAnimation = true
-    // [ [SkeletonHelper, AnimationMixer, frameTime], [SkeletonHelper, AnimationMixer, frameTime], ...]
+// [ [SkeletonHelper, AnimationMixer, frameTime], [SkeletonHelper, AnimationMixer, frameTime], ...]
 let bvhAnimationsArray = []
 const initialCameraPosition = 150
 let pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
@@ -22,6 +22,10 @@ function updateFrameTime() {
     }
 }
 
+function updateRendererSize() {
+    renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
+    camera.aspect = $("#player")[0].offsetWidth / $("#player")[0].offsetHeight
+}
 
 /**
  * Initialise le lecteur avec une grille de référence
@@ -35,7 +39,7 @@ $(function initialisePlayer() {
     renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
     $("#player").append(renderer.domElement)
-    window.onresize = _ => { renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight) }
+    window.onresize = updateRendererSize
 
     camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 1000)
     camera.position.z = initialCameraPosition
@@ -52,7 +56,7 @@ $(function initialisePlayer() {
     mouseControls.mouseButtons = {
         LEFT: THREE.MOUSE.ROTATE, //rotate
         MIDDLE: THREE.MOUSE.DOLLY, //zoom
-        RIGHT: null
+        RIGHT: THREE.MOUSE.PAN
     }
     mouseControls.keys = {
         LEFT: 81, // q
@@ -128,6 +132,8 @@ function inputEventManager() {
     $(document).on("keydown", event => keydownAction(event))
 
     $(document).on("keyup", event => keyupAction(event))
+
+    $("#closeOpenButton").one("click", closeObjectListAction)
 }
 
 /**
@@ -142,6 +148,7 @@ function clickOnPlayAction() {
     }
 }
 
+
 /**
  * TODO
  */
@@ -155,6 +162,65 @@ function clickOnReplayAction() {
     if (currPlayingAnim == true) {
         playAnimation = true
     }
+}
+
+
+/**
+ * Fonction appellée pour minimiser la div de sélection d'élements
+ */
+function closeObjectListAction() {
+
+    $("#objectSelector").animate({
+        width: '2%',
+        marginRight: '0.5%'
+    }, {
+        duration: 100
+    })
+
+    $("#player").animate({
+        width: '87.5%'
+    }, {
+        duration: 100,
+        progress: updateRendererSize,
+        complete: _ => $("#closeOpenButton").one("click", openObjectListAction)
+    })
+
+    $("#objectSelector").children().not("#closeOpenButton").fadeOut(100)
+
+    $("#messagePlayer").animate({
+        width: '84%'
+    }, {
+        duration: 100,
+    })
+}
+
+
+/**
+ * Fonction appellée pour "ouvrir" la div de sélection d'élements
+ */
+function openObjectListAction() {
+
+    $("#objectSelector").animate({
+        width: '30%'
+    }, {
+        duration: 100
+    })
+
+    $("#player").animate({
+        width: '59%'
+    }, {
+        duration: 100,
+        progress: updateRendererSize,
+        complete: _ => $("#closeOpenButton").one("click", closeObjectListAction)
+    })
+
+    $("#objectSelector").children().not("#closeOpenButton").fadeIn(100)
+
+    $("#messagePlayer").animate({
+        width: '59%'
+    }, {
+        duration: 100,
+    })
 }
 
 /**
@@ -188,8 +254,8 @@ function keydownAction(keyEvent) {
             break
         case "SHIFT":
             mouseControls.screenSpacePanning = true
-            mouseControls.keys.UP = 83 // S
-            mouseControls.keys.BOTTOM = 90 // Z
+            mouseControls.keys.UP = 90 // Z
+            mouseControls.keys.BOTTOM = 83 // S
             break
     }
 }
