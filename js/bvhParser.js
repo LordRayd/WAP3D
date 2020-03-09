@@ -1,4 +1,4 @@
-const pelvisYReference = initialCameraPosition / 2
+const pelvisYReference = 75
 
 class BVHParser {
     constructor(bvhFileContent) {
@@ -7,11 +7,24 @@ class BVHParser {
         } else {
             let bvhAsLinesArray = bvhFileContent.split('\n')
             this.bonesHierarchy = this._readBvh(bvhAsLinesArray)
-            this.animation = this._bvhBonesHierarchyToTHREEBonesAndAnimationClip(this.bonesHierarchy)
+            this.animation = this._bvhBonesHierarchyToTHREESkeletonAndAnimationClip(this.bonesHierarchy)
         }
     }
 
-    /** TODO */
+    /** Permet de lire le bvh ligne par ligne
+     *  Chaque categorie fait appel a une fonction pour parser et recuperer les informations de cette categorie
+     * 
+     * categorie : 
+     *  - HIERARCHY
+     *  - MOTION
+     *  - Frames
+     *  - Frame Time
+     *  - Reste du fichier ou apparaisse les angles de chaques partie du corp poru chaque frame
+     * 
+     * @param bvhAsLinesArray : un fichier bvh sous forme de tableau de string
+     * 
+     * @return bonesHierarchy : hierarchy des os (sous la forme decrite dans la doc de la fonction _readHierarchySection)
+     */
     _readBvh(bvhAsLinesArray) {
         let lines = bvhAsLinesArray.map(_ => _.slice())
         if (lines.shift().trim().toUpperCase() != "HIERARCHY") {
@@ -35,7 +48,18 @@ class BVHParser {
         }
     }
 
-    /** TODO */
+    /** Parse la section HIERARCHY du bvh
+     *  
+     * @return { bonesHierarchy, lines}
+     *  - bonesHierarchy : tableau contenant chaque node
+     *      - un node contient 
+     *          - son nom
+     *          - son type 
+     *          - un tableau contenant ses enfant dans l'arbe
+     *          - une liste vide pour y placer les frames du node
+     * 
+     *  - lines : reste des ligne encore a parser
+     */
     _readHierarchySection(lines, list) {
         let firstLine = lines.shift().trim();
         let bonesHierarchy = readHierarchySectionRec(lines, firstLine, list)
@@ -82,7 +106,11 @@ class BVHParser {
         }
     }
 
-    /** TODO */
+    /** Associe pour chacun des os de la hierarchy, la frame correspondante
+     *  - temps / moment de la frame
+     *  - position x, y, z (uniquement pour le pelvis)
+     *  - rotation
+     */
     _associateFramesToHierarchy(lines, nbFrames, frameTime, bonesHierarchy) {
         let rad = Math.PI / 180
         let that = this
@@ -138,8 +166,13 @@ class BVHParser {
         }
     }
 
-    /** TODO */
-    _bvhBonesHierarchyToTHREEBonesAndAnimationClip(bonesHierarchy) {
+    /** Renvoie un objet contenant le skelette et le clip a partir de la hierarchy des os passe en parametre
+     *  
+     * @return { skeleton, clip } correspondant a la hierarchie
+     *  - skeleton : objet THREE.Skeleton()
+     *  - clip : objet THREE.AnimationClip()
+     */
+    _bvhBonesHierarchyToTHREESkeletonAndAnimationClip(bonesHierarchy) {
         let THREEBones = bvhThreeHierarchyToTHREEBonesRec(bonesHierarchy, []).threeBone
 
         return {
@@ -162,7 +195,10 @@ class BVHParser {
         }
     }
 
-    /** TODO */
+    /** Renvoie l'animation correspondant à la hierarchy des os entree en parametre
+     * 
+     * @return objet THREE.AnimationClip()
+     */
     _bvhBonesHierarchyToTHREEAnimation(bonesHierarchy) {
         let flatBonesHierachy = this._flattenHierarchy(bonesHierarchy)
         let tracks = []
@@ -193,7 +229,7 @@ class BVHParser {
         return new THREE.AnimationClip("animation", -1, tracks)
     }
 
-    /** TODO */
+    /** Renvoie la hierarchy des os dans un tableau a une dimension a partir de la hierarchy des os cree par readBvh */
     _flattenHierarchy(bonesHierarchy) {
         return flattenHierarchyRec(bonesHierarchy, [])
 
@@ -209,29 +245,30 @@ class BVHParser {
         }
     }
 
-    /** TODO */
+    /** @return le Frame Time du bvh*/
     getFrameTime() {
         console.debug("frameTime: ", this.frameTime)
         return this.frameTime
     }
 
-    /** TODO */
+    /** @return le Nombre de frame total du bvh */
     getNbFrames() {
         console.debug("nbFrames: ", this.nbFrames)
         return this.nbFrames
     }
 
-    /** TODO */
+    /** @return objet THREE.AnimationClip() correspondant du bvh */
     getAnimation() {
         return this.animation
     }
 
-    /** TODO */
+    /** @return le hierarchy des os (sous la forme decrite dans la doc de la fonction _readHierarchySection) */
     getBonesHierarchy() {
         return this.bonesHierarchy
     }
 
-    /** TODO */
+    /** @return facteur de taille squelette, correpondant a la position de reference prise pour
+     * le pelvis divise par la position du pelvis dans le bvh*/
     getSizeFactor() {
         return this.sizeFactor
     }
@@ -243,7 +280,7 @@ class rotationQuaternion {
     z = 0
     w = 1
 
-    /** TODO */
+    /** Initialise le Quaternion a partir de la valeur angulaire x ou y ou z */
     setxyzFromAxisAngle(ax, ay, az, angle) {
         let halfAngle = angle * 0.5
         let sinHalfAngle = Math.sin(halfAngle)
@@ -254,7 +291,7 @@ class rotationQuaternion {
         this.w = Math.cos(halfAngle)
     }
 
-    /** TODO */
+    /** Met a jour le Quaternion en le multipliant avec un autre Quaternion */
     multiply(quatB) {
         let quatA = {...this }
         this.x = quatA.x * quatB.w + quatA.w * quatB.x + quatA.y * quatB.z - quatA.z * quatB.y

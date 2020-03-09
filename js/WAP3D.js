@@ -5,6 +5,8 @@ let playAnimation = true
 // [ [SkeletonHelper, AnimationMixer, frameTime], [SkeletonHelper, AnimationMixer, frameTime], ...]
 let bvhAnimationsArray = []
 const initialCameraPosition = 150
+let pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
+let playDiv = $('<div><img src="./images/play_button.svg"></div>')
 
 /**
  * Permet de récupérer le frame time du navigateur en secondes
@@ -70,34 +72,48 @@ $(function initialisePlayer() {
 
 /** TODO */
 function animate() {
-    if (playAnimation === true) {
-        if (getLoadingState() !== "loading") {
-            requestAnimationFrame(animate)
-            $("#messagePlayer").hide()
-            mouseControls.update()
+    if (getLoadingState() !== "loading") {
+        requestAnimationFrame(animate)
+        mouseControls.update()
+        if (playAnimation === true) {
             if (getLoadingState() === "loaded") {
                 bvhAnimationsArray.forEach(bvh => {
-                    bvh[1].timeScale = currentScreenFrameTime / bvh[2]
-                    bvh[1].update(bvh[2])
+                    if (bvh[3] > $("#time-slider")[0].valueAsNumber) {
+                        bvh[1].timeScale = currentScreenFrameTime / bvh[2]
+                        bvh[1].update(bvh[2])
+                    }
                 });
+                if ($("#time-slider")[0].max > $("#time-slider")[0].valueAsNumber) $("#time-slider")[0].valueAsNumber += 1
                 updateFrameTime()
             }
-        } else {
-            $("#messagePlayer").show()
         }
-        renderer.render(scene, camera)
     } else {
-        return
+        framerateTimeReference = -1
+        $("#messagePlayer").show()
     }
+    renderer.render(scene, camera)
 }
 
 /** TODO */
 function fileLoadedCallBack() {
-    requestAnimationFrame(animate)
+    $("#messagePlayer").hide()
+
+    // Update par rapport au timer général actuel
+    bvhAnimationsArray.forEach(bvh => {
+        let newTime = bvh[3] > $("#time-slider")[0].valueAsNumber ? bvh[2] * $("#time-slider")[0].valueAsNumber : bvh[2] * bvh[3]
+        bvh[1].setTime(newTime)
+    });
+
     $("#fileSelector").one("change", event => associateBVH(event, scene, bvhAnimationsArray))
     $("#play").on("click", clickOnPlayAction)
     $("#replay").on("click", clickOnReplayAction)
+
+    $("#time-slider")[0].min = 0
+    $("#time-slider")[0].max = bvhAnimationsArray.map(bvh => { return bvh[3] }).max()
+
     $("#time-slider").on("change", advanceTimeBar)
+
+    requestAnimationFrame(animate)
 }
 
 /** Gestionnaire des événement clavier et souris
@@ -125,11 +141,11 @@ function inputEventManager() {
  */
 function clickOnPlayAction() {
     playAnimation = !playAnimation
-    if (playAnimation === false) {
-        cancelAnimationFrame(animate)
-        framerateTimeReference = -1
-    } else
-        requestAnimationFrame(animate)
+    if (playAnimation == false) {
+        $("#play").children().replaceWith(pauseDiv)
+    } else {
+        $("#play").children().replaceWith(playDiv)
+    }
 }
 
 
@@ -137,9 +153,15 @@ function clickOnPlayAction() {
  * TODO
  */
 function clickOnReplayAction() {
+    let currPlayingAnim = playAnimation
+    playAnimation = false
+    $("#time-slider")[0].valueAsNumber = $("#time-slider")[0].min
     bvhAnimationsArray.forEach(bvh => {
-        bvh[1].setTime(0)
+        bvh[1].setTime(1)
     });
+    if (currPlayingAnim == true) {
+        playAnimation = true
+    }
 }
 
 
@@ -202,12 +224,25 @@ function openObjectListAction() {
 }
 
 /**
- * problème: comment gérer la barre quand il y'a plusieurs animations ?
+ * TODO
  */
 function advanceTimeBar() {
-    // TODO
+    let currPlayingAnim = playAnimation
+    playAnimation = false
+    framerateTimeReference = -1
+    $("#time-slider")[0].max
+    bvhAnimationsArray.forEach(bvh => {
+        let newTime = bvh[3] > $("#time-slider")[0].valueAsNumber ? bvh[2] * $("#time-slider")[0].valueAsNumber : bvh[2] * bvh[3]
+        bvh[1].setTime(newTime)
+    });
+    if (currPlayingAnim == true) {
+        playAnimation = true
+    } else {
+        renderer.render(scene, camera)
+    }
 }
 
+/** TODO */
 function keydownAction(keyEvent) {
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
@@ -225,6 +260,7 @@ function keydownAction(keyEvent) {
     }
 }
 
+/** TODO */
 function keyupAction(keyEvent) {
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
