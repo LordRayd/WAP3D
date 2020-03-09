@@ -78,9 +78,9 @@ function animate() {
         if (playAnimation === true) {
             if (getLoadingState() === "loaded") {
                 bvhAnimationsArray.forEach(bvh => {
-                    if (bvh[3] > $("#time-slider")[0].valueAsNumber) {
-                        bvh[1].timeScale = currentScreenFrameTime / bvh[2]
-                        bvh[1].update(bvh[2])
+                    if (bvh[4] > $("#time-slider")[0].valueAsNumber) {
+                        bvh[2].timeScale = currentScreenFrameTime / bvh[3]
+                        bvh[2].update(bvh[3])
                     }
                 });
                 if ($("#time-slider")[0].max > $("#time-slider")[0].valueAsNumber) $("#time-slider")[0].valueAsNumber += 1
@@ -100,8 +100,9 @@ function fileLoadedCallBack() {
 
     // Update par rapport au timer général actuel
     bvhAnimationsArray.forEach(bvh => {
-        let newTime = bvh[3] > $("#time-slider")[0].valueAsNumber ? bvh[2] * $("#time-slider")[0].valueAsNumber : bvh[2] * bvh[3]
-        bvh[1].setTime(newTime)
+        console.log(bvh)
+        let newTime = bvh[4] > $("#time-slider")[0].valueAsNumber ? bvh[3] * $("#time-slider")[0].valueAsNumber : bvh[3] * bvh[4]
+        bvh[2].setTime(newTime)
     });
 
     $("#fileSelector").one("change", event => associateBVH(event, scene, bvhAnimationsArray))
@@ -109,7 +110,7 @@ function fileLoadedCallBack() {
     $("#replay").on("click", clickOnReplayAction)
 
     $("#time-slider")[0].min = 0
-    $("#time-slider")[0].max = bvhAnimationsArray.map(bvh => { return bvh[3] }).max()
+    $("#time-slider")[0].max = bvhAnimationsArray.map(bvh => { return bvh[4] }).max()
 
     $("#time-slider").on("change", advanceTimeBar)
 
@@ -142,12 +143,11 @@ function inputEventManager() {
 function clickOnPlayAction() {
     playAnimation = !playAnimation
     if (playAnimation == false) {
-        $("#play").children().replaceWith(pauseDiv)
-    } else {
         $("#play").children().replaceWith(playDiv)
+    } else {
+        $("#play").children().replaceWith(pauseDiv)
     }
 }
-
 
 /**
  * TODO
@@ -157,13 +157,12 @@ function clickOnReplayAction() {
     playAnimation = false
     $("#time-slider")[0].valueAsNumber = $("#time-slider")[0].min
     bvhAnimationsArray.forEach(bvh => {
-        bvh[1].setTime(1)
+        bvh[2].setTime(1)
     });
     if (currPlayingAnim == true) {
         playAnimation = true
     }
 }
-
 
 /**
  * Fonction appellée pour minimiser la div de sélection d'élements
@@ -193,7 +192,6 @@ function closeObjectListAction() {
         duration: 100,
     })
 }
-
 
 /**
  * Fonction appellée pour "ouvrir" la div de sélection d'élements
@@ -229,11 +227,12 @@ function openObjectListAction() {
 function advanceTimeBar() {
     let currPlayingAnim = playAnimation
     playAnimation = false
+    console.log($("#time-slider")[0].valueAsNumber)
     framerateTimeReference = -1
     $("#time-slider")[0].max
     bvhAnimationsArray.forEach(bvh => {
-        let newTime = bvh[3] > $("#time-slider")[0].valueAsNumber ? bvh[2] * $("#time-slider")[0].valueAsNumber : bvh[2] * bvh[3]
-        bvh[1].setTime(newTime)
+        let newTime = bvh[4] > $("#time-slider")[0].valueAsNumber ? bvh[3] * $("#time-slider")[0].valueAsNumber : bvh[3] * bvh[4]
+        bvh[2].setTime(newTime)
     });
     if (currPlayingAnim == true) {
         playAnimation = true

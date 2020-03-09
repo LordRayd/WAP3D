@@ -2,19 +2,21 @@
 <html>
 
 <head>
-    <meta charset='utf-8'>
-    <title>WAP3D</title>
-    <link rel="stylesheet" type="text/css" href="./css/WAP3D.css">
-    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-    <script src="./ressources/externalSources/three.js-master/build/three.js"></script>
-    <script src="./js/WAP3D.js"></script>
-    <script src="./js/bvhLoader.js"></script>
-    <script src="./js/wap3DUtil.js"></script>
-    <script src="./js/bvhParser.js"></script>
-    <script src="./ressources/externalSources/three.js-master/examples/js/controls/OrbitControls.js"></script>
+  <meta charset='utf-8'>
+  <title>WAP3D</title>
+  <link rel="stylesheet" type="text/css" href="./css/WAP3D.css">
+  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+  <script src="./ressources/externalSources/three.js-master/build/three.js"></script>
+  <script src="./js/WAP3D.js"></script>
+  <script src="./js/bvhLoader.js"></script>
+  <script src="./js/wap3DUtil.js"></script>
+  <script src="./js/bvhParser.js"></script>
+  <script src="./ressources/externalSources/three.js-master/examples/js/controls/OrbitControls.js"></script>
 </head>
 
 <body>
+  <div id="container">
+    <div id="objectSelector">
       <input id="fileSelector" type="file" multiple="multiple" accept=".bvh">
       <div id="closeOpenButton">
         <!--TODO mettre image-->
@@ -31,20 +33,18 @@
       </div>
     </div>
     <div id="player">
-      <div id="messagePlayer">Chargement en cours</div>
+      <div id="messagePlayer" hidden>Chargement en cours</div>
       <!-- canvas ici -->
       <!-- en javascript créer le canvas et lui donner un ID -->
-        </div>
-        <div id="control">
-            <div id="play">
-                <div>
-                    <img src="./images/play_button.svg">
-                </div>
-            </div>
-            <input id="time-slider" type="range">
-            <div id="replay"><img src="./images/replay_button.svg"></div>
-        </div>
     </div>
+    <div id="control">
+      <div id="play">
+        <div><img src="./images/pause_button.svg"></div>
+      </div>
+      <input id="time-slider" type="range">
+      <div id="replay"><img src="./images/replay_button.svg"></div>
+    </div>
+  </div>
 </body>
 
 </html>
