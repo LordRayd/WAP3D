@@ -7,6 +7,7 @@ let bvhAnimationsArray = []
 const initialCameraPosition = 150
 let pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
 let playDiv = $('<div><img src="./images/play_button.svg"></div>')
+let bvhLoader
 
 /**
  * Permet de récupérer le frame time du navigateur en secondes
@@ -33,6 +34,7 @@ function updateRendererSize() {
  * Initialise les interactions à la souris et au clavier
  */
 $(function initialisePlayer() {
+    bvhLoader = new BVHLoader(scene, bvhAnimationsArray)
 
     scene = new THREE.Scene()
 
@@ -72,11 +74,11 @@ $(function initialisePlayer() {
 
 /** TODO */
 function animate() {
-    if (getLoadingState() !== "loading") {
+    if (bvhLoader.loadingState !== "loading") {
         requestAnimationFrame(animate)
         mouseControls.update()
         if (playAnimation === true) {
-            if (getLoadingState() === "loaded") {
+            if (bvhLoader.loadingState === "loaded") {
                 bvhAnimationsArray.forEach(bvh => {
                     if (bvh[4] > $("#time-slider")[0].valueAsNumber) {
                         bvh[2].timeScale = currentScreenFrameTime / bvh[3]
@@ -100,12 +102,11 @@ function fileLoadedCallBack() {
 
     // Update par rapport au timer général actuel
     bvhAnimationsArray.forEach(bvh => {
-        console.log(bvh)
         let newTime = bvh[4] > $("#time-slider")[0].valueAsNumber ? bvh[3] * $("#time-slider")[0].valueAsNumber : bvh[3] * bvh[4]
         bvh[2].setTime(newTime)
     });
 
-    $("#fileSelector").one("change", event => associateBVH(event, scene, bvhAnimationsArray))
+    $("#fileSelector").one("change", event => bvhLoader.associateBVH(event))
     $("#play").on("click", clickOnPlayAction)
     $("#replay").on("click", clickOnReplayAction)
 
@@ -122,7 +123,7 @@ function fileLoadedCallBack() {
  */
 function inputEventManager() {
 
-    $("#fileSelector").one("change", event => associateBVH(event, scene, bvhAnimationsArray))
+    $("#fileSelector").one("change", event => bvhLoader.associateBVH(event))
 
     $("#play").on("click", clickOnPlayAction)
 
