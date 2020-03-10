@@ -2,12 +2,17 @@ let scene, renderer, camera, mouseControls
 let framerateTimeReference = -1
 let currentScreenFrameTime = 0.01667
 let playAnimation = true
-// [ [SkeletonHelper, AnimationMixer, frameTime], [SkeletonHelper, AnimationMixer, frameTime], ...]
+
+let bvhWithMaximumNbFrames = { nbFrames: 0 }
+
+/** [{name, skeleton, clip(mixer), frameTime, nbFrames},] */
 let bvhAnimationsArray = []
 const initialCameraPosition = 150
 let pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
 let playDiv = $('<div><img src="./images/play_button.svg"></div>')
 let bvhLoader
+
+let generalTimeSlider
 
 /**
  * Permet de récupérer le frame time du navigateur en secondes
@@ -34,7 +39,7 @@ function updateRendererSize() {
  * Initialise les interactions à la souris et au clavier
  */
 $(function initialisePlayer() {
-    bvhLoader = new BVHLoader(scene, bvhAnimationsArray)
+    generalTimeSlider = $("#time-slider")[0]
 
     scene = new THREE.Scene()
 
@@ -67,6 +72,8 @@ $(function initialisePlayer() {
         BOTTOM: 83 // s
     }
 
+    bvhLoader = new BVHLoader(scene, bvhAnimationsArray)
+
     inputEventManager()
 
     animate()
@@ -80,12 +87,12 @@ function animate() {
         if (playAnimation === true) {
             if (bvhLoader.loadingState === "loaded") {
                 bvhAnimationsArray.forEach(bvh => {
-                    if (bvh[4] > $("#time-slider")[0].valueAsNumber) {
-                        bvh[2].timeScale = currentScreenFrameTime / bvh[3]
-                        bvh[2].update(bvh[3])
+                    if (bvh.nbFrames > generalTimeSlider.valueAsNumber) {
+                        bvh.clip.timeScale = currentScreenFrameTime / bvh.frameTime
+                        bvh.clip.update(bvh.frameTime)
                     }
                 });
-                if ($("#time-slider")[0].max > $("#time-slider")[0].valueAsNumber) $("#time-slider")[0].valueAsNumber += 1
+                if (generalTimeSlider.max > generalTimeSlider.valueAsNumber) { generalTimeSlider.valueAsNumber += bvhWithMaximumNbFrames.clip.timeScale }
                 updateFrameTime()
             }
         }
@@ -96,25 +103,29 @@ function animate() {
     renderer.render(scene, camera)
 }
 
+
+
 /** TODO */
 function fileLoadedCallBack() {
     $("#messagePlayer").hide()
 
     // Update par rapport au timer général actuel
+    let timeSliderCurrentValue = $("#time-slider")[0].valueAsNumber
     bvhAnimationsArray.forEach(bvh => {
-        let newTime = bvh[4] > $("#time-slider")[0].valueAsNumber ? bvh[3] * $("#time-slider")[0].valueAsNumber : bvh[3] * bvh[4]
-        bvh[2].setTime(newTime)
+        if (bvh.nbFrames > bvhWithMaximumNbFrames.nbFrames) { bvhWithMaximumNbFrames = bvh }
+        let newTime = bvh.nbFrames > timeSliderCurrentValue ? bvh.frameTime * timeSliderCurrentValue : bvh.frameTime * bvh.nbFrames
+        bvh.clip.setTime(newTime)
     });
 
-    $("#fileSelector").one("change", event => bvhLoader.associateBVH(event))
+    $("#fileSelector").one("change", event => bvhLoader.loadBVH(event, fileLoadedCallBack))
     $("#play").on("click", clickOnPlayAction)
     $("#replay").on("click", clickOnReplayAction)
 
     $("#time-slider")[0].min = 0
-    $("#time-slider")[0].max = bvhAnimationsArray.map(bvh => { return bvh[4] }).max()
+    $("#time-slider")[0].max = bvhAnimationsArray.map(bvh => { return bvh.nbFrames }).max()
 
     $("#time-slider").on("change", advanceTimeBar)
-
+    generalTimeSlider = $("#time-slider")[0]
     requestAnimationFrame(animate)
 }
 
@@ -123,7 +134,7 @@ function fileLoadedCallBack() {
  */
 function inputEventManager() {
 
-    $("#fileSelector").one("change", event => bvhLoader.associateBVH(event))
+    $("#fileSelector").one("change", event => bvhLoader.loadBVH(event, fileLoadedCallBack))
 
     $("#play").on("click", clickOnPlayAction)
 
@@ -158,7 +169,7 @@ function clickOnReplayAction() {
     playAnimation = false
     $("#time-slider")[0].valueAsNumber = $("#time-slider")[0].min
     bvhAnimationsArray.forEach(bvh => {
-        bvh[2].setTime(1)
+        bvh.clip.setTime(1)
     });
     if (currPlayingAnim == true) {
         playAnimation = true
@@ -232,8 +243,8 @@ function advanceTimeBar() {
     framerateTimeReference = -1
     $("#time-slider")[0].max
     bvhAnimationsArray.forEach(bvh => {
-        let newTime = bvh[4] > $("#time-slider")[0].valueAsNumber ? bvh[3] * $("#time-slider")[0].valueAsNumber : bvh[3] * bvh[4]
-        bvh[2].setTime(newTime)
+        let newTime = bvh.nbFrames > $("#time-slider")[0].valueAsNumber ? bvh.frameTime * $("#time-slider")[0].valueAsNumber : bvh.frameTime * bvh.nbFrames
+        bvh.clip.setTime(newTime)
     });
     if (currPlayingAnim == true) {
         playAnimation = true
