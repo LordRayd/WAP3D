@@ -1,6 +1,6 @@
 { /** LOG console */
     console.DEBUG_MODE = false
-    console.INFO_MODE = true
+    console.INFO_MODE = false
 
     console.debug = function() {
         if (console.DEBUG_MODE === true) {
