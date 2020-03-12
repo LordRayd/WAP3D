@@ -292,11 +292,21 @@ class rotationQuaternion {
     }
 
     /** Met a jour le Quaternion en le multipliant avec un autre Quaternion */
-    multiply(quatB) {
+    multiply(quat2) {
         let quatA = {...this }
-        this.x = quatA.x * quatB.w + quatA.w * quatB.x + quatA.y * quatB.z - quatA.z * quatB.y
-        this.y = quatA.y * quatB.w + quatA.w * quatB.y + quatA.z * quatB.x - quatA.x * quatB.z
-        this.z = quatA.z * quatB.w + quatA.w * quatB.z + quatA.x * quatB.y - quatA.y * quatB.x
-        this.w = quatA.w * quatB.w - quatA.x * quatB.x - quatA.y * quatB.y - quatA.z * quatB.z
+        let q1w = this.w, // a1
+            q1x = this.x, // b1
+            q1y = this.y, // c1
+            q1z = this.z  // d1
+
+        let q2w = quat2.w, // a2
+            q2x = quat2.x, // b2
+            q2y = quat2.y, // c2
+            q2z = quat2.z  // d2
+
+        this.x = q1x * q2w + q1w * q2x + q1y * q2z - q1z * q2y
+        this.y = q1y * q2w + q1w * q2y + q1z * q2x - q1x * q2z
+        this.z = q1z * q2w + q1w * q2z + q1x * q2y - q1y * q2x
+        this.w = q1w * q2w - q1x * q2x - q1y * q2y - q1z * q2z
     }
 }

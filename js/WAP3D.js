@@ -8,8 +8,8 @@ let bvhWithMaximumNbFrames = { nbFrames: 0 }
 /** [{name, skeleton, clip(mixer), frameTime, nbFrames},] */
 let bvhAnimationsArray = []
 const initialCameraPosition = 150
-let pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
-let playDiv = $('<div><img src="./images/play_button.svg"></div>')
+let pauseDiv = {...$('<div><img src="./images/pause_button.svg"></div>') }
+let playDiv = {...$('<div><img src="./images/play_button.svg"></div>') }
 let bvhLoader
 
 let generalTimeSlider
@@ -21,11 +21,10 @@ let generalTimeSlider
 function updateFrameTime() {
     if (framerateTimeReference == -1) {
         framerateTimeReference = Date.now();
-    } else {
-        let delta = (Date.now() - framerateTimeReference) / 1000;
-        framerateTimeReference = Date.now();
-        currentScreenFrameTime = delta;
     }
+    let delta = (Date.now() - framerateTimeReference) / 1000;
+    framerateTimeReference = Date.now();
+    currentScreenFrameTime = delta;
 }
 
 function updateRendererSize() {
@@ -40,7 +39,7 @@ function updateRendererSize() {
  */
 $(function initialisePlayer() {
     generalTimeSlider = $("#time-slider")[0]
-
+    generalTimeSlider.valueAsNumber = 0
     scene = new THREE.Scene()
 
     renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -65,6 +64,7 @@ $(function initialisePlayer() {
         MIDDLE: THREE.MOUSE.DOLLY, //zoom
         RIGHT: THREE.MOUSE.PAN
     }
+
     mouseControls.keys = {
         LEFT: 81, // q
         UP: 90, // z
@@ -78,13 +78,14 @@ $(function initialisePlayer() {
 
     animate()
 })
-
-/** TODO */
+let animating = true
+    /** TODO */
 function animate() {
     if (bvhLoader.loadingState !== "loading") {
         requestAnimationFrame(animate)
         mouseControls.update()
         if (playAnimation === true) {
+            animating = true
             if (bvhLoader.loadingState === "loaded") {
                 bvhAnimationsArray.forEach(bvh => {
                     if (bvh.nbFrames > generalTimeSlider.valueAsNumber) {
@@ -94,16 +95,16 @@ function animate() {
                 });
                 if (generalTimeSlider.max > generalTimeSlider.valueAsNumber) { generalTimeSlider.valueAsNumber += bvhWithMaximumNbFrames.clip.timeScale }
                 updateFrameTime()
+                $("#messagePlayer").text(generalTimeSlider.valueAsNumber).show()
             }
+            animating = false
         }
     } else {
         framerateTimeReference = -1
-        $("#messagePlayer").show()
+        $("#messagePlayer").text("Chargement en cours").show()
     }
     renderer.render(scene, camera)
 }
-
-
 
 /** TODO */
 function fileLoadedCallBack() {
@@ -121,11 +122,12 @@ function fileLoadedCallBack() {
     $("#play").on("click", clickOnPlayAction)
     $("#replay").on("click", clickOnReplayAction)
 
-    $("#time-slider")[0].min = 0
-    $("#time-slider")[0].max = bvhAnimationsArray.map(bvh => { return bvh.nbFrames }).max()
+    generalTimeSlider = $("#time-slider")[0]
+    generalTimeSlider.min = 1
+    generalTimeSlider.max = bvhAnimationsArray.map(bvh => { return bvh.nbFrames }).max()
 
     $("#time-slider").on("change", advanceTimeBar)
-    generalTimeSlider = $("#time-slider")[0]
+
     requestAnimationFrame(animate)
 }
 
@@ -153,12 +155,17 @@ function inputEventManager() {
  * TODO 
  */
 function clickOnPlayAction() {
+    cancelAnimationFrame(animate)
     playAnimation = !playAnimation
+    framerateTimeReference = -1
     if (playAnimation == false) {
         $("#play").children().replaceWith(playDiv)
+            //$("#messagePlayer").html(playDiv).show(500).hide(500)
     } else {
         $("#play").children().replaceWith(pauseDiv)
+            //$("#messagePlayer").html(pauseDiv).show(500).hide(500)
     }
+    requestAnimationFrame(animate)
 }
 
 /**
@@ -167,13 +174,25 @@ function clickOnPlayAction() {
 function clickOnReplayAction() {
     let currPlayingAnim = playAnimation
     playAnimation = false
-    $("#time-slider")[0].valueAsNumber = $("#time-slider")[0].min
+    new Promise((resolve, reject) => {
+        let inter = setInterval(_ => {
+            if (animating == false) {
+                clearInterval(inter)
+                resolve()
+            } else {
+                console.log("animating")
+            }
+        }, 1)
+    })
+    framerateTimeReference = -1
+    generalTimeSlider.valueAsNumber = generalTimeSlider.min
     bvhAnimationsArray.forEach(bvh => {
-        bvh.clip.setTime(1)
+        bvh.clip.setTime(generalTimeSlider.min * bvh.frameTime)
     });
     if (currPlayingAnim == true) {
         playAnimation = true
     }
+    requestAnimationFrame(animate)
 }
 
 /**
@@ -239,17 +258,12 @@ function openObjectListAction() {
 function advanceTimeBar() {
     let currPlayingAnim = playAnimation
     playAnimation = false
-    console.log($("#time-slider")[0].valueAsNumber)
-    framerateTimeReference = -1
-    $("#time-slider")[0].max
     bvhAnimationsArray.forEach(bvh => {
-        let newTime = bvh.nbFrames > $("#time-slider")[0].valueAsNumber ? bvh.frameTime * $("#time-slider")[0].valueAsNumber : bvh.frameTime * bvh.nbFrames
+        let newTime = bvh.nbFrames > generalTimeSlider.valueAsNumber ? bvh.frameTime * generalTimeSlider.valueAsNumber : bvh.frameTime * bvh.nbFrames
         bvh.clip.setTime(newTime)
     });
     if (currPlayingAnim == true) {
         playAnimation = true
-    } else {
-        renderer.render(scene, camera)
     }
 }
 
@@ -262,6 +276,9 @@ function keydownAction(keyEvent) {
         case "S":
         case "D":
             // Déjà utiliser par le déplacement de la caméra
+            break
+        case " ":
+            clickOnPlayAction()
             break
         case "SHIFT":
             mouseControls.screenSpacePanning = true
