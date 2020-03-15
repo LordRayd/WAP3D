@@ -82,10 +82,10 @@ class BVHLoader {
             let bvhNbFrame = bvhFile.getNbFrames()
 
             bvhAnimationsArray[bvhAnimationsIndex] = { name: currBVHInAnimationArray.name, skeleton: skeletonHelper, clip: mixer, frameTime: bvhFrameTime, nbFrames: bvhNbFrame }
-                // currBVHInAnimationArray.push(skeletonHelper, mixer, bvhFrameTime, bvhNbFrame)
+            // currBVHInAnimationArray.push(skeletonHelper, mixer, bvhFrameTime, bvhNbFrame)
 
             this._addBVHToObjectList(skeletonHelper.uuid, currBVHInAnimationArray.name, bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
-                // this._addBVHToObjectList(skeletonHelper.uuid, currBVHInAnimationArray[0], bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
+            // this._addBVHToObjectList(skeletonHelper.uuid, currBVHInAnimationArray[0], bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
 
             this.nbLoadedFiles += 1
             resolve()
@@ -94,7 +94,7 @@ class BVHLoader {
 
     /** TODO */
     _readBvhFilesAsText(files, currNbLoadedFile) {
-        return Promise.all([...files].map(async(file, index) => {
+        return Promise.all([...files].map(async (file, index) => {
             return this._loadBvhfile(file, currNbLoadedFile + index)
         }))
     }
@@ -103,10 +103,10 @@ class BVHLoader {
     _loadBvhfile(file, bvhAnimationsIndex) {
         return new Promise((resolve, reject) => {
             let reader = new FileReader();
-            reader.onload = async(event) => { resolve(await this._parseBvhFileContent(event, bvhAnimationsIndex)) }
+            reader.onload = async (event) => { resolve(await this._parseBvhFileContent(event, bvhAnimationsIndex)) }
 
             bvhAnimationsArray.push({ name: file.name })
-                // bvhAnimationsArray.push([file.name])
+            // bvhAnimationsArray.push([file.name])
             reader.readAsText(file); // Async
         })
     }
@@ -130,7 +130,19 @@ class BVHLoader {
      * pour permettre de supprimer des éléments du tab sans perte d'ordre ?
      */
     _addBVHToObjectList(uuid_, name, frameTime, nbFrames, indexInDiv) {
-        $("#bvhList").append('<div value="' + indexInDiv + '" id="' + uuid_ + '"class="object">' + name + '\t' + nbFrames + '</div>')
+        /*
+        '<div id="' + uuid_ + '" class="object">
+            <div>
+                <img src="./images/pause_button.svg">
+            </div>
+            <input class="time" classstep="any" type="range">
+            <div>
+                <img src="./images/replay_button.svg">
+            </div>
+            <input class="display" type="checkbox">
+        </div>'
+        */
+        $("#bvhList .list").append('<div id="' + uuid_ + '" class="object"><div><img src="./images/pause_button.svg"></div><input class="time" classstep="any" type="range"><div><img src="./images/replay_button.svg"></div><input class="display" type="checkbox"></div>')
     }
 
     /** TODO */
