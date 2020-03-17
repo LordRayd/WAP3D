@@ -5,8 +5,8 @@ let playAnimation = true
 
 let bvhWithMaximumNbFrames = { nbFrames: 0 }
 
-/** [{name, skeleton, clip(mixer), frameTime, nbFrames},] */
-let bvhAnimationsArray = []
+/** [{name, skeleton, clip(mixer), bvhFile},] */
+let bvhAnimationsArray
 const initialCameraPosition = 150
 let pauseDiv = {...$('<div><img src="./images/pause_button.svg"></div>') }
 let playDiv = {...$('<div><img src="./images/play_button.svg"></div>') }
@@ -38,6 +38,7 @@ function updateRendererSize() {
  * Initialise les interactions à la souris et au clavier
  */
 $(function initialisePlayer() {
+    bvhAnimationsArray = new BVHAnimationArray()
     generalTimeSlider = $("#time-slider")[0]
     generalTimeSlider.valueAsNumber = 0
     scene = new THREE.Scene()
@@ -112,8 +113,8 @@ function fileLoadedCallBack() {
 
     // Update par rapport au timer général actuel
     let timeSliderCurrentValue = $("#time-slider")[0].valueAsNumber
+    bvhWithMaximumNbFrames = bvhAnimationsArray.getByMaxNbOfFrames()
     bvhAnimationsArray.forEach(bvh => {
-        if (bvh.nbFrames > bvhWithMaximumNbFrames.nbFrames) { bvhWithMaximumNbFrames = bvh }
         let newTime = bvh.nbFrames > timeSliderCurrentValue ? bvh.frameTime * timeSliderCurrentValue : bvh.frameTime * bvh.nbFrames
         bvh.clip.setTime(newTime)
     });
@@ -124,7 +125,7 @@ function fileLoadedCallBack() {
 
     generalTimeSlider = $("#time-slider")[0]
     generalTimeSlider.min = 1
-    generalTimeSlider.max = bvhAnimationsArray.map(bvh => { return bvh.nbFrames }).max()
+    generalTimeSlider.max = bvhWithMaximumNbFrames.nbFrames
 
     $("#time-slider").on("change", advanceTimeBar)
 

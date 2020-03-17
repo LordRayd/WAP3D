@@ -81,7 +81,7 @@ class BVHLoader {
             let bvhFrameTime = bvhFile.getFrameTime()
             let bvhNbFrame = bvhFile.getNbFrames()
 
-            bvhAnimationsArray[bvhAnimationsIndex] = { name: currBVHInAnimationArray.name, skeleton: skeletonHelper, clip: mixer, frameTime: bvhFrameTime, nbFrames: bvhNbFrame }
+            bvhAnimationsArray[bvhAnimationsIndex] = new BVHAnimationElement(currBVHInAnimationArray.name, skeletonHelper, mixer, bvhFile)
             // currBVHInAnimationArray.push(skeletonHelper, mixer, bvhFrameTime, bvhNbFrame)
 
             this._addBVHToObjectList(skeletonHelper.uuid, currBVHInAnimationArray.name, bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)

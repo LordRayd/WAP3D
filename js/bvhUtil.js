@@ -25,94 +25,48 @@ class BVHAnimationElement {
     }
 }
 
-class BVHAnimationArray {
-    /**
-     * Simple outil agissant comme un array classique auquels des fonctionnalité
-     * utiles au problèmes liées aux BVH ont été greffé.
-     */
-    constructor() {
-        this.array = new Array()
-    }
+
+/**
+ * Simple outil agissant comme un array classique auquels des fonctionnalité utiles au problèmes liées aux BVH ont été greffé.
+ */
+class BVHAnimationArray extends Array {
 
     /**
-     * Performs the specified action for each element in an array.
-     * @param {*} function_ 
-     */
-    forEach(function_) {
-        this.array.forEach(function_)
-    }
-
-    /**
-     * Calls a defined callback function on each element of an array, and returns an array that contains the results.
-     * @param {*} function_ 
-     */
-    map(function_) {
-        return this.array.map(function_)
-    }
-
-    /**
-     * Appends new elements to an array, and returns the new length of the array.
-     * @param {*} element_ 
-     */
-    push(element_) {
-        this.array.push(element_)
-    }
-
-    /**
-     * Désalloue l'élément à l'uuid correspondant du groupe
+     * Retire l'élément de uuid correspondant de l'objet
      * @param {*} uuid_ 
-     * @returns l'index de l'élément supprimé
      */
     removeByUUID(uuid_) {
-        for (let index in this.array) {
-            if (this.array[index].getuuid() === uuid_) {
-                this.array.splice(index, 1)
+        for (let index in this) {
+            if (this[index].getuuid() === uuid_) {
+                this.splice(index, 1)
                 return index
             }
         }
     }
 
     /**
-     * Équivalent à array[index_] = element_
+     * Retourne l'OBJET ayant le plus grand nombre de frames
      */
-    setAtIdx(index_, element_) {
-        this.array[index_] = element_
-    }
-
-    /**
-     * renvoie le maximum globale de frames d'animations
-     */
-    get byMaxNbOfFrames() {
-        return this.array.reduce((bvh0, bvh1) => {
-            if (bvh0.nbFrames < bvh1.nbFrames) {
-                return bvh1
-            } else return bvh0
+    getByMaxNbOfFrames() {
+        return this.reduce((bvh0, bvh1) => {
+            return bvh0.nbFrames < bvh1.nbFrames ? bvh1 : bvh0
         })
     }
 
     /**
      * Retourne l'OBJET ayant l'animation la plus longue de la collection
      */
-    get byMaxOverallTime() {
-        return this.array.reduce((bvh0, bvh1) => {
-            if ((bvh0.nbFrames * bvh0.frameTime) < (bvh1.nbFrames * bvh1.frameTime)) {
-                return bvh1
-            } else return bvh0
+    getByMaxOverallTime() {
+        return this.reduce((bvh0, bvh1) => {
+            return (bvh0.nbFrames * bvh0.frameTime) < (bvh1.nbFrames * bvh1.frameTime) ? bvh1 : bvh0
         })
-    }
-
-    /**
-     * renvoie l'élément avec l'index correspondant
-     */
-    getByIdx(index_) {
-        return this.array[index_]
     }
 
     /**
      * renvoie l'élément avec le UUID correspondant
      */
     getByUUID(uuid_) {
-        for (let elem of this.array) {
+        for (let elem of this) {
             if (elem.getuuid() === uuid_) {
                 return elem
             }
