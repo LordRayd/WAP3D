@@ -20,4 +20,9 @@ function updateEventListener() {
   $("#time-slider").on("change", event => inputEventManager.advanceTimeBar(event))
 
   $(window).on("resize", event => inputEventManager.updateRendererSize(event))
+
+  $("#fileSelector").one("change", event => {
+    // TODO bloquer IEM
+    player.bvhLoader.loadBVH(event, player.fileLoadedCallBack.bind(player))
+  })
 }

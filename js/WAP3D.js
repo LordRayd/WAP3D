@@ -19,10 +19,9 @@ class wap3D {
     this.bvhWithMaximumNbFrames = { nbFrames: 0 }
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
 
-    this._activateEventListener()
-
     this.animating = true
     this.playAnimation = true
+
     this._animate()
   }
 
@@ -60,20 +59,49 @@ class wap3D {
   }
 
   /** TODO */
-  _fileLoadedCallBack() {
-    $("#messagePlayer").hide()
+  updateRendererSize() {
+    let player = $("#player")[0]
+    this.renderer.setSize(player.offsetWidth, player.offsetHeight)
+    this.camera.aspect = player.offsetWidth / player.offsetHeight
+  }
 
-    // Update par rapport au timer général actuel
-    let timeSliderCurrentValue = this.generalTimeSlider.valueAsNumber
-    this.bvhWithMaximumNbFrames = this.bvhAnimationsArray.getByMaxNbOfFrames()
+  /** TODO */
+  toggleAnimation() {
+    this.playAnimation = !this.playAnimation
+    return this.playAnimation
+  }
+
+  /** TODO */
+  stopAnimation() {
+    this.playAnimation = false
+    return this.playAnimation
+  }
+
+  /** TODO */
+  startAnimation() {
+    this.playAnimation = true
+    return this.playAnimation
+  }
+
+  /** TODO */
+  setAllBvhFrameTime(time) {
     this.bvhAnimationsArray.forEach(bvh => {
-      let newTime = bvh.nbFrames > timeSliderCurrentValue ? bvh.frameTime * timeSliderCurrentValue : bvh.frameTime * bvh.nbFrames
+      let newTime = bvh.nbFrames > time ? bvh.frameTime * time : bvh.frameTime * bvh.nbFrames
       bvh.clip.setTime(newTime)
     });
+  }
 
+  /** TODO */
+  fileLoadedCallBack() {
+    $("#messagePlayer").hide()
+
+    this.bvhWithMaximumNbFrames = this.bvhAnimationsArray.getByMaxNbOfFrames()
     this.generalTimeSlider.max = this.bvhWithMaximumNbFrames.nbFrames
 
-    this._activateEventListener()
+    // Update par rapport au timer général actuel
+    this.setAllBvhFrameTime(this.generalTimeSlider.valueAsNumber)
+
+    updateEventListener()
 
     requestAnimationFrame(this._animate.bind(this))
   }
@@ -86,14 +114,24 @@ class wap3D {
       if (this.playAnimation === true) {
         this.animating = true
         if (this.bvhLoader.loadingState === "loaded") {
+
+          
           this.bvhAnimationsArray.forEach(bvh => {
             if (bvh.nbFrames > this.generalTimeSlider.valueAsNumber) {
               bvh.clip.timeScale = this.currentScreenFrameTime / bvh.frameTime
               bvh.clip.update(bvh.frameTime)
             }
           });
-          if (this.generalTimeSlider.max > this.generalTimeSlider.valueAsNumber) { this.generalTimeSlider.valueAsNumber += this.bvhWithMaximumNbFrames.clip.timeScale }
+          
+          // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
+          // this.setAllBvhFrameTime(this.generalTimeSlider.valueAsNumber)
+          // this.bvhWithMaximumNbFrames.clip.timeScale = this.currentScreenFrameTime / this.bvhWithMaximumNbFrames.frameTime
+
           this._updateFrameTime()
+          if (this.generalTimeSlider.max > this.generalTimeSlider.valueAsNumber) {
+            this.generalTimeSlider.valueAsNumber += this.bvhWithMaximumNbFrames.clip.timeScale;
+            console.log(this.generalTimeSlider.valueAsNumber)
+          }
           if (console.DEBUG_MODE == true) $("#messagePlayer").text(this.generalTimeSlider.valueAsNumber).show()
         }
         this.animating = false
@@ -117,15 +155,6 @@ class wap3D {
   }
 
   /** TODO */
-  _activateEventListener() {
-    $("#fileSelector").one("change", event => {
-      // TODO bloquer IEM
-      this.bvhLoader.loadBVH(event, this._fileLoadedCallBack.bind(this))
-    })
-    updateEventListener()
-  }
-
-  /** TODO */
   get framerateTimeReference() {
     return this._framerateTimeReference == -1 ? Date.now() : this._framerateTimeReference
   }
@@ -145,34 +174,11 @@ class wap3D {
     this._mouseControls = newValue
   }
 
-  /** TODO */
-  updateRendererSize() {
-    let player = $("#player")[0]
-    this.renderer.setSize(player.offsetWidth, player.offsetHeight)
-    this.camera.aspect = player.offsetWidth / player.offsetHeight
+  get bvhLoader() {
+    return this._bvhLoader
   }
 
-  /** TODO */
-  toggleAnimation(){
-    this.playAnimation = !this.playAnimation
-    return this.playAnimation
-  }
-  /** TODO */
-  stopAnimation(){
-    this.playAnimation = false
-    return this.playAnimation
-  }
-  /** TODO */
-  startAnimation(){
-    this.playAnimation = true
-    return this.playAnimation
-  }
-
-  /** TODO */
-  setAllBvhFrameTime(time){
-    this.bvhAnimationsArray.forEach(bvh => {
-      let newTime = bvh.nbFrames > time ? bvh.frameTime * time : bvh.frameTime * bvh.nbFrames
-      bvh.clip.setTime(newTime)
-    });
+  set bvhLoader(newValue) {
+    this._bvhLoader = newValue
   }
 }
