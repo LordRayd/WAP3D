@@ -14,22 +14,3 @@
         }
     }
 }
-
-Object.defineProperties(Array.prototype, {
-    max: {
-        configurable: true,
-        enumerable: false,
-        value: function() {
-            return this.length === 0 ? undefined : Math.max(...this)
-        },
-        writable: true
-    },
-    min: {
-        configurable: true,
-        enumerable: false,
-        value: function() {
-            return this.length === 0 ? undefined : Math.min(...this)
-        },
-        writtable: true
-    }
-});

@@ -1,50 +1,65 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta charset='utf-8'>
-  <title>WAP3D</title>
-  <link rel="stylesheet" type="text/css" href="./css/WAP3D.css">
-  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-  <script src="./ressources/externalSources/three.js-master/build/three.js"></script>
-  <script src="./js/WAP3D.js"></script>
-  <script src="./js/bvhLoader.js"></script>
-  <script src="./js/wap3DUtil.js"></script>
-  <script src="./js/bvhParser.js"></script>
-  <script src="./ressources/externalSources/three.js-master/examples/js/controls/OrbitControls.js"></script>
-</head>
+  <head>
+    <meta charset='utf-8'>
+    <title>WAP3D</title>
+    <link rel="stylesheet" type="text/css" href="./css/WAP3D.css">
 
-<body>
-  <div id="container">
-    <div id="objectSelector">
-      <input id="fileSelector" type="file" multiple="multiple" accept=".bvh">
-      <div id="closeOpenButton">
-        <!--TODO mettre image-->
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Three JS -->
+    <script src="./ressources/externalSources/three.js-master/build/three.js"></script>
+    <script src="./ressources/externalSources/three.js-master/examples/js/controls/OrbitControls.js"></script>
+    <script src="./ressources/externalSources/three.js-master/src/core/Clock.js"></script>
+
+    <!-- BVH -->
+    <script src="./js/bvh/bvhParser.js"></script>
+    <script src="./js/bvh/bvhLoader.js"></script>
+    <script src="./js/bvh/bvhCollection.js"></script>
+
+    <!-- FBX -->
+
+    <!-- WAP3D -->
+    <script src="./js/wap3DUtil.js"></script>
+    <script src="./js/WAP3D.js"></script>
+    <script src="./js/InputEventManager.js"></script>
+    <script src="./js/main.js"></script>
+  </head>
+
+  <body>
+    <div id="container">
+      <div id="objectSelector">
+        <input id="fileSelector" type="file" multiple="multiple" accept=".bvh">
+        <div id="closeOpenButton">
+          <!--TODO mettre image-->
+        </div>
+        <!--TODO-->
+        <div class="objectList" id="bvhList">
+          <div class="title">BVH</div>
+          <div class="list"></div>
+        </div>
+
+        <!--TODO-->
+        <div class="objectList" id="fbxList">
+          <div class="title">FBX</div>
+          <div class="list"></div>
+        </div>
       </div>
-
-      <!--TODO-->
-      <div class="objectList" id="bvhList">
-        <div class="title">BVH</div>
+      <div id="player">
+        <div id="messagePlayer" hidden></div>
+        <!-- canvas ici -->
+        <!-- en javascript créer le canvas et lui donner un ID -->
       </div>
-
-      <!--TODO-->
-      <div class="objectList" id="fbxList">
-        <div class="title">FBX</div>
+      <div id="control">
+        <div id="play">
+          <div><img src="./images/pause_button.svg"></div>
+        </div>
+        <input id="time-slider" step="any" type="range">
+        <div id="replay"><img src="./images/replay_button.svg"></div>
       </div>
     </div>
-    <div id="player">
-      <div id="messagePlayer" hidden>Chargement en cours</div>
-      <!-- canvas ici -->
-      <!-- en javascript créer le canvas et lui donner un ID -->
-    </div>
-    <div id="control">
-      <div id="play">
-        <div><img src="./images/pause_button.svg"></div>
-      </div>
-      <input id="time-slider" step="any" type="range">
-      <div id="replay"><img src="./images/replay_button.svg"></div>
-    </div>
-  </div>
-</body>
+  </body>
 
 </html>

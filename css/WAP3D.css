@@ -30,22 +30,52 @@ img {
 .objectList{
     width: 90%;
     height: 45%;
-    overflow: scroll;
     margin-left: 2%;
     margin-top: 2%;
     margin-bottom: 2%;
     border-color: gray;
-    border-style: hidden hidden hidden solid;
+    border-style: hidden hidden solid solid;
     border-width: 1px;
 }
 
 .objectList div.title{
+    width: 100%;
+    height: 10%;
     background-color: green;
     color: white;
 }
 
-.objectList div.object:hover{
+.objectList div.list{
+    width: 100%;
+    height: 90%;
+    overflow-y: scroll;
+}
+
+.objectList div.list .object{
+    width: 100%;
+    height: 30%;
+}
+.objectList div.list div.object:hover{
     background-color: gray;
+}
+.objectList div.list .object div{
+    float: left;
+    width: 10%;
+    height: 90%;
+}
+.objectList div.list .object img{
+    width: 100%;
+    height: 100%;
+}
+.objectList div.list .object .time{
+    float: left;
+    width: 65%;
+    height: 90%;
+}
+.objectList div.list .object .display{
+    float: left;
+    width: 10%;
+    height: 90%;
 }
 
 #closeOpenButton{
