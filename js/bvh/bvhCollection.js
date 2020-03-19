@@ -1,31 +1,3 @@
-class BVHAnimationElement {
-  /**
-   * Objet contenant l'ensembles des données nécéssaires aux traitement
-   * d'un BVH.
-   * Utilisé en tandeme avec l'objet BVHAnimationArray
-   * @param {*} name_ 
-   * @param {*} skeleton_ 
-   * @param {*} animationMixer_ 
-   * @param {*} bvhFile_ 
-   */
-  constructor(name_, skeleton_, animationMixer_, bvhFile_) {
-    this.name = name_
-    this.skeleton = skeleton_
-    this.clip = animationMixer_
-    this.frameTime = bvhFile_.getFrameTime()
-    this.nbFrames = bvhFile_.getNbFrames()
-  }
-
-  /**
-   * Renvoie le uuid correspondant à l'objet.
-   * Il s'agit en réalité du uuid du skeleton lié à l'objet
-   */
-  get uuid() {
-    return this.skeleton.uuid
-  }
-}
-
-
 /**
  * Simple outil agissant comme un array classique auquels des fonctionnalité utiles au problèmes liées aux BVH ont été greffé.
  */
@@ -80,5 +52,32 @@ class BVHAnimationArray extends Array {
         return elem
       }
     }
+  }
+}
+
+class BVHAnimationElement {
+  /**
+   * Objet contenant l'ensembles des données nécéssaires aux traitement
+   * d'un BVH.
+   * Utilisé en tandeme avec l'objet BVHAnimationArray
+   * @param {*} name_ 
+   * @param {*} skeleton_ 
+   * @param {*} animationMixer_ 
+   * @param {*} bvhFile_ 
+   */
+  constructor(name_, skeleton_, animationMixer_, bvhFile_) {
+    this.name = name_
+    this.skeleton = skeleton_
+    this.clip = animationMixer_
+    this.frameTime = bvhFile_.getFrameTime()
+    this.nbFrames = bvhFile_.getNbFrames()
+  }
+
+  /**
+   * Renvoie le uuid correspondant à l'objet.
+   * Il s'agit en réalité du uuid du skeleton lié à l'objet
+   */
+  get uuid() {
+    return this.skeleton.uuid
   }
 }

@@ -1,24 +1,26 @@
-class wap3D {
+class Player {
 
   /**
    * Joue les animations quand elles existent
    * Initialise les interactions à la souris et au clavier
    */
-  constructor() {
-    this.scene = new THREE.Scene()
-    this.renderer = new THREE.WebGLRenderer({ antialias: true })
-    this.camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 1000)
-    this.mouseControls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
-    this.bvhAnimationsArray = new BVHAnimationArray()
+  constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray) {
+    this.scene = scene
+    this.renderer = renderer
+    this.camera = camera
+    this.cameraControls = cameraControls
+    this.bvhAnimationsArray = bvhAnimationsArray
     this.generalTimeSlider = $("#time-slider")[0]
-
     this.framerateTimeReference = -1
     this.currentScreenFrameTime = 0.01667
-    this._initialiseSceneRenderer()
-
     this.bvhWithMaximumNbFrames = { nbFrames: 0 }
+
+    this._initialisePlayer()
+
+    /** TODO */
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
 
+    /** TODO */
     this.animating = true
     this.playAnimation = true
 
@@ -28,7 +30,7 @@ class wap3D {
   /**
    * Initialise le lecteur avec une grille de référence
    */
-  _initialiseSceneRenderer() {
+  _initialisePlayer() {
     this.generalTimeSlider.min = 1
     this.generalTimeSlider.valueAsNumber = this.generalTimeSlider.min
 
@@ -41,16 +43,16 @@ class wap3D {
 
     this.scene.add(new THREE.GridHelper(1000, 50))
 
-    this.mouseControls.enableKeys = true
-    this.mouseControls.rotateSpeed = 0.3
-    this.mouseControls.keyPanSpeed = 25
-    this.mouseControls.screenSpacePanning = false // Défini si le translate se fait par rapport à (X,Z) ou par rapport à la caméra
-    this.mouseControls.mouseButtons = {
+    this.cameraControls.enableKeys = true
+    this.cameraControls.rotateSpeed = 0.3
+    this.cameraControls.keyPanSpeed = 25
+    this.cameraControls.screenSpacePanning = false // Défini si le translate se fait par rapport à (X,Z) ou par rapport à la caméra
+    this.cameraControls.mouseButtons = {
       LEFT: THREE.MOUSE.ROTATE, //rotate
       MIDDLE: THREE.MOUSE.DOLLY, //zoom
       RIGHT: THREE.MOUSE.PAN
     }
-    this.mouseControls.keys = {
+    this.cameraControls.keys = {
       LEFT: 81, // q
       UP: 90, // z
       RIGHT: 68, // d
@@ -68,6 +70,9 @@ class wap3D {
   /** TODO */
   toggleAnimation() {
     this.playAnimation = !this.playAnimation
+    if(this.playAnimation == false){
+      this.framerateTimeReference = -1
+    }
     return this.playAnimation
   }
 
@@ -110,19 +115,17 @@ class wap3D {
   _animate() {
     if (this.bvhLoader.loadingState !== "loading") {
       requestAnimationFrame(this._animate.bind(this))
-      this.mouseControls.update()
+      this.cameraControls.update()
       if (this.playAnimation === true) {
         this.animating = true
         if (this.bvhLoader.loadingState === "loaded") {
-
-          
           this.bvhAnimationsArray.forEach(bvh => {
             if (bvh.nbFrames > this.generalTimeSlider.valueAsNumber) {
               bvh.clip.timeScale = this.currentScreenFrameTime / bvh.frameTime
               bvh.clip.update(bvh.frameTime)
             }
           });
-          
+
           // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
           // this.setAllBvhFrameTime(this.generalTimeSlider.valueAsNumber)
           // this.bvhWithMaximumNbFrames.clip.timeScale = this.currentScreenFrameTime / this.bvhWithMaximumNbFrames.frameTime
@@ -158,27 +161,8 @@ class wap3D {
   get framerateTimeReference() {
     return this._framerateTimeReference == -1 ? Date.now() : this._framerateTimeReference
   }
-
   /** TODO */
   set framerateTimeReference(newFrameTimeRef) {
     this._framerateTimeReference = newFrameTimeRef
-  }
-
-  /** TODO */
-  get mouseControls() {
-    return this._mouseControls
-  }
-
-  /** TODO */
-  set mouseControls(newValue) {
-    this._mouseControls = newValue
-  }
-
-  get bvhLoader() {
-    return this._bvhLoader
-  }
-
-  set bvhLoader(newValue) {
-    this._bvhLoader = newValue
   }
 }

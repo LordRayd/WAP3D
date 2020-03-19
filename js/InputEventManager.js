@@ -1,71 +1,11 @@
 class IEM {
-  constructor(player) {
+  constructor(player, cameraControls) {
     this.player = player
+    this.cameraControls = cameraControls
     this.playerAnimating = this.player.startAnimation()
     this.generalTimeSlider = $("#time-slider")[0]
     this.pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
     this.playDiv = $('<div><img src="./images/play_button.svg"></div>')
-  }
-
-  /** TODO */
-  keydownAction(keyEvent) {
-    let keyPressed = keyEvent.originalEvent.key.toUpperCase()
-    switch (keyPressed) {
-      case "Z":
-      case "Q":
-      case "S":
-      case "D":
-        // Déjà utiliser par le déplacement de la caméra
-        break
-      case " ":
-        this.player.clickOnPlayAction()
-        break
-      case "SHIFT":
-        this.player.mouseControls.screenSpacePanning = true
-        this.player.mouseControls.keys.UP = 90 // Z
-        this.player.mouseControls.keys.BOTTOM = 83 // S
-        break
-    }
-  }
-
-  /** TODO */
-  keyupAction(keyEvent) {
-    let keyPressed = keyEvent.originalEvent.key.toUpperCase()
-    switch (keyPressed) {
-      case "Z":
-      case "Q":
-      case "S":
-      case "D":
-        // Déjà utiliser par le déplacement de la caméra
-        break
-      case "SHIFT":
-        this.player.mouseControls.screenSpacePanning = false
-        this.player.mouseControls.keys.UP = 90 // Z
-        this.player.mouseControls.keys.BOTTOM = 83 // S
-        break
-    }
-  }
-
-  /**
-   * Fonction appellée pour minimiser la div de sélection d'élements
-   */
-  closeObjectListAction() {
-
-    $("#objectSelector").animate({ width: '2%', marginRight: '0.5%' }, {
-      duration: 100
-    })
-
-    $("#player").animate({ width: '87.5%' }, {
-      duration: 100,
-      progress: _ => this.player.updateRendererSize(),
-      complete: _ => $("#closeOpenButton").one("click", event => this._openObjectListAction(event))
-    })
-
-    $("#objectSelector").children().not("#closeOpenButton").fadeOut(100)
-
-    $("#messagePlayer").animate({ width: '84%' }, {
-      duration: 100,
-    })
   }
 
   /**
@@ -90,10 +30,70 @@ class IEM {
     })
   }
 
+  /**
+   * Fonction appellée pour minimiser la div de sélection d'élements
+   */
+  closeObjectListAction() {
+
+    $("#objectSelector").animate({ width: '2%', marginRight: '0.5%' }, {
+      duration: 100
+    })
+
+    $("#player").animate({ width: '87.5%' }, {
+      duration: 100,
+      progress: _ => this.player.updateRendererSize(),
+      complete: _ => $("#closeOpenButton").one("click", event => this._openObjectListAction(event))
+    })
+
+    $("#objectSelector").children().not("#closeOpenButton").fadeOut(100)
+
+    $("#messagePlayer").animate({ width: '84%' }, {
+      duration: 100,
+    })
+  }
+
+  /** TODO */
+  keydownAction(keyEvent) {
+    let keyPressed = keyEvent.originalEvent.key.toUpperCase()
+    switch (keyPressed) {
+      case "Z":
+      case "Q":
+      case "S":
+      case "D":
+        // Déjà utiliser par le déplacement de la caméra
+        break
+      case " ":
+        this.player.clickOnPlayAction()
+        break
+      case "SHIFT":
+        this.cameraControls.screenSpacePanning = true
+        this.cameraControls.keys.UP = 90 // Z
+        this.cameraControls.keys.BOTTOM = 83 // S
+        break
+    }
+  }
+
+  /** TODO */
+  keyupAction(keyEvent) {
+    let keyPressed = keyEvent.originalEvent.key.toUpperCase()
+    switch (keyPressed) {
+      case "Z":
+      case "Q":
+      case "S":
+      case "D":
+        // Déjà utiliser par le déplacement de la caméra
+        break
+      case "SHIFT":
+        this.cameraControls.screenSpacePanning = false
+        this.cameraControls.keys.UP = 90 // Z
+        this.cameraControls.keys.BOTTOM = 83 // S
+        break
+    }
+  }
+
   /** TODO */
   clickOnPlayAction() {
     this.playerAnimating = this.player.toggleAnimation()
-    this.player.framerateTimeReference = -1
     if (this.playerAnimating == false) {
       $("#play").children().replaceWith(this.playDiv)
         // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
@@ -109,7 +109,6 @@ class IEM {
     if (currPlayingAnim == true) {
       this.playerAnimating = this.player.toggleAnimation()
     }
-    this.player.framerateTimeReference = -1
 
     let generalSliderMin = this.generalTimeSlider.min
     this.generalTimeSlider.valueAsNumber = generalSliderMin
@@ -121,7 +120,7 @@ class IEM {
   }
 
   /** TODO */
-  advanceTimeBar() {
+  modifyTimeSliderAction() {
     let currPlayingAnim = this.playerAnimating
     if (currPlayingAnim == true) {
       this.playerAnimating = this.player.toggleAnimation()
@@ -136,7 +135,7 @@ class IEM {
   }
 
   /** TODO */
-  updateRendererSize(){
+  modifyWindowSizeAction() {
     this.player.updateRendererSize()
   }
 }
