@@ -56,16 +56,35 @@ class BVHAnimationArray extends Array {
   }
 
   /**TODO */
-  setAllBvhFrameTime(time){
+  setAllBvhFrameTime(time) {
     this.forEach(bvh => {
       let newTime = bvh.nbFrames > time ? bvh.frameTime * time : bvh.frameTime * bvh.nbFrames
       bvh.clip.setTime(newTime)
     });
   }
 
-
-
+  /**
+   * Met à jour l'ensemble des bvh chargé dans le lecteur.
+   * Prend en compte pour chaque élément si il est mis en pause
+   * (TODO) et si il sont visible ou non
+   * 
+   * @param {*} sliderReference_ le slider générale du lecteur
+   * @param {*} frameTimeReference_ le frametime de référence du navigateur
+   */
+  updateAllElements(sliderReference_, frameTimeReference_) {
+    //TODO
+    this.forEach(bvhElem => {
+      if (bvhElem.nbFrames > sliderReference_ && !bvhElem.isPaused) {
+        //TODO prise en compte de bvhElem.isVisible
+        //TODO prise en compte de la position du slider correspondant à bvhElem
+        bvhElem.clip.timeScale = frameTimeReference_ / bvhElem.frameTime
+        bvhElem.clip.update(bvhElem.frameTime)
+        bvhElem.updateTimeSlider() // TODO à faire marcher correctement
+      }
+    });
+  }
 }
+
 
 class BVHAnimationElement {
   /**
@@ -83,9 +102,63 @@ class BVHAnimationElement {
     this.clip = animationMixer_
     this.frameTime = bvhFile_.getFrameTime()
     this.nbFrames = bvhFile_.getNbFrames()
-    $('#'+String(this.uuid)+" .time").max = this.nbFrames
-    $('#'+String(this.uuid)+" .time").min = 1
-    $('#'+String(this.uuid)+" .time").valueAsNumber = 1
+    $('#' + String(this.uuid) + " .time").max = this.nbFrames
+    $('#' + String(this.uuid) + " .time").min = 1
+    $('#' + String(this.uuid) + " .time").valueAsNumber = 1
+  }
+
+  /**
+   * True si la checkbox de l'élément dans la page est coché, false sinon.
+   */
+  get isVisible() {
+    return $('#' + String(this.uuid) + " .display").is(":checked")
+  }
+
+  /**
+   * Si true alors la checkbox est coché, inverse sinon
+   */
+  set isVisible(value_) {
+    $('#' + String(this.uuid) + " .display").prop('checked', value_)
+  }
+
+  /**
+   * True si le bouton play/pause est reglé sur paus, false sinon
+   */
+  get isPaused() {
+    //TODO
+    let img = $('#' + String(this.uuid) + " .playPause")[0].lastChild.src.split("/").splice(-1)[0]
+    if (img === "pause_button.svg") {
+      return false
+    } else if (img === "play_button.svg") {
+      return true
+    } else {
+      console.error("Unknown play/Pause source")
+      return true
+    }
+  }
+
+  /**
+   * Si true, le bouton play/pause sera set sur le logo play
+   * Inverse si false
+   */
+  set isPaused(value_) {
+    let target = $('#' + String(this.uuid) + " .playPause")[0].lastChild
+    if (value_) {
+      target.src = "./images/play_button.svg"
+    } else {
+      target.src = "./images/pause_button.svg"
+    }
+  }
+
+  /**
+   * Si target n'est pas spécifié, incrémente la position;
+   * Sinon set la position à la valeur donnée par target
+   * @param {*} target 
+   */
+  updateTimeSlider(target) {
+    //TODO
+    if (target !== undefined) $('#' + String(this.uuid) + " .time")[0].valueAsNumber = target
+    else $('#' + String(this.uuid) + " .time")[0].valueAsNumber += this.clip.timeScale
   }
 
   /**
@@ -97,45 +170,10 @@ class BVHAnimationElement {
   }
 
   /**
-   * True si la checkbox de l'élément dans la page est coché, false sinon.
-   */
-  get isChecked(){
-    return $('#'+String(this.uuid)+" .display").is(":checked")
-  }
-
-  /**
-   * True si le bouton play/pause est reglé sur paus, false sinon
-   */
-  get isPaused(){
-    //TODO
-    let img = $('#'+String(this.uuid)+" .playPause")[0].lastChild.src.split("/").splice(-1)[0]
-    if(img === "pause_button.svg"){
-      return false
-    }else if(img === "play_button.svg"){
-      return true
-    }else{
-      console.error("Unknown play/Pause source")
-      return true
-    }
-  }
-
-  /**
    * Remet l'animation de l'objet à la première frame
    * Attention de penser à reset la time bar global si cet élément est le plus long
    */
-  restart(){
+  restart() {
     this.clip.setTime(0)
   }
-
-  /**
-   * Si target n'est pas spécifié, incrémente la position;
-   * Sinon set la position à la valeur donnée par target
-   * @param {*} target 
-   */
-  updateTimeSlider(target){
-    //TODO
-    if(target !== undefined) $('#'+String(this.uuid)+" .time")[0].valueAsNumber = target
-    else $('#'+String(this.uuid)+" .time")[0].valueAsNumber += this.clip.timeScale
-  }
-
 }

@@ -70,7 +70,7 @@ class Player {
   /** TODO */
   toggleAnimation() {
     this.playAnimation = !this.playAnimation
-    if(this.playAnimation == false){
+    if (this.playAnimation == false) {
       this.framerateTimeReference = -1
     }
     return this.playAnimation
@@ -110,15 +110,10 @@ class Player {
       this.cameraControls.update()
       if (this.playAnimation === true) {
         this.animating = true
+        
+        //BVH---
         if (this.bvhLoader.loadingState === "loaded") {
-
-          this.bvhAnimationsArray.forEach(bvh => {
-            if (bvh.nbFrames > this.generalTimeSlider.valueAsNumber) {
-              bvh.clip.timeScale = this.currentScreenFrameTime / bvh.frameTime
-              bvh.clip.update(bvh.frameTime)
-              bvh.updateTimeSlider()
-            }
-          });
+          this.bvhAnimationsArray.updateAllElements(this.generalTimeSlider.valueAsNumber, this.currentScreenFrameTime)
 
           // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
           // this.bvhAnimationsArray.setAllBvhFrameTime(this.generalTimeSlider.valueAsNumber)
@@ -131,6 +126,10 @@ class Player {
           }
           if (console.DEBUG_MODE == true) $("#messagePlayer").text(this.generalTimeSlider.valueAsNumber).show()
         }
+        
+        //FBX---
+          //TODO
+
         this.animating = false
       }
     } else {

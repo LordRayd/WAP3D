@@ -82,10 +82,10 @@ class BVHLoader {
       let bvhNbFrame = bvhFile.getNbFrames()
 
       this.bvhAnimations[bvhAnimationsIndex] = new BVHAnimationElement(currBVHInAnimationArray.name, skeletonHelper, mixer, bvhFile)
-        // currBVHInAnimationArray.push(skeletonHelper, mixer, bvhFrameTime, bvhNbFrame)
+      // currBVHInAnimationArray.push(skeletonHelper, mixer, bvhFrameTime, bvhNbFrame)
 
       this._addBVHToObjectList(skeletonHelper.uuid, currBVHInAnimationArray.name, bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
-        // this._addBVHToObjectList(skeletonHelper.uuid, currBVHInAnimationArray[0], bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
+      // this._addBVHToObjectList(skeletonHelper.uuid, currBVHInAnimationArray[0], bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
 
       this.nbLoadedFiles += 1
       resolve()
@@ -94,7 +94,7 @@ class BVHLoader {
 
   /** TODO */
   async _readBvhFilesAsText(files, currNbLoadedFile) {
-    return Promise.all([...files].map(async(file, index) => {
+    return Promise.all([...files].map(async (file, index) => {
       return this._loadBvhfile(file, currNbLoadedFile + index)
     }))
 
@@ -104,9 +104,9 @@ class BVHLoader {
   _loadBvhfile(file, bvhAnimationsIndex) {
     return new Promise((resolve, reject) => {
       let reader = new FileReader();
-      reader.onload = async(event) => { resolve(await this._parseBvhFileContent(event, bvhAnimationsIndex)) }
+      reader.onload = async (event) => { resolve(await this._parseBvhFileContent(event, bvhAnimationsIndex)) }
       this.bvhAnimations.push({ name: file.name })
-        // bvhAnimationsArray.push([file.name])
+      // bvhAnimationsArray.push([file.name])
       reader.readAsText(file); // Async
     })
   }
