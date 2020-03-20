@@ -10,6 +10,7 @@ class BVHAnimationArray extends Array {
   removeByUUID(uuid_) {
     return this.some((bvhAnimationElem, index) => {
       if (bvhAnimationElem.uuid === uuid_) {
+        //TODO supprimer l'élément dans la scène
         this.splice(index, 1)
         return index
       }
@@ -48,11 +49,22 @@ class BVHAnimationArray extends Array {
    */
   getByUUID(uuid_) {
     for (let elem of this) {
-      if (elem.getuuid() === uuid_) {
+      if (elem.uuid === uuid_) {
         return elem
       }
     }
   }
+
+  /**TODO */
+  setAllBvhFrameTime(time){
+    this.forEach(bvh => {
+      let newTime = bvh.nbFrames > time ? bvh.frameTime * time : bvh.frameTime * bvh.nbFrames
+      bvh.clip.setTime(newTime)
+    });
+  }
+
+
+
 }
 
 class BVHAnimationElement {
@@ -71,6 +83,9 @@ class BVHAnimationElement {
     this.clip = animationMixer_
     this.frameTime = bvhFile_.getFrameTime()
     this.nbFrames = bvhFile_.getNbFrames()
+    $('#'+String(this.uuid)+" .time").max = this.nbFrames
+    $('#'+String(this.uuid)+" .time").min = 1
+    $('#'+String(this.uuid)+" .time").valueAsNumber = 1
   }
 
   /**
@@ -80,4 +95,47 @@ class BVHAnimationElement {
   get uuid() {
     return this.skeleton.uuid
   }
+
+  /**
+   * True si la checkbox de l'élément dans la page est coché, false sinon.
+   */
+  get isChecked(){
+    return $('#'+String(this.uuid)+" .display").is(":checked")
+  }
+
+  /**
+   * True si le bouton play/pause est reglé sur paus, false sinon
+   */
+  get isPaused(){
+    //TODO
+    let img = $('#'+String(this.uuid)+" .playPause")[0].lastChild.src.split("/").splice(-1)[0]
+    if(img === "pause_button.svg"){
+      return false
+    }else if(img === "play_button.svg"){
+      return true
+    }else{
+      console.error("Unknown play/Pause source")
+      return true
+    }
+  }
+
+  /**
+   * Remet l'animation de l'objet à la première frame
+   * Attention de penser à reset la time bar global si cet élément est le plus long
+   */
+  restart(){
+    this.clip.setTime(0)
+  }
+
+  /**
+   * Si target n'est pas spécifié, incrémente la position;
+   * Sinon set la position à la valeur donnée par target
+   * @param {*} target 
+   */
+  updateTimeSlider(target){
+    //TODO
+    if(target !== undefined) $('#'+String(this.uuid)+" .time")[0].valueAsNumber = target
+    else $('#'+String(this.uuid)+" .time")[0].valueAsNumber += this.clip.timeScale
+  }
+
 }

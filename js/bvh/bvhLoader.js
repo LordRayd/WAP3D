@@ -132,17 +132,17 @@ class BVHLoader {
   _addBVHToObjectList(uuid_, name, frameTime, nbFrames, indexInDiv) {
     /*
     '<div id="' + uuid_ + '" class="object">
-        <div>
+        <div class="playPause">
             <img src="./images/pause_button.svg">
         </div>
         <input class="time" classstep="any" type="range">
-        <div>
+        <div class="replay">
             <img src="./images/replay_button.svg">
         </div>
         <input class="display" type="checkbox">
     </div>'
     */
-    $("#bvhList .list").append('<div id="' + uuid_ + '" class="object"><div><img src="./images/pause_button.svg"></div><input class="time" classstep="any" type="range"><div><img src="./images/replay_button.svg"></div><input class="display" type="checkbox"></div>')
+    $("#bvhList .list").append('<div id="' + uuid_ + '" class="object"><div class="playPause"><img src="./images/pause_button.svg"></div><input class="time" classstep="any" type="range"><div class="replay"><img src="./images/replay_button.svg"></div><input class="display" type="checkbox"></div>')
   }
 
   /** TODO */

@@ -112,7 +112,7 @@ class IEM {
 
     let generalSliderMin = this.generalTimeSlider.min
     this.generalTimeSlider.valueAsNumber = generalSliderMin
-    this.player.setAllBvhFrameTime(generalSliderMin)
+    this.player.bvhAnimationsArray.setAllBvhFrameTime(generalSliderMin)
 
     if (currPlayingAnim == true) {
       this.playerAnimating = this.player.toggleAnimation()
@@ -127,7 +127,7 @@ class IEM {
     }
 
     let currGeneralTimerValue = this.generalTimeSlider.valueAsNumber
-    this.player.setAllBvhFrameTime(currGeneralTimerValue)
+    this.player.bvhAnimationsArray.setAllBvhFrameTime(currGeneralTimerValue)
 
     if (currPlayingAnim == true) {
       this.playerAnimating = this.player.toggleAnimation()

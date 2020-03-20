@@ -89,14 +89,6 @@ class Player {
   }
 
   /** TODO */
-  setAllBvhFrameTime(time) {
-    this.bvhAnimationsArray.forEach(bvh => {
-      let newTime = bvh.nbFrames > time ? bvh.frameTime * time : bvh.frameTime * bvh.nbFrames
-      bvh.clip.setTime(newTime)
-    });
-  }
-
-  /** TODO */
   fileLoadedCallBack() {
     $("#messagePlayer").hide()
 
@@ -104,7 +96,7 @@ class Player {
     this.generalTimeSlider.max = this.bvhWithMaximumNbFrames.nbFrames
 
     // Update par rapport au timer général actuel
-    this.setAllBvhFrameTime(this.generalTimeSlider.valueAsNumber)
+    this.bvhAnimationsArray.setAllBvhFrameTime(this.generalTimeSlider.valueAsNumber)
 
     updateEventListener()
 
@@ -119,21 +111,23 @@ class Player {
       if (this.playAnimation === true) {
         this.animating = true
         if (this.bvhLoader.loadingState === "loaded") {
+
           this.bvhAnimationsArray.forEach(bvh => {
             if (bvh.nbFrames > this.generalTimeSlider.valueAsNumber) {
               bvh.clip.timeScale = this.currentScreenFrameTime / bvh.frameTime
               bvh.clip.update(bvh.frameTime)
+              bvh.updateTimeSlider()
             }
           });
 
           // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
-          // this.setAllBvhFrameTime(this.generalTimeSlider.valueAsNumber)
+          // this.bvhAnimationsArray.setAllBvhFrameTime(this.generalTimeSlider.valueAsNumber)
           // this.bvhWithMaximumNbFrames.clip.timeScale = this.currentScreenFrameTime / this.bvhWithMaximumNbFrames.frameTime
 
           this._updateFrameTime()
           if (this.generalTimeSlider.max > this.generalTimeSlider.valueAsNumber) {
             this.generalTimeSlider.valueAsNumber += this.bvhWithMaximumNbFrames.clip.timeScale;
-            console.log(this.generalTimeSlider.valueAsNumber)
+            //console.log(this.generalTimeSlider.valueAsNumber)
           }
           if (console.DEBUG_MODE == true) $("#messagePlayer").text(this.generalTimeSlider.valueAsNumber).show()
         }
