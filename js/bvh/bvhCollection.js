@@ -74,7 +74,7 @@ class BVHAnimationArray extends Array {
   updateAllElements(sliderReference_, frameTimeReference_) {
     //TODO
     this.forEach(bvhElem => {
-      if(bvhElem.isVisible) bvhElem.show()
+      if (bvhElem.isVisible) bvhElem.show()
       else bvhElem.hide()
 
       if (sliderReference_ < bvhElem.nbFrames && !bvhElem.isPaused) {
@@ -105,60 +105,55 @@ class BVHAnimationElement {
     this.clip = animationMixer_
     this.frameTime = bvhFile_.getFrameTime()
     this.nbFrames = bvhFile_.getNbFrames()
-    $('#' + String(this.uuid) + " .time").max = this.nbFrames
-    $('#' + String(this.uuid) + " .time").min = 1
-    $('#' + String(this.uuid) + " .time").valueAsNumber = 1
+    this.uuidString = String(this.uuid)
+    $('#' + this.uuidString + " .time").max = this.nbFrames
+    $('#' + this.uuidString + " .time").min = 1
+    $('#' + this.uuidString + " .time").valueAsNumber = 1
     this.isVisible = true
   }
 
   /**
-   * True si la checkbox de l'élément dans la page est coché, false sinon.
+   * @return True si la checkbox de l'élément dans la page est coché, false sinon.
    */
   get isVisible() {
-    return $('#' + String(this.uuid) + " .display").is(":checked")
+    return $('#' + this.uuidString + " .display").is(":checked")
   }
 
   /**
-   * Si true alors la checkbox est coché, inverse sinon
+   * @param value_ : si true alors la checkbox est coché, inverse sinon
    */
   set isVisible(value_) {
-    $('#' + String(this.uuid) + " .display").prop('checked', value_)
+    $('#' + this.uuidString + " .display").prop('checked', value_)
   }
 
   /**
    * Désactive le rendu du BVH
    */
-  hide(){
-    this.skeleton.root.visible = false
-    this.skeleton.root.traverse(obj3d =>{
-      obj3d.visible = false
-    })
+  hide() {
+    this.skeleton.visible = false
   }
 
   /**
    * Active le rendu du BVH
    */
-  show(){
-    this.skeleton.root.visible = true
-    this.skeleton.root.traverse(obj3d =>{
-      obj3d.visible = true
-    })
+  show() {
+    this.skeleton.visible = true
   }
 
   /**
    * Active ou non le rendu des ombres de l'objet
    * @param {*} value_ 
    */
-  enableShadows(value_){
+  enableShadows(value_) {
     //TODO  le rendu de des ombres pour les bvh et les fbx peuvent être activé avec les attribut (dans leur attribut Object3D) castShadow: bool et .receiveShadow: bool
   }
 
-  /**
+  /**  
    * True si le bouton play/pause est reglé sur paus, false sinon
    */
   get isPaused() {
     //TODO
-    let img = $('#' + String(this.uuid) + " .playPause")[0].lastChild.src.split("/").splice(-1)[0]
+    let img = $('#' + this.uuidString + " .playPause")[0].lastChild.src.split("/").splice(-1)[0]
     if (img === "pause_button.svg") {
       return false
     } else if (img === "play_button.svg") {
@@ -174,7 +169,7 @@ class BVHAnimationElement {
    * Inverse si false
    */
   set isPaused(value_) {
-    let target = $('#' + String(this.uuid) + " .playPause")[0].lastChild
+    let target = $('#' + this.uuidString + " .playPause")[0].lastChild
     if (value_) {
       target.src = "./images/play_button.svg"
     } else {
@@ -189,8 +184,8 @@ class BVHAnimationElement {
    */
   updateTimeSlider(target) {
     //TODO
-    if (target !== undefined) $('#' + String(this.uuid) + " .time")[0].valueAsNumber = target
-    else $('#' + String(this.uuid) + " .time")[0].valueAsNumber += this.clip.timeScale
+    if (target !== undefined) $('#' + this.uuidString + " .time")[0].valueAsNumber = target
+    else $('#' + this.uuidString + " .time")[0].valueAsNumber += this.clip.timeScale
   }
 
   /**
