@@ -74,7 +74,10 @@ class BVHAnimationArray extends Array {
   updateAllElements(sliderReference_, frameTimeReference_) {
     //TODO
     this.forEach(bvhElem => {
-      if (bvhElem.nbFrames > sliderReference_ && !bvhElem.isPaused) {
+      if(bvhElem.isVisible) bvhElem.show()
+      else bvhElem.hide()
+
+      if (sliderReference_ < bvhElem.nbFrames && !bvhElem.isPaused) {
         //TODO prise en compte de bvhElem.isVisible
         //TODO prise en compte de la position du slider correspondant à bvhElem
         bvhElem.clip.timeScale = frameTimeReference_ / bvhElem.frameTime
@@ -105,6 +108,7 @@ class BVHAnimationElement {
     $('#' + String(this.uuid) + " .time").max = this.nbFrames
     $('#' + String(this.uuid) + " .time").min = 1
     $('#' + String(this.uuid) + " .time").valueAsNumber = 1
+    this.isVisible = true
   }
 
   /**
@@ -119,6 +123,34 @@ class BVHAnimationElement {
    */
   set isVisible(value_) {
     $('#' + String(this.uuid) + " .display").prop('checked', value_)
+  }
+
+  /**
+   * Désactive le rendu du BVH
+   */
+  hide(){
+    this.skeleton.root.visible = false
+    this.skeleton.root.traverse(obj3d =>{
+      obj3d.visible = false
+    })
+  }
+
+  /**
+   * Active le rendu du BVH
+   */
+  show(){
+    this.skeleton.root.visible = true
+    this.skeleton.root.traverse(obj3d =>{
+      obj3d.visible = true
+    })
+  }
+
+  /**
+   * Active ou non le rendu des ombres de l'objet
+   * @param {*} value_ 
+   */
+  enableShadows(value_){
+    //TODO  le rendu de des ombres pour les bvh et les fbx peuvent être activé avec les attribut (dans leur attribut Object3D) castShadow: bool et .receiveShadow: bool
   }
 
   /**
