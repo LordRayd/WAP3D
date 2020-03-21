@@ -71,12 +71,9 @@ class BVHAnimationArray extends Array {
    * @param {*} sliderReference_ le slider générale du lecteur
    * @param {*} frameTimeReference_ le frametime de référence du navigateur
    */
-  updateAllElements(sliderReference_, frameTimeReference_) {
+  updateAllElementsAnimation(sliderReference_, frameTimeReference_) {
     //TODO
     this.forEach(bvhElem => {
-      if (bvhElem.isVisible) bvhElem.show()
-      else bvhElem.hide()
-
       if (sliderReference_ < bvhElem.nbFrames && !bvhElem.isPaused) {
         //TODO prise en compte de bvhElem.isVisible
         //TODO prise en compte de la position du slider correspondant à bvhElem
@@ -85,6 +82,14 @@ class BVHAnimationArray extends Array {
         bvhElem.updateTimeSlider() // TODO à faire marcher correctement
       }
     });
+  }
+
+  /** TODO */
+  updateAllElementsProperties(){
+    this.forEach(bvhElem => {
+      if (bvhElem.isVisible) bvhElem.show()
+      else bvhElem.hide()
+    })
   }
 }
 

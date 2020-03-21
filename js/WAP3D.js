@@ -107,13 +107,14 @@ class Player {
   _animate() {
     if (this.bvhLoader.loadingState !== "loading") {
       requestAnimationFrame(this._animate.bind(this))
+      this.bvhAnimationsArray.updateAllElementsProperties()
       this.cameraControls.update()
       if (this.playAnimation === true) {
         this.animating = true
         
         //BVH---
         if (this.bvhLoader.loadingState === "loaded") {
-          this.bvhAnimationsArray.updateAllElements(this.generalTimeSlider.valueAsNumber, this.currentScreenFrameTime)
+          this.bvhAnimationsArray.updateAllElementsAnimation(this.generalTimeSlider.valueAsNumber, this.currentScreenFrameTime)
 
           // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
           // this.bvhAnimationsArray.setAllBvhFrameTime(this.generalTimeSlider.valueAsNumber)
