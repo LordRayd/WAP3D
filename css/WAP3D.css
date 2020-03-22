@@ -1,36 +1,117 @@
-body{
+body {
     background-color: gray;
 }
 
-#container{
+#container {
     margin-left: auto;
     margin-right: auto;
     width: 90vw;
     height: 49vw;
 }
 
+
 /*les images font la taille des buttons dans lequelles elles se trouvent */
-img{
-    width: 100%; 
+
+img {
+    width: 100%;
     height: 100%;
 }
 
-#player{
-    margin-left: auto;
-    margin-right: auto;
-    width: 90%;
-    height: 95%;
+#objectSelector{
+    float: left;
+    background-color: white;
+    margin-left: 5%;
+    margin-right: 1%;
+    width: 30%;
+    height: 90%;
+    overflow: hidden;
 }
 
-#control{
+.objectList{
+    width: 90%;
+    height: 45%;
+    margin-left: 2%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    border-color: gray;
+    border-style: hidden hidden solid solid;
+    border-width: 1px;
+}
+
+.objectList div.title{
+    width: 100%;
+    height: 10%;
+    background-color: green;
+    color: white;
+}
+
+.objectList div.list{
+    width: 100%;
+    height: 90%;
+    overflow-y: scroll;
+}
+
+.objectList div.list .object{
+    width: 100%;
+    height: 30%;
+}
+.objectList div.list div.object:hover{
+    background-color: gray;
+}
+.objectList div.list .object div{
+    float: left;
+    width: 10%;
+    height: 90%;
+}
+.objectList div.list .object img{
+    width: 100%;
+    height: 100%;
+}
+.objectList div.list .object .time{
+    float: left;
+    width: 65%;
+    height: 90%;
+}
+.objectList div.list .object .display{
+    float: left;
+    width: 10%;
+    height: 90%;
+}
+
+#closeOpenButton{
+    background-color: red;
+    width: 10px;
+    height: 10px;
+    top: 50%;
+    position: relative;
+    float: right;
+}
+
+#player {
+    overflow: hidden;
+    width: 59%;
+    height: 90%;
+}
+
+#messagePlayer {
+    color: white;
+    right: 0;
+    width: 59%;
+    text-align: center;
+    position: absolute;
+    margin-top: 28.125%;
+    /*TODO 9/16 * 50% (du au scaling du player par rapport à la page) */
+    margin-Left: 50%;
+}
+
+#control {
     margin-left: auto;
     margin-right: auto;
     height: 5%;
     width: 90%;
 }
 
-
-#play {
+#playPause {
     float: left;
     height: 100%;
     width: 4%;
@@ -46,4 +127,28 @@ img{
     float: right;
     height: 100%;
     width: 4%;
+}
+
+
+/* Barre de chargement de ficher*/
+#progressBar {
+    background-color: black;
+    margin-left: auto;
+    margin-right: auto;
+    height: 5%;
+    width: 90%;
+}
+
+#currProgress {
+    background-color: rgb(0, 156, 52);
+    width: 0%;
+    height: 100%;
+}
+
+#progressValue {
+    color: whitesmoke;
+    width: 81%;
+    /* 90%( * 90% */
+    text-align: center;
+    position: absolute;
 }

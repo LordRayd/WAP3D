@@ -1,0 +1,18 @@
+{
+  "name": "wap3d",
+  "version": "1.0.0",
+  "lockfileVersion": 1,
+  "requires": true,
+  "dependencies": {
+    "jquery": {
+      "version": "3.4.1",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.4.1.tgz",
+      "integrity": "sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw=="
+    },
+    "three": {
+      "version": "0.114.0",
+      "resolved": "https://registry.npmjs.org/three/-/three-0.114.0.tgz",
+      "integrity": "sha512-3av45FxJeqYm7Rl02dfGBoqTaf2a934oUB4zMNrN8xjmASoSGeeykYoAr35+UntTdJDY/STw6CY3KuXFBWETig=="
+    }
+  }
+}
