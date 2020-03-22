@@ -7,7 +7,8 @@ WAP3D est un projet dont le but est d'afficher des scènes définie par des fich
 - Cliquer sur le bouton "Browse..." en haut à gauche de la page pour séléctionner un ou plusiers fichier BVH
 - Plusieur fichiers BVH peuvent être chargé et animé dans le lecteur
 - Utiliser le click gauche de la souris pour faire tourner la caméra
-- Utiliser les touches ZSQD pour translater la caméra
+- Utiliser les touches ZSQD ou le clic droit de la souris pour translater la caméra
+- utiliser shift pour changer de mode de translation de caméra
 - Utiliser le scroll de la souris pour faire dézoomer la caméra
 
 ## Charte de code
