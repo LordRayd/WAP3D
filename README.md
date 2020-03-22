@@ -1,9 +1,10 @@
 # WAP3D
 
 ## Présentation
-WAP3D est un projet dont le but est d'afficher des scènes définie par des fichiers .bvh ou .fbx dans un player. Ce player devra être capable d'afficher des informations relatives à des objets de la scène séléctionnés par l'utilisateur à la souris.
+WAP3D est un projet dont le but est d'afficher des scènes définie par des fichiers .bvh ou .fbx dans un player. Ce player devra être capable d'afficher des informations relatives à des objets de la scène séléctionnés par l'utilisateur à la souris. 
 
 ## Utilisation (temporaire)
+- Le projet se basant sur npm pour l'intégration des librairies externe, la commande "npm install" ou similaire doit être exécuté afin d'installer l'ensemble des librairies nécessaires au fonctionnement du projet
 - Cliquer sur le bouton "Browse..." en haut à gauche de la page pour séléctionner un ou plusiers fichier BVH
 - Plusieur fichiers BVH peuvent être chargé et animé dans le lecteur
 - Utiliser le click gauche de la souris pour faire tourner la caméra
