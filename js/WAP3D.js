@@ -128,8 +128,8 @@ class Player {
           if (console.DEBUG_MODE == true) $("#messagePlayer").text(this.generalTimeSlider.valueAsNumber).show()
         }
         
-        //FBX---
-          //TODO
+        // FBX---
+          // TODO
 
         this.animating = false
       }

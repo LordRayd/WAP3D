@@ -7,11 +7,11 @@
     <link rel="stylesheet" type="text/css" href="./css/WAP3D.css">
 
     <!-- JQuery -->
-    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script src="./node_modules/jquery/dist/jquery.js"></script>
 
     <!-- Three JS -->
-    <script src="./ressources/externalSources/three.js-master/build/three.js"></script>
-    <script src="./ressources/externalSources/three.js-master/examples/js/controls/OrbitControls.js"></script>
+    <script src="./node_modules/three/build/three.js"></script>
+    <script src="./node_modules/three/examples/js/controls/OrbitControls.js"></script>
 
     <!-- BVH -->
     <script src="./js/bvh/bvhParser.js"></script>
@@ -24,6 +24,8 @@
     <script src="./js/wap3DUtil.js"></script>
     <script src="./js/WAP3D.js"></script>
     <script src="./js/InputEventManager.js"></script>
+
+    <!-- Main -->
     <script src="./js/main.js"></script>
   </head>
 
@@ -52,7 +54,7 @@
         <!-- en javascript créer le canvas et lui donner un ID -->
       </div>
       <div id="control">
-        <div id="play">
+        <div id="playPause">
           <div><img src="./images/pause_button.svg"></div>
         </div>
         <input id="time-slider" step="any" type="range">

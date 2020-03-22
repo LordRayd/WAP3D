@@ -9,24 +9,35 @@ $(_ => {
   player = new Player(scene, renderer, camera, cameraControls, bvhAnimationsArray)
   inputEventManager = new IEM(player, cameraControls)
 
-  updateEventListener()
+  setAllEventListener()
 })
 
 let player
 let inputEventManager
 
 /** TODO */
-function updateEventListener() {
+function setAllEventListener() {
   $(document).on("keydown", event => inputEventManager.keydownAction(event))
   $(document).on("keyup", event => inputEventManager.keyupAction(event))
 
+  $(window).on("resize", event => inputEventManager.modifyWindowSizeAction(event))
+
   $("#closeOpenButton").one("click", event => inputEventManager.closeObjectListAction(event))
 
-  $("#play").on("click", event => inputEventManager.clickOnPlayAction(event))
+  $("#playPause").on("click", event => inputEventManager.clickOnPlayAction(event))
   $("#replay").on("click", event => inputEventManager.clickOnReplayAction(event))
   $("#time-slider").on("change", event => inputEventManager.modifyTimeSliderAction(event))
 
-  $(window).on("resize", event => inputEventManager.modifyWindowSizeAction(event))
+  $("#fileSelector").one("change", event => {
+    // TODO bloquer IEM
+    player.bvhLoader.loadBVH(event, player.fileLoadedCallBack.bind(player))
+  })
+}
+
+function updateEventListener() {
+  $("#playPause").on("click", event => inputEventManager.clickOnPlayAction(event))
+  $("#replay").on("click", event => inputEventManager.clickOnReplayAction(event))
+  $("#time-slider").on("change", event => inputEventManager.modifyTimeSliderAction(event))
 
   $("#fileSelector").one("change", event => {
     // TODO bloquer IEM

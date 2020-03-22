@@ -63,7 +63,7 @@ class IEM {
         // Déjà utiliser par le déplacement de la caméra
         break
       case " ":
-        this.player.clickOnPlayAction()
+        this.clickOnPlayAction()
         break
       case "SHIFT":
         this.cameraControls.screenSpacePanning = true
@@ -95,10 +95,10 @@ class IEM {
   clickOnPlayAction() {
     this.playerAnimating = this.player.toggleAnimation()
     if (this.playerAnimating == false) {
-      $("#play").children().replaceWith(this.playDiv)
+      $("#playPause").children().replaceWith(this.playDiv)
         // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
-      $("#play").children().replaceWith(this.pauseDiv)
+      $("#playPause").children().replaceWith(this.pauseDiv)
         // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
