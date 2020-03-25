@@ -277,6 +277,8 @@ class BVHAnimationElement {
   }
 
   /**
+   * TODO : regler le bug du time slider lors d'un clique sur celui-ci
+   * 
    * Si target n'est pas spécifié, incrémente la position;
    * Sinon set la position à la valeur donnée par target
    * @param {*} target 

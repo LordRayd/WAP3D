@@ -19,7 +19,6 @@ let player
 let inputEventManager
 
 /** TODO */
-
 function _setAllEventListener() {
   $(document).on("keydown", event => inputEventManager.keydownAction(event))
   $(document).on("keyup", event => inputEventManager.keyupAction(event))
@@ -38,6 +37,7 @@ function _setAllEventListener() {
   })
 }
 
+/** TODO */
 function updateEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
