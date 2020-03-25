@@ -45,7 +45,7 @@ class BVHLoader {
   }
 
   /** TODO */
-  async _parseBvhFileContent(event, bvhAnimationsIndex) {
+  async _parseBvhFileContent(event, bvhAnimationsIndex, bvhFileName) {
     return new Promise((resolve, reject) => {
       // Parsing du fichier BVH
       let bvhFile = new BVHParser(event.target.result)
@@ -77,15 +77,12 @@ class BVHLoader {
       let mixer = new THREE.AnimationMixer(mesh);
       mixer.clipAction(animation.clip).play()
 
-      let currBVHInAnimationArray = this.bvhAnimations[bvhAnimationsIndex]
       let bvhFrameTime = bvhFile.getFrameTime()
       let bvhNbFrame = bvhFile.getNbFrames()
 
-      this.bvhAnimations[bvhAnimationsIndex] = new BVHAnimationElement(currBVHInAnimationArray.name, skeletonHelper, mixer, bvhFile)
-      // currBVHInAnimationArray.push(skeletonHelper, mixer, bvhFrameTime, bvhNbFrame)
-
-      this._addBVHToObjectList(skeletonHelper.uuid, currBVHInAnimationArray.name, bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
-      // this._addBVHToObjectList(skeletonHelper.uuid, currBVHInAnimationArray[0], bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
+      this._addBVHToObjectList(skeletonHelper.uuid, bvhFileName, bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
+      
+      this.bvhAnimations.push(new BVHAnimationElement(bvhFileName, skeletonHelper, mixer, bvhFile))
 
       this.nbLoadedFiles += 1
       resolve()
@@ -94,7 +91,7 @@ class BVHLoader {
 
   /** TODO */
   async _readBvhFilesAsText(files, currNbLoadedFile) {
-    return Promise.all([...files].map(async (file, index) => {
+    return Promise.all([...files].map(async(file, index) => {
       return this._loadBvhfile(file, currNbLoadedFile + index)
     }))
 
@@ -104,9 +101,7 @@ class BVHLoader {
   _loadBvhfile(file, bvhAnimationsIndex) {
     return new Promise((resolve, reject) => {
       let reader = new FileReader();
-      reader.onload = async (event) => { resolve(await this._parseBvhFileContent(event, bvhAnimationsIndex)) }
-      this.bvhAnimations.push({ name: file.name })
-      // bvhAnimationsArray.push([file.name])
+      reader.onload = async(event) => { resolve(await this._parseBvhFileContent(event, bvhAnimationsIndex, file.name)) }
       reader.readAsText(file); // Async
     })
   }
@@ -130,6 +125,13 @@ class BVHLoader {
    * pour permettre de supprimer des éléments du tab sans perte d'ordre ?
    */
   _addBVHToObjectList(uuid_, name, frameTime, nbFrames, indexInDiv) {
+    $("#bvhList .list").append('<div id="' + uuid_ + '" class="object"></div>')
+    let divToAppendTo = "#bvhList .list #" + uuid_
+    $(divToAppendTo).append('<div   class="playPause"><img src="./images/pause_button.svg"></div>')
+    $(divToAppendTo).append('<input class="timeSlider" step="any" type="range">')
+    $(divToAppendTo).append('<div   class="replay"> <img src="./images/replay_button.svg"></div>')
+    $(divToAppendTo).append('<input class="display" type="checkbox" checked>')
+
     /*
     '<div id="' + uuid_ + '" class="object">
         <div class="playPause">
@@ -142,7 +144,7 @@ class BVHLoader {
         <input class="display" type="checkbox" checked>
     </div>'
     */
-    $("#bvhList .list").append('<div id="' + uuid_ + '" class="object"><div class="playPause"><img src="./images/pause_button.svg"></div><input class="time" classstep="any" type="range"><div class="replay"><img src="./images/replay_button.svg"></div><input class="display" type="checkbox" checked></div>')
+    //$("#bvhList .list").append('<div id="' + uuid_ + '" class="object"><div class="playPause"><img src="./images/pause_button.svg"></div><input class="time" step="any" type="range"><div class="replay"><img src="./images/replay_button.svg"></div><input class="display" type="checkbox" checked></div>')
   }
 
   /** TODO */

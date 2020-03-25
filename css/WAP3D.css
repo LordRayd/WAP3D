@@ -67,7 +67,7 @@ img {
     width: 100%;
     height: 100%;
 }
-.objectList div.list .object .time{
+.objectList div.list .object .timeSlider{
     float: left;
     width: 65%;
     height: 90%;
@@ -111,22 +111,22 @@ img {
     width: 90%;
 }
 
-#playPause {
+#globalPlayPause {
     float: left;
     height: 100%;
     width: 4%;
 }
 
-#time-slider {
-    float: middle;
-    height: 90%;
-    width: 90%
-}
-
-#replay {
+#globalReplay {
     float: right;
     height: 100%;
     width: 4%;
+}
+
+#globalTimeSlider {
+    float: middle;
+    height: 90%;
+    width: 90%
 }
 
 

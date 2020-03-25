@@ -1,3 +1,6 @@
+const pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
+const playDiv = $('<div><img src="./images/play_button.svg"></div>')
+
 /** TODO */
 $(_ => {
   let scene = new THREE.Scene()
@@ -9,14 +12,15 @@ $(_ => {
   player = new Player(scene, renderer, camera, cameraControls, bvhAnimationsArray)
   inputEventManager = new IEM(player, cameraControls)
 
-  setAllEventListener()
+  _setAllEventListener()
 })
 
 let player
 let inputEventManager
 
 /** TODO */
-function setAllEventListener() {
+
+function _setAllEventListener() {
   $(document).on("keydown", event => inputEventManager.keydownAction(event))
   $(document).on("keyup", event => inputEventManager.keyupAction(event))
 
@@ -24,9 +28,9 @@ function setAllEventListener() {
 
   $("#closeOpenButton").one("click", event => inputEventManager.closeObjectListAction(event))
 
-  $("#playPause").on("click", event => inputEventManager.clickOnPlayAction(event))
-  $("#replay").on("click", event => inputEventManager.clickOnReplayAction(event))
-  $("#time-slider").on("change", event => inputEventManager.modifyTimeSliderAction(event))
+  $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
+  $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
+  $("#globalTimeSlider").on("change", event => inputEventManager.modifyGlobalTimeSliderAction(event))
 
   $("#fileSelector").one("change", event => {
     // TODO bloquer IEM
@@ -35,12 +39,16 @@ function setAllEventListener() {
 }
 
 function updateEventListener() {
-  $("#playPause").on("click", event => inputEventManager.clickOnPlayAction(event))
-  $("#replay").on("click", event => inputEventManager.clickOnReplayAction(event))
-  $("#time-slider").on("change", event => inputEventManager.modifyTimeSliderAction(event))
+  $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
+  $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
+  $("#globalTimeSlider").on("change", event => inputEventManager.modifyGlobalTimeSliderAction(event))
 
   $("#fileSelector").one("change", event => {
     // TODO bloquer IEM
     player.bvhLoader.loadBVH(event, player.fileLoadedCallBack.bind(player))
   })
+
+  $(".playPause").on("click", event => inputEventManager.clickOnPlayPauseAction(event))
+  $(".replay").on("click", event => inputEventManager.clickOnReplayAction(event))
+  $(".timeSlider").on("change", event => inputEventManager.modifyTimeSliderAction(event))
 }

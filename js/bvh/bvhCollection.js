@@ -8,11 +8,11 @@ class BVHAnimationArray extends Array {
    * @param {*} uuid_ 
    */
   removeByUUID(uuid_) {
-    return this.some((bvhAnimationElem, index) => {
+    this.some((bvhAnimationElem, index) => {
       if (bvhAnimationElem.uuid === uuid_) {
         //TODO supprimer l'élément dans la scène
         this.splice(index, 1)
-        return index
+        return true
       }
     })
 
@@ -73,22 +73,80 @@ class BVHAnimationArray extends Array {
    */
   updateAllElementsAnimation(sliderReference_, frameTimeReference_) {
     //TODO
+    let atLeastOneElementToAnimate = false
     this.forEach(bvhElem => {
       if (sliderReference_ < bvhElem.nbFrames && !bvhElem.isPaused) {
-        //TODO prise en compte de bvhElem.isVisible
-        //TODO prise en compte de la position du slider correspondant à bvhElem
+        atLeastOneElementToAnimate = true
+          //TODO prise en compte de bvhElem.isVisible
+          //TODO prise en compte de la position du slider correspondant à bvhElem
         bvhElem.clip.timeScale = frameTimeReference_ / bvhElem.frameTime
         bvhElem.clip.update(bvhElem.frameTime)
-        bvhElem.updateTimeSlider() // TODO à faire marcher correctement
+        bvhElem.modifyTimeSlider() // TODO à faire marcher correctement
       }
     });
+    return atLeastOneElementToAnimate
   }
 
   /** TODO */
-  updateAllElementsProperties(){
+  updateAllElementsProperties() {
     this.forEach(bvhElem => {
       if (bvhElem.isVisible) bvhElem.show()
       else bvhElem.hide()
+    })
+  }
+
+  /** TODO */
+  contain(objectUuid_) {
+    return this.some((bvh_) => {
+      return bvh_.uuid == objectUuid_
+    })
+  }
+
+  /** TODO */
+  toggleOneBVHAnimation(objectUuid_) {
+    this.getByUUID(objectUuid_).toggleAnimation()
+  }
+
+  /** TODO */
+  replayOneBVHAnimation(objectUuid_) {
+    this.getByUUID(objectUuid_).replayAnimation()
+  }
+
+  /** TODO */
+  modifyOneBVHFTimeSlider(objectUuid_, newValue) {
+    console.log(newValue)
+    this.getByUUID(objectUuid_).modifyTimeSlider(newValue)
+  }
+
+  /** TODO */
+  pauseAllAnimation() {
+    this.forEach((bvh) => {
+      bvh.pauseAnimation()
+    })
+  }
+
+  /** TODO */
+  playAllAnimation() {
+    this.forEach((bvh) => {
+      bvh.playAnimation()
+    })
+  }
+
+  /** TODO */
+  resumeAllAnimation() {
+    let atLeastOneAnimationToPlay = false
+    this.forEach((bvh) => {
+      if (bvh.resumeAnimation() == true) {
+        atLeastOneAnimationToPlay = true
+      }
+    })
+    return atLeastOneAnimationToPlay
+  }
+
+  /** TODO */
+  replayAllAnimation(resetResumeAnim = false) {
+    this.forEach((bvh) => {
+      bvh.replayAnimation(resetResumeAnim)
     })
   }
 }
@@ -105,15 +163,22 @@ class BVHAnimationElement {
    * @param {*} bvhFile_ 
    */
   constructor(name_, skeleton_, animationMixer_, bvhFile_) {
-    this.name = name_
     this.skeleton = skeleton_
     this.clip = animationMixer_
     this.frameTime = bvhFile_.getFrameTime()
     this.nbFrames = bvhFile_.getNbFrames()
-    this.uuidString = String(this.uuid)
-    $('#' + this.uuidString + " .time").max = this.nbFrames
-    $('#' + this.uuidString + " .time").min = 1
-    $('#' + this.uuidString + " .time").valueAsNumber = 1
+    this.name = name_
+    this.isPaused = false
+    this.resumeAnimationValue = this.isPaused
+
+    // Time Slider
+    console.log($("#" + this.uuid))
+    this.timeSlider = $("#" + this.uuid + " .timeSlider")[0]
+    this.timeSlider.max = this.nbFrames
+    this.timeSlider.min = 1
+    this.timeSlider.valueAsNumber = this.timeSlider.min
+
+    // Affichage a lecran
     this.isVisible = true
   }
 
@@ -121,14 +186,14 @@ class BVHAnimationElement {
    * @return True si la checkbox de l'élément dans la page est coché, false sinon.
    */
   get isVisible() {
-    return $('#' + this.uuidString + " .display").is(":checked")
+    return $('#' + this.uuid + " .display").is(":checked")
   }
 
   /**
    * @param value_ : si true alors la checkbox est coché, inverse sinon
    */
   set isVisible(value_) {
-    $('#' + this.uuidString + " .display").prop('checked', value_)
+    $('#' + this.uuid + " .display").prop('checked', value_)
   }
 
   /**
@@ -153,32 +218,61 @@ class BVHAnimationElement {
     //TODO  le rendu de des ombres pour les bvh et les fbx peuvent être activé avec les attribut (dans leur attribut Object3D) castShadow: bool et .receiveShadow: bool
   }
 
-  /**  
-   * True si le bouton play/pause est reglé sur paus, false sinon
-   */
-  get isPaused() {
-    //TODO
-    let img = $('#' + this.uuidString + " .playPause")[0].lastChild.src.split("/").splice(-1)[0]
-    if (img === "pause_button.svg") {
-      return false
-    } else if (img === "play_button.svg") {
-      return true
+  /** TODO */
+  toggleAnimation() {
+    if (this.isPaused) this.playAnimation()
+    else this.pauseAnimation()
+    this.resumeAnimationValue = this.isPaused
+    this._updatePlayPauseImg()
+  }
+
+  /** TODO */
+  playAnimation() {
+    this.isPaused = false
+    this._updatePlayPauseImg()
+  }
+
+  /** TODO */
+  pauseAnimation() {
+    this.isPaused = true
+    this._updatePlayPauseImg()
+  }
+
+  /** TODO */
+  resumeAnimation() {
+    this.isPaused = this.resumeAnimationValue
+    this._updatePlayPauseImg()
+    return !this.isPaused
+  }
+
+  /** TODO */
+  replayAnimation(resetResumeAnim) {
+    if (resetResumeAnim == true) this.resumeAnimationValue = false
+    this.timeSlider.valueAsNumber = this.timeSlider.min
+    this._updatePlayPauseImg()
+  }
+
+  /** TODO */
+  _updatePlayPauseImg() {
+    let img = $('#' + this.uuid + " .playPause")[0].lastChild
+    if (this.isPaused) {
+      img.src = "./images/play_button.svg"
     } else {
-      console.error("Unknown play/Pause source")
-      return true
+      img.src = "./images/pause_button.svg"
     }
   }
 
-  /**
-   * Si true, le bouton play/pause sera set sur le logo play
-   * Inverse si false
+  /**  
+   * @return True si le bouton play/pause est reglé sur paus, false sinon
    */
-  set isPaused(value_) {
-    let target = $('#' + this.uuidString + " .playPause")[0].lastChild
-    if (value_) {
-      target.src = "./images/play_button.svg"
-    } else {
-      target.src = "./images/pause_button.svg"
+  get isPaused() {
+    return this._isPaused
+  }
+
+  /** TODO */
+  set isPaused(newValue) {
+    if (newValue == false || newValue == true) {
+      this._isPaused = newValue
     }
   }
 
@@ -187,10 +281,12 @@ class BVHAnimationElement {
    * Sinon set la position à la valeur donnée par target
    * @param {*} target 
    */
-  updateTimeSlider(target) {
-    //TODO
-    if (target !== undefined) $('#' + this.uuidString + " .time")[0].valueAsNumber = target
-    else $('#' + this.uuidString + " .time")[0].valueAsNumber += this.clip.timeScale
+  modifyTimeSlider(target) {
+    if (target){
+       this.timeSlider.valueAsNumber = target
+       this.clip.setTime(target)
+      }
+    else this.timeSlider.valueAsNumber += this.clip.timeScale
   }
 
   /**

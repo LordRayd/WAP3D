@@ -2,10 +2,8 @@ class IEM {
   constructor(player, cameraControls) {
     this.player = player
     this.cameraControls = cameraControls
-    this.playerAnimating = this.player.startAnimation()
-    this.generalTimeSlider = $("#time-slider")[0]
-    this.pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
-    this.playDiv = $('<div><img src="./images/play_button.svg"></div>')
+    this.playerAnimating = true
+    this.globalTimeSlider = $("#globalTimeSlider")[0]
   }
 
   /**
@@ -92,46 +90,52 @@ class IEM {
   }
 
   /** TODO */
-  clickOnPlayAction() {
+  clickOnGlobalPlayPauseAction() {
     this.playerAnimating = this.player.toggleAnimation()
-    if (this.playerAnimating == false) {
-      $("#playPause").children().replaceWith(this.playDiv)
-        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
-    } else {
-      $("#playPause").children().replaceWith(this.pauseDiv)
-        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
-    }
   }
 
   /** TODO */
-  clickOnReplayAction() {
-    let currPlayingAnim = this.playerAnimating
-    if (currPlayingAnim == true) {
-      this.playerAnimating = this.player.toggleAnimation()
-    }
-
-    let generalSliderMin = this.generalTimeSlider.min
-    this.generalTimeSlider.valueAsNumber = generalSliderMin
+  clickOnGlobalReplayAction() {
+    let generalSliderMin = this.globalTimeSlider.min
+    this.globalTimeSlider.valueAsNumber = generalSliderMin
     this.player.bvhAnimationsArray.setAllBvhFrameTime(generalSliderMin)
-
-    if (currPlayingAnim == true) {
-      this.playerAnimating = this.player.toggleAnimation()
-    }
+    this.player.restartAnimation()
   }
 
   /** TODO */
-  modifyTimeSliderAction() {
+  clickOnPlayPauseAction(event) {
+    let objectId = event.target.parentNode.parentNode.id
+    this.player.toggleObjectInListAnimation(objectId)
+  }
+
+  /** TODO */
+  clickOnReplayAction(event) {
+    let objectId = event.target.parentNode.parentNode.id
+    this.player.replayObjectInListAnimation(objectId)
+  }
+
+  /** TODO */
+  modifyGlobalTimeSliderAction(event) {
+    console.log(event.currentTarget.valueAsNumber)
     let currPlayingAnim = this.playerAnimating
     if (currPlayingAnim == true) {
       this.playerAnimating = this.player.toggleAnimation()
     }
 
-    let currGeneralTimerValue = this.generalTimeSlider.valueAsNumber
+    let currGeneralTimerValue = this.globalTimeSlider.valueAsNumber
     this.player.bvhAnimationsArray.setAllBvhFrameTime(currGeneralTimerValue)
 
     if (currPlayingAnim == true) {
       this.playerAnimating = this.player.toggleAnimation()
     }
+  }
+
+  /** TODO */
+  modifyTimeSliderAction(event){
+    let newValue = event.currentTarget.valueAsNumber
+    let objectId = event.target.parentNode.id
+    console.log(newValue, objectId)
+    this.player.modifyObjectInListTimeSlider(objectId, newValue)
   }
 
   /** TODO */

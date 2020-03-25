@@ -14,3 +14,12 @@
         }
     }
 }
+
+String.prototype.replaceAll = function(search, replacement) {
+    let target = this
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
+String.prototype.lastOf = function(separator) {
+    return this.split(separator)[this.split(separator).length - 1]
+}
