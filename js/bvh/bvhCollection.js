@@ -249,6 +249,7 @@ class BVHAnimationElement {
   replayAnimation(resetResumeAnim) {
     if (resetResumeAnim == true) this.resumeAnimationValue = false
     this.timeSlider.valueAsNumber = this.timeSlider.min
+    this.clip.setTime(this.timeSlider.valueAsNumber)
     this._updatePlayPauseImg()
   }
 
