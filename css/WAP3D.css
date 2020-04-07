@@ -54,25 +54,44 @@ img {
 .objectList div.list .object{
     width: 100%;
     height: 30%;
+    /*p.mix {border-style: dotted dashed solid double;}*/
+    border-style: none none solid none;
+    border-width: 0.5%;
+    border-color: black;
 }
-.objectList div.list div.object:hover{
+.objectList div.list .object:hover{
     background-color: gray;
 }
-.objectList div.list .object div{
+.objectList div.list .object .titleArea{
     float: left;
-    width: 10%;
+    width: 100%;
+    height: 40%;
+    text-align: center;
+    font-size: small;
+}
+.objectList div.list .object .titleArea p{
+    margin-top: 3px;
+}
+.objectList div.list .object .controlFunctions{
+    float: left;
+    width: 100%;
+    height: 60%;
+}
+.objectList div.list .object .controlFunctions div{
+    float: left;
+    width: 9%;
     height: 90%;
 }
-.objectList div.list .object img{
+.objectList div.list .object .controlFunctions div img{
     width: 100%;
     height: 100%;
 }
-.objectList div.list .object .timeSlider{
+.objectList div.list .object .controlFunctions .timeSlider{
     float: left;
     width: 65%;
     height: 90%;
 }
-.objectList div.list .object .display{
+.objectList div.list .object .controlFunctions .display{
     float: left;
     width: 10%;
     height: 90%;

@@ -104,13 +104,15 @@ class IEM {
 
   /** TODO */
   clickOnPlayPauseAction(event) {
-    let objectId = event.target.parentNode.parentNode.id
+    let objectId = event.target.parentNode.parentNode.parentNode.id
+    console.log(objectId)
     this.player.toggleObjectInListAnimation(objectId)
   }
 
   /** TODO */
   clickOnReplayAction(event) {
-    let objectId = event.target.parentNode.parentNode.id
+    let objectId = event.target.parentNode.parentNode.parentNode.id
+    console.log(objectId)
     this.player.replayObjectInListAnimation(objectId)
   }
 
@@ -133,7 +135,7 @@ class IEM {
   /** TODO */
   modifyTimeSliderAction(event){
     let newValue = event.currentTarget.valueAsNumber
-    let objectId = event.target.parentNode.id
+    let objectId = event.target.parentNode.parentNode.id
     console.log(newValue, objectId)
     this.player.modifyObjectInListTimeSlider(objectId, newValue)
   }

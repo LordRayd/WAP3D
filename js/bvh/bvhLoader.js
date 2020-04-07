@@ -122,29 +122,39 @@ class BVHLoader {
   /**
    * TODO
    * initialisation par UUID 
-   * pour permettre de supprimer des éléments du tab sans perte d'ordre ?
+   * TODO enlever params inutiles
    */
   _addBVHToObjectList(uuid_, name, frameTime, nbFrames, indexInDiv) {
     $("#bvhList .list").append('<div id="' + uuid_ + '" class="object"></div>')
     let divToAppendTo = "#bvhList .list #" + uuid_
-    $(divToAppendTo).append('<div   class="playPause"><img src="./images/pause_button.svg"></div>')
-    $(divToAppendTo).append('<input class="timeSlider" step="any" type="range">')
-    $(divToAppendTo).append('<div   class="replay"> <img src="./images/replay_button.svg"></div>')
-    $(divToAppendTo).append('<input class="display" type="checkbox" checked>')
+
+    $(divToAppendTo).append('<div class="titleArea"><p>' + name + '</p></div>')
+    $(divToAppendTo).append('<div class="controlFunctions"></div>')
+
+    let controlDivToAppendTo = "#bvhList .list #" + uuid_ + " .controlFunctions"
+
+    $(controlDivToAppendTo).append('<div   class="playPause"><img src="./images/pause_button.svg"></div>')
+    $(controlDivToAppendTo).append('<input class="timeSlider" step="any" type="range">')
+    $(controlDivToAppendTo).append('<div   class="replay"> <img src="./images/replay_button.svg"></div>')
+    $(controlDivToAppendTo).append('<input class="display" type="checkbox" checked>')
 
     /*
     '<div id="' + uuid_ + '" class="object">
-        <div class="playPause">
-            <img src="./images/pause_button.svg">
+        <div class="titleArea">
+          <p>' + name + '</p>
         </div>
-        <input class="time" classstep="any" type="range">
-        <div class="replay">
-            <img src="./images/replay_button.svg">
+        <div class="controlFunctions">
+          <div class="playPause">
+              <img src="./images/pause_button.svg">
+          </div>
+          <input class="time" classstep="any" type="range">
+          <div class="replay">
+              <img src="./images/replay_button.svg">
+          </div>
+          <input class="display" type="checkbox" checked>
         </div>
-        <input class="display" type="checkbox" checked>
     </div>'
     */
-    //$("#bvhList .list").append('<div id="' + uuid_ + '" class="object"><div class="playPause"><img src="./images/pause_button.svg"></div><input class="time" step="any" type="range"><div class="replay"><img src="./images/replay_button.svg"></div><input class="display" type="checkbox" checked></div>')
   }
 
   /** TODO */
