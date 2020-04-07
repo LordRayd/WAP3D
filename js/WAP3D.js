@@ -228,7 +228,10 @@ class Player {
       $("body").append('<div id="advencedControlForBVH" title="'+objectUuid_+'"></div>')
       $("#advencedControlForBVH").dialog({
         height: 480,
-        width: 640
+        width: 640,
+        close: (event, ui) =>{
+          $("#advencedControlForBVH").remove()
+        }
       })
     } else {
       //FBX
