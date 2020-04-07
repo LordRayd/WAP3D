@@ -222,6 +222,20 @@ class Player {
   }
 
   /** TODO */
+  launchAdvancedControls(objectUuid_){
+    //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
+    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+      $("body").append('<div id="advencedControlForBVH" title="'+objectUuid_+'"></div>')
+      $("#advencedControlForBVH").dialog({
+        height: 480,
+        width: 640
+      })
+    } else {
+      //FBX
+    }
+  }
+
+  /** TODO */
   get framerateTimeReference() {
     return this._framerateTimeReference == -1 ? Date.now() : this._framerateTimeReference
   }

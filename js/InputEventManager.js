@@ -142,4 +142,11 @@ class IEM {
   modifyWindowSizeAction() {
     this.player.updateRendererSize()
   }
+
+  /** TODO*/
+  selectElementFromListAction(objectId_){
+    //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
+    // en gros le cas où on fait CTRL+clic / shift+Clic sur plusieurs éléments puis entré
+    this.player.launchAdvancedControls(objectId_)
+  }
 }
