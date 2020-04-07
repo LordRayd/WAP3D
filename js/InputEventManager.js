@@ -105,14 +105,12 @@ class IEM {
   /** TODO */
   clickOnPlayPauseAction(event) {
     let objectId = event.target.parentNode.parentNode.parentNode.id
-    console.log(objectId)
     this.player.toggleObjectInListAnimation(objectId)
   }
 
   /** TODO */
   clickOnReplayAction(event) {
     let objectId = event.target.parentNode.parentNode.parentNode.id
-    console.log(objectId)
     this.player.replayObjectInListAnimation(objectId)
   }
 
