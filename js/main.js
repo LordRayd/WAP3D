@@ -3,6 +3,8 @@ const playDiv = $('<div><img src="./images/play_button.svg"></div>')
 
 /** TODO */
 $(_ => {
+  $("#listTabs").tabs()
+
   let scene = new THREE.Scene()
   let renderer = new THREE.WebGLRenderer({ antialias: true })
   let camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 1000)

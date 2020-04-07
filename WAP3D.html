@@ -40,17 +40,25 @@
         <div id="closeOpenButton">
           <!--TODO mettre image-->
         </div>
-        <!--TODO-->
-        <div class="objectList" id="bvhList">
-          <div class="title">BVH</div>
-          <div class="list"></div>
-        </div>
 
-        <!--TODO-->
-        <div class="objectList" id="fbxList">
-          <div class="title">FBX</div>
-          <div class="list"></div>
+        <div id="listTabs" class="jqueryUIOverride">
+          <ul>
+            <li><a href="#bvhList">BVH</a></li>
+            <li><a href="#fbxList">FBX</a></li>
+          </ul>
+          <!--TODO-->
+          <div class="objectList" id="bvhList">
+            <!--<div class="title">BVH</div>-->
+            <div class="list"></div>
+          </div>
+
+          <!--TODO-->
+          <div class="objectList" id="fbxList">
+            <!--<div class="title">FBX</div>-->
+            <div class="list"></div>
+          </div>
         </div>
+          
       </div>
       <div id="player">
         <div id="messagePlayer" hidden></div>
