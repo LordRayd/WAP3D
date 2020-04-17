@@ -186,10 +186,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -222,14 +222,50 @@ class Player {
   }
 
   /** TODO */
-  launchAdvancedControls(objectUuid_){
-    //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
+  launchAdvancedControls(objectUuid_) {
     if (this.bvhAnimationsArray.contain(objectUuid_)) {
-      $("body").append('<div id="advencedControlForBVH" title="'+objectUuid_+'"></div>')
+      //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
+      //TODO ajouter comportement si page déjà ouverte
+      $("body").append('<div id="advencedControlForBVH" title="' + this.bvhAnimationsArray.getByUUID(objectUuid_).name + '"></div>')
+
+      //todo parcourir dynamiquement arbre de squelette pour pouvoir en faire des listes de liste intégrable dans la fenêtre
+
+      $("#advencedControlForBVH").append('\
+        <div id="advancedControlsTabsForBVH">\
+          <ul> \
+            <li><a href="#graphs">Graphs</a></li>\
+            <li><a href="#rendering">Rendering Options</a></li>\
+            <li><a href="#selection">Display Selection</a></li>\
+          </ul>\
+          <div id="graphs">\
+          </div>\
+          <div id="rendering">\
+            <ul>\
+              <li><input id="speedRatioSelector" type="number" step="0.25"></li>\
+              <li>\
+                <label for="orthoEnabled"> Affichage d\'un repère orthonormé pour chaque articulation</label>\
+                <input type="checkbox" name="orthoEnabled" id="orthoEnabled">\
+              </li>\
+              <li>\
+                <p> Rendering mode: </p>\
+                <label for="WireFrame">WireFrame</label>\
+                <input type="radio" id="renderModeWireFrame" name="renderMode" value="WireFrame"><br>\
+                <label for="Cubic">Cubic</label>\
+                <input type="radio" id="renderModeCubic" name="renderMode" value="Cubic"><br>\
+              </li>\
+            </ul>\
+          </div>\
+          <div id="selection">\
+          </div>\
+        </div>\
+      ')
+
+      $("#advancedControlsTabsForBVH").tabs()
+
       $("#advencedControlForBVH").dialog({
         height: 480,
         width: 640,
-        close: (event, ui) =>{
+        close: (event, ui) => {
           $("#advencedControlForBVH").remove()
         }
       })
