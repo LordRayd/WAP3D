@@ -15,21 +15,11 @@
     }
 }
 
-Object.defineProperties(Array.prototype, {
-    max: {
-        configurable: true,
-        enumerable: false,
-        value: function() {
-            return this.length === 0 ? undefined : Math.max(...this)
-        },
-        writable: true
-    },
-    min: {
-        configurable: true,
-        enumerable: false,
-        value: function() {
-            return this.length === 0 ? undefined : Math.min(...this)
-        },
-        writtable: true
-    }
-});
+String.prototype.replaceAll = function(search, replacement) {
+    let target = this
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
+String.prototype.lastOf = function(separator) {
+    return this.split(separator)[this.split(separator).length - 1]
+}

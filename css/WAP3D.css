@@ -27,23 +27,30 @@ img {
     overflow: hidden;
 }
 
-.objectList{
+#listTabs{
     width: 90%;
-    height: 45%;
+    height: 90%;
     margin-left: 2%;
     margin-top: 2%;
-    margin-bottom: 2%;
-    border-color: gray;
-    border-style: hidden hidden solid solid;
-    border-width: 1px;
 }
 
-.objectList div.title{
+/* Nécessaire pour "override" le CSS par défaut des tabs*/
+#listTabs div{
+    padding: 0.1em 0em;
+}
+
+.objectList{
+    width: 100%;
+    height: 98%;
+    padding-left: 0%;
+}
+
+/*.objectList div.title{
     width: 100%;
     height: 10%;
     background-color: green;
     color: white;
-}
+}*/
 
 .objectList div.list{
     width: 100%;
@@ -53,26 +60,45 @@ img {
 
 .objectList div.list .object{
     width: 100%;
-    height: 30%;
+    height: 15%;
+    border-style: none none solid none;
+    border-width: 0.5%;
+    border-color: black;
 }
-.objectList div.list div.object:hover{
+.objectList div.list .object:hover{
     background-color: gray;
 }
-.objectList div.list .object div{
+.objectList div.list .object .titleArea{
     float: left;
-    width: 10%;
+    width: 100%;
+    height: 40%;
+    text-align: center;
+    font-size: small;
+}
+.objectList div.list .object .titleArea p{
+    user-select: none;
+    margin-top: 3px;
+}
+.objectList div.list .object .controlFunctions{
+    float: left;
+    width: 100%;
+    height: 60%;
+}
+.objectList div.list .object .controlFunctions div{
+    float: left;
+    width: 9%;
     height: 90%;
 }
-.objectList div.list .object img{
+.objectList div.list .object .controlFunctions div img{
     width: 100%;
     height: 100%;
 }
-.objectList div.list .object .time{
+.objectList div.list .object .controlFunctions .timeSlider{
     float: left;
     width: 65%;
     height: 90%;
 }
-.objectList div.list .object .display{
+.objectList div.list .object .controlFunctions .display{
     float: left;
     width: 10%;
     height: 90%;
@@ -111,22 +137,22 @@ img {
     width: 90%;
 }
 
-#play {
+#globalPlayPause {
     float: left;
     height: 100%;
     width: 4%;
 }
 
-#time-slider {
-    float: middle;
-    height: 90%;
-    width: 90%
-}
-
-#replay {
+#globalReplay {
     float: right;
     height: 100%;
     width: 4%;
+}
+
+#globalTimeSlider {
+    float: middle;
+    height: 90%;
+    width: 90%
 }
 
 

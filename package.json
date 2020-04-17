@@ -1,0 +1,31 @@
+{
+  "name": "wap3d",
+  "version": "1.0.0",
+  "description": "WAP3D est un projet dont le but est d'afficher des scènes définie par des fichiers .bvh ou .fbx dans un player. Ce player devra être capable d'afficher des informations relatives à des objets de la scène séléctionnés par l'utilisateur à la souris.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LordRayd/WAP3D.git"
+  },
+  "keywords": [
+    "WEBGL",
+    "THREEJS",
+    "player",
+    "BVH",
+    "FBX"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LordRayd/WAP3D/issues"
+  },
+  "homepage": "https://github.com/LordRayd/WAP3D#readme",
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "jquery-ui-dist": "^1.12.1",
+    "three": "^0.114.0"
+  }
+}

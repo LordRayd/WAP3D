@@ -1,308 +1,250 @@
-let scene, renderer, camera, mouseControls
-let framerateTimeReference = -1
-let currentScreenFrameTime = 0.01667
-let playAnimation = true
+class Player {
 
-let bvhWithMaximumNbFrames = { nbFrames: 0 }
+  /**
+   * Joue les animations quand elles existent
+   * Initialise les interactions à la souris et au clavier
+   */
+  constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray) {
+    this.scene = scene
+    this.renderer = renderer
+    this.camera = camera
+    this.cameraControls = cameraControls
+    this.bvhAnimationsArray = bvhAnimationsArray
+    this.globalTimeSlider = $("#globalTimeSlider")[0]
+    this.framerateTimeReference = -1
+    this.currentScreenFrameTime = 0.01667
+    this.bvhWithMaximumNbFrames = { nbFrames: 0 }
 
-/** [{name, skeleton, clip(mixer), bvhFile},] */
-let bvhAnimationsArray
-const initialCameraPosition = 150
-let pauseDiv = {...$('<div><img src="./images/pause_button.svg"></div>') }
-let playDiv = {...$('<div><img src="./images/play_button.svg"></div>') }
-let bvhLoader
+    this._initialisePlayer()
 
-let generalTimeSlider
-
-/**
- * Permet de récupérer le frame time du navigateur en secondes
- * Estimation approximative à l'instant T
- */
-function updateFrameTime() {
-    if (framerateTimeReference == -1) {
-        framerateTimeReference = Date.now();
-    }
-    let delta = (Date.now() - framerateTimeReference) / 1000;
-    framerateTimeReference = Date.now();
-    currentScreenFrameTime = delta;
-}
-
-function updateRendererSize() {
-    renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
-    camera.aspect = $("#player")[0].offsetWidth / $("#player")[0].offsetHeight
-}
-
-/**
- * Initialise le lecteur avec une grille de référence
- * Joue les animations quand elles existent
- * Initialise les interactions à la souris et au clavier
- */
-$(function initialisePlayer() {
-    bvhAnimationsArray = new BVHAnimationArray()
-    generalTimeSlider = $("#time-slider")[0]
-    generalTimeSlider.valueAsNumber = 0
-    scene = new THREE.Scene()
-
-    renderer = new THREE.WebGLRenderer({ antialias: true })
-    renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
-    $("#player").append(renderer.domElement)
-    window.onresize = updateRendererSize
-
-    camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 1000)
-    camera.position.z = initialCameraPosition
-    camera.position.y = initialCameraPosition
-
-    let referenceGrid = new THREE.GridHelper(1000, 50);
-    scene.add(referenceGrid);
-
-    mouseControls = new THREE.OrbitControls(camera, renderer.domElement)
-    mouseControls.enableKeys = true
-    mouseControls.rotateSpeed = 0.3
-    mouseControls.keyPanSpeed = 25
-    mouseControls.screenSpacePanning = false // Défini si le translate se fait par rapport à (X,Z) ou par rapport à la caméra
-    mouseControls.mouseButtons = {
-        LEFT: THREE.MOUSE.ROTATE, //rotate
-        MIDDLE: THREE.MOUSE.DOLLY, //zoom
-        RIGHT: THREE.MOUSE.PAN
-    }
-
-    mouseControls.keys = {
-        LEFT: 81, // q
-        UP: 90, // z
-        RIGHT: 68, // d
-        BOTTOM: 83 // s
-    }
-
-    bvhLoader = new BVHLoader(scene, bvhAnimationsArray)
-
-    inputEventManager()
-
-    animate()
-})
-let animating = true
     /** TODO */
-function animate() {
-    if (bvhLoader.loadingState !== "loading") {
-        requestAnimationFrame(animate)
-        mouseControls.update()
-        if (playAnimation === true) {
-            animating = true
-            if (bvhLoader.loadingState === "loaded") {
-                bvhAnimationsArray.forEach(bvh => {
-                    if (bvh.nbFrames > generalTimeSlider.valueAsNumber) {
-                        bvh.clip.timeScale = currentScreenFrameTime / bvh.frameTime
-                        bvh.clip.update(bvh.frameTime)
-                    }
-                });
-                if (generalTimeSlider.max > generalTimeSlider.valueAsNumber) { generalTimeSlider.valueAsNumber += bvhWithMaximumNbFrames.clip.timeScale }
-                updateFrameTime()
-                $("#messagePlayer").text(generalTimeSlider.valueAsNumber).show()
-            }
-            animating = false
-        }
-    } else {
-        framerateTimeReference = -1
-        $("#messagePlayer").text("Chargement en cours").show()
-    }
-    renderer.render(scene, camera)
-}
+    this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
 
-/** TODO */
-function fileLoadedCallBack() {
+    /** TODO */
+    this.animating = true
+    this.animationIsPaused = true
+
+    this._animate()
+  }
+
+  /**
+   * Initialise le lecteur avec une grille de référence
+   */
+  _initialisePlayer() {
+    this.globalTimeSlider.min = 1
+    this.globalTimeSlider.valueAsNumber = this.globalTimeSlider.min
+
+    this.renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
+    $("#player").append(this.renderer.domElement)
+
+    let initialCameraPosition = 150
+    this.camera.position.z = initialCameraPosition
+    this.camera.position.y = initialCameraPosition
+
+    this.scene.add(new THREE.GridHelper(1000, 50))
+
+    this.cameraControls.enableKeys = true
+    this.cameraControls.rotateSpeed = 0.3
+    this.cameraControls.keyPanSpeed = 25
+    this.cameraControls.screenSpacePanning = false // Défini si le translate se fait par rapport à (X,Z) ou par rapport à la caméra
+    this.cameraControls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE, //rotate
+      MIDDLE: THREE.MOUSE.DOLLY, //zoom
+      RIGHT: THREE.MOUSE.PAN
+    }
+    this.cameraControls.keys = {
+      LEFT: 81, // q
+      UP: 90, // z
+      RIGHT: 68, // d
+      BOTTOM: 83 // s
+    }
+  }
+
+  /**
+   * Permet de récupérer le frame time du navigateur en secondes
+   * Estimation approximative à l'instant T
+   */
+  _updateFrameTime() {
+    let currDateTime = Date.now()
+    let delta = (currDateTime - this.framerateTimeReference) / 1000;
+    this.framerateTimeReference = currDateTime
+    this.currentScreenFrameTime = delta;
+  }
+
+  /** TODO */
+  _animate() {
+    if (this.bvhLoader.loadingState !== "loading") {
+      requestAnimationFrame(this._animate.bind(this))
+      this.bvhAnimationsArray.updateAllElementsProperties()
+      this.cameraControls.update()
+      this.animating = true
+
+      //BVH---
+      if (this.bvhLoader.loadingState === "loaded") {
+        if (this.animationIsPaused == false) {
+          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.globalTimeSlider.valueAsNumber, this.currentScreenFrameTime) == true) {
+            // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
+            // this.bvhAnimationsArray.setAllBvhFrameTime(this.globalTimeSlider.valueAsNumber)
+            // this.bvhWithMaximumNbFrames.clip.timeScale = this.currentScreenFrameTime / this.bvhWithMaximumNbFrames.frameTime
+            this._updateFrameTime()
+            if (this.globalTimeSlider.max > this.globalTimeSlider.valueAsNumber) {
+              this.globalTimeSlider.valueAsNumber += this.bvhWithMaximumNbFrames.clip.timeScale;
+              //console.log(this.globalTimeSlider.valueAsNumber)
+            }
+            if (console.DEBUG_MODE == true) $("#messagePlayer").text(this.globalTimeSlider.valueAsNumber).show()
+          } else {
+            this._pauseAnimation()
+          }
+        } else {
+          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.globalTimeSlider.valueAsNumber, this.currentScreenFrameTime) == true) {
+            this.animationIsPaused = false
+            this._updateGeneralPlayPauseImg()
+          }
+        }
+      }
+
+      // FBX---
+      // TODO
+
+      this.animating = false
+    } else {
+      this.framerateTimeReference = -1
+      $("#messagePlayer").text("Chargement en cours").show()
+    }
+    this.renderer.render(this.scene, this.camera)
+  }
+
+  /** TODO */
+  fileLoadedCallBack() {
     $("#messagePlayer").hide()
 
+    this.bvhWithMaximumNbFrames = this.bvhAnimationsArray.getByMaxNbOfFrames()
+    this.globalTimeSlider.max = this.bvhWithMaximumNbFrames.nbFrames
+
     // Update par rapport au timer général actuel
-    let timeSliderCurrentValue = $("#time-slider")[0].valueAsNumber
-    bvhWithMaximumNbFrames = bvhAnimationsArray.getByMaxNbOfFrames()
-    bvhAnimationsArray.forEach(bvh => {
-        let newTime = bvh.nbFrames > timeSliderCurrentValue ? bvh.frameTime * timeSliderCurrentValue : bvh.frameTime * bvh.nbFrames
-        bvh.clip.setTime(newTime)
-    });
+    this.bvhAnimationsArray.setAllBvhFrameTime(this.globalTimeSlider.valueAsNumber)
 
-    $("#fileSelector").one("change", event => bvhLoader.loadBVH(event, fileLoadedCallBack))
-    $("#play").on("click", clickOnPlayAction)
-    $("#replay").on("click", clickOnReplayAction)
+    updateEventListener()
 
-    generalTimeSlider = $("#time-slider")[0]
-    generalTimeSlider.min = 1
-    generalTimeSlider.max = bvhWithMaximumNbFrames.nbFrames
+    requestAnimationFrame(this._animate.bind(this))
+  }
 
-    $("#time-slider").on("change", advanceTimeBar)
+  /** TODO */
+  updateRendererSize() {
+    let player = $("#player")[0]
+    this.renderer.setSize(player.offsetWidth, player.offsetHeight)
+    this.camera.aspect = player.offsetWidth / player.offsetHeight
+  }
 
-    requestAnimationFrame(animate)
-}
+  /** TODO */
+  toggleAnimation() {
+    if (this.animationIsPaused) this.resumeAnimation()
+    else this._pauseAnimation()
+  }
 
-/** Gestionnaire des événement clavier et souris
- *  A chargé au chargement de la page
- */
-function inputEventManager() {
+  /** TODO */
+  _pauseAnimation() {
+    this.animationIsPaused = true
+    this.bvhAnimationsArray.pauseAllAnimation()
+    this._updateGeneralPlayPauseImg()
+  }
 
-    $("#fileSelector").one("change", event => bvhLoader.loadBVH(event, fileLoadedCallBack))
+  /** TODO */
+  restartAnimation() {
+    let animationWasPlaying = false
+    if (this.animationIsPaused == false) {
+      animationWasPlaying = true
+      this._pauseAnimation()
+    }
 
-    $("#play").on("click", clickOnPlayAction)
+    this.bvhAnimationsArray.replayAllAnimation(!animationWasPlaying)
 
-    $("#replay").on("click", clickOnReplayAction)
+    if (animationWasPlaying) {
+      this.resumeAnimation()
+    }
+  }
 
-    $("#time-slider").on("change", advanceTimeBar)
-
-    $(document).on("keydown", event => keydownAction(event))
-
-    $(document).on("keyup", event => keyupAction(event))
-
-    $("#closeOpenButton").one("click", closeObjectListAction)
-}
-
-/**
- * TODO 
- */
-function clickOnPlayAction() {
-    cancelAnimationFrame(animate)
-    playAnimation = !playAnimation
-    framerateTimeReference = -1
-    if (playAnimation == false) {
-        $("#play").children().replaceWith(playDiv)
-            //$("#messagePlayer").html(playDiv).show(500).hide(500)
+  /** TODO */
+  resumeAnimation() {
+    this.animationIsPaused = false
+    if (this.bvhAnimationsArray.resumeAllAnimation() == false) {
+      this._playAnimation()
     } else {
-        $("#play").children().replaceWith(pauseDiv)
-            //$("#messagePlayer").html(pauseDiv).show(500).hide(500)
+      this._updateGeneralPlayPauseImg()
     }
-    requestAnimationFrame(animate)
-}
+  }
 
-/**
- * TODO
- */
-function clickOnReplayAction() {
-    let currPlayingAnim = playAnimation
-    playAnimation = false
-    new Promise((resolve, reject) => {
-        let inter = setInterval(_ => {
-            if (animating == false) {
-                clearInterval(inter)
-                resolve()
-            } else {
-                console.log("animating")
-            }
-        }, 1)
-    })
-    framerateTimeReference = -1
-    generalTimeSlider.valueAsNumber = generalTimeSlider.min
-    bvhAnimationsArray.forEach(bvh => {
-        bvh.clip.setTime(generalTimeSlider.min * bvh.frameTime)
-    });
-    if (currPlayingAnim == true) {
-        playAnimation = true
+  /** TODO */
+  _playAnimation() {
+    this.animationIsPaused = false
+    this.bvhAnimationsArray.playAllAnimation()
+    this._updateGeneralPlayPauseImg()
+  }
+
+  /** TODO */
+  _updateGeneralPlayPauseImg() {
+    if (this.animationIsPaused == true) {
+      this.framerateTimeReference = -1
+      $("#globalPlayPause").children().replaceWith(playDiv)
+        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+    } else {
+      $("#globalPlayPause").children().replaceWith(pauseDiv)
+        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
-    requestAnimationFrame(animate)
-}
+  }
 
-/**
- * Fonction appellée pour minimiser la div de sélection d'élements
- */
-function closeObjectListAction() {
-
-    $("#objectSelector").animate({
-        width: '2%',
-        marginRight: '0.5%'
-    }, {
-        duration: 100
-    })
-
-    $("#player").animate({
-        width: '87.5%'
-    }, {
-        duration: 100,
-        progress: updateRendererSize,
-        complete: _ => $("#closeOpenButton").one("click", openObjectListAction)
-    })
-
-    $("#objectSelector").children().not("#closeOpenButton").fadeOut(100)
-
-    $("#messagePlayer").animate({
-        width: '84%'
-    }, {
-        duration: 100,
-    })
-}
-
-/**
- * Fonction appellée pour "ouvrir" la div de sélection d'élements
- */
-function openObjectListAction() {
-
-    $("#objectSelector").animate({
-        width: '30%'
-    }, {
-        duration: 100
-    })
-
-    $("#player").animate({
-        width: '59%'
-    }, {
-        duration: 100,
-        progress: updateRendererSize,
-        complete: _ => $("#closeOpenButton").one("click", closeObjectListAction)
-    })
-
-    $("#objectSelector").children().not("#closeOpenButton").fadeIn(100)
-
-    $("#messagePlayer").animate({
-        width: '59%'
-    }, {
-        duration: 100,
-    })
-}
-
-/**
- * TODO
- */
-function advanceTimeBar() {
-    let currPlayingAnim = playAnimation
-    playAnimation = false
-    bvhAnimationsArray.forEach(bvh => {
-        let newTime = bvh.nbFrames > generalTimeSlider.valueAsNumber ? bvh.frameTime * generalTimeSlider.valueAsNumber : bvh.frameTime * bvh.nbFrames
-        bvh.clip.setTime(newTime)
-    });
-    if (currPlayingAnim == true) {
-        playAnimation = true
+  /** TODO */
+  toggleObjectInListAnimation(objectUuid_) {
+    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+      this.bvhAnimationsArray.toggleOneBVHAnimation(objectUuid_)
+    } else {
+      //FBX
     }
-}
+  }
 
-/** TODO */
-function keydownAction(keyEvent) {
-    let keyPressed = keyEvent.originalEvent.key.toUpperCase()
-    switch (keyPressed) {
-        case "Z":
-        case "Q":
-        case "S":
-        case "D":
-            // Déjà utiliser par le déplacement de la caméra
-            break
-        case " ":
-            clickOnPlayAction()
-            break
-        case "SHIFT":
-            mouseControls.screenSpacePanning = true
-            mouseControls.keys.UP = 90 // Z
-            mouseControls.keys.BOTTOM = 83 // S
-            break
+  /** TODO */
+  replayObjectInListAnimation(objectUuid_) {
+    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+      this.bvhAnimationsArray.replayOneBVHAnimation(objectUuid_)
+    } else {
+      //FBX
     }
-}
+  }
 
-/** TODO */
-function keyupAction(keyEvent) {
-    let keyPressed = keyEvent.originalEvent.key.toUpperCase()
-    switch (keyPressed) {
-        case "Z":
-        case "Q":
-        case "S":
-        case "D":
-            // Déjà utiliser par le déplacement de la caméra
-            break
-        case "SHIFT":
-            mouseControls.screenSpacePanning = false
-            mouseControls.keys.UP = 90 // Z
-            mouseControls.keys.BOTTOM = 83 // S
-            break
+  /** TODO */
+  modifyObjectInListTimeSlider(objectUuid_, newValue) {
+    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+      console.log(arguments)
+      this.bvhAnimationsArray.modifyOneBVHFTimeSlider(objectUuid_, newValue)
+    } else {
+      //FBX
     }
+  }
+
+  /** TODO */
+  launchAdvancedControls(objectUuid_){
+    //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
+    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+      $("body").append('<div id="advencedControlForBVH" title="'+objectUuid_+'"></div>')
+      $("#advencedControlForBVH").dialog({
+        height: 480,
+        width: 640,
+        close: (event, ui) =>{
+          $("#advencedControlForBVH").remove()
+        }
+      })
+    } else {
+      //FBX
+    }
+  }
+
+  /** TODO */
+  get framerateTimeReference() {
+    return this._framerateTimeReference == -1 ? Date.now() : this._framerateTimeReference
+  }
+
+  /** TODO */
+  set framerateTimeReference(newFrameTimeRef) {
+    this._framerateTimeReference = newFrameTimeRef
+  }
 }
