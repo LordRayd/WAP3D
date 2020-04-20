@@ -12,7 +12,6 @@ class Player {
     this.bvhAnimationsArray = bvhAnimationsArray
     this.framerateTimeReference = -1
     this.currentScreenFrameTime = 0.01667
-    this.bvhWithMaximumNbFrames = { nbFrames: 0 }
 
     this._initialisePlayer()
 
@@ -81,8 +80,7 @@ class Player {
         if (this.animationIsPaused == false) {
           if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
             // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
-            // this.bvhAnimationsArray.setAllBvhFrameTime(this.globalTimeSlider.valueAsNumber)
-            // this.bvhWithMaximumNbFrames.clip.timeScale = this.currentScreenFrameTime / this.bvhWithMaximumNbFrames.frameTime
+
             this._updateFrameTime()
 
           } else {
@@ -110,8 +108,6 @@ class Player {
   /** TODO */
   fileLoadedCallBack() {
     $("#messagePlayer").hide()
-
-    this.bvhWithMaximumNbFrames = this.bvhAnimationsArray.getByMaxNbOfFrames()
 
     // Update par rapport au timer général actuel
     this.bvhAnimationsArray.setAllBvhFrameTime(0)
@@ -259,7 +255,7 @@ class Player {
         let uuid = object.target.parentNode.parentNode.parentNode.parentNode.getAttribute('data-uuid')
         let newTimeScaleValue = object.target.valueAsNumber
         console.log(newTimeScaleValue)
-        this.bvhAnimationsArray.getByUUID(uuid).clip.timeScale = newTimeScaleValue
+        this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
       })
 
       $("#advancedControlsTabsForBVH").tabs()

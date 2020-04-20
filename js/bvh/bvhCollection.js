@@ -74,11 +74,15 @@ class BVHAnimationArray extends Array {
     //TODO
     let atLeastOneElementToAnimate = false
     this.forEach(bvhElem => {
+      if(bvhElem.timeSlider.valueAsNumber >= bvhElem.nbFrames){
+        bvhElem.isPaused = true
+      }
+
       if (!bvhElem.isPaused) {
         atLeastOneElementToAnimate = true
           //TODO prise en compte de bvhElem.isVisible
           //TODO prise en compte de la position du slider correspondant à bvhElem
-        bvhElem.clip.timeScale = frameTimeReference_ / bvhElem.frameTime
+        bvhElem.clip.timeScale = (bvhElem.speedRatio * frameTimeReference_) / bvhElem.frameTime
         bvhElem.clip.update(bvhElem.frameTime)
         bvhElem.modifyTimeSlider() // TODO à faire marcher correctement
       }
@@ -169,6 +173,7 @@ class BVHAnimationElement {
     this.name = name_
     this.isPaused = false
     this.resumeAnimationValue = this.isPaused
+    this.speedRatio = 1
 
     // Time Slider
     console.log($("#" + this.uuid))
