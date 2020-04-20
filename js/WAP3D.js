@@ -10,10 +10,8 @@ class Player {
     this.camera = camera
     this.cameraControls = cameraControls
     this.bvhAnimationsArray = bvhAnimationsArray
-    this.globalTimeSlider = $("#globalTimeSlider")[0]
     this.framerateTimeReference = -1
     this.currentScreenFrameTime = 0.01667
-    this.bvhWithMaximumNbFrames = { nbFrames: 0 }
 
     this._initialisePlayer()
 
@@ -31,8 +29,6 @@ class Player {
    * Initialise le lecteur avec une grille de référence
    */
   _initialisePlayer() {
-    this.globalTimeSlider.min = 1
-    this.globalTimeSlider.valueAsNumber = this.globalTimeSlider.min
 
     this.renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
     $("#player").append(this.renderer.domElement)
@@ -82,21 +78,16 @@ class Player {
       //BVH---
       if (this.bvhLoader.loadingState === "loaded") {
         if (this.animationIsPaused == false) {
-          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.globalTimeSlider.valueAsNumber, this.currentScreenFrameTime) == true) {
+          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
             // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
-            // this.bvhAnimationsArray.setAllBvhFrameTime(this.globalTimeSlider.valueAsNumber)
-            // this.bvhWithMaximumNbFrames.clip.timeScale = this.currentScreenFrameTime / this.bvhWithMaximumNbFrames.frameTime
+
             this._updateFrameTime()
-            if (this.globalTimeSlider.max > this.globalTimeSlider.valueAsNumber) {
-              this.globalTimeSlider.valueAsNumber += this.bvhWithMaximumNbFrames.clip.timeScale;
-              //console.log(this.globalTimeSlider.valueAsNumber)
-            }
-            if (console.DEBUG_MODE == true) $("#messagePlayer").text(this.globalTimeSlider.valueAsNumber).show()
+
           } else {
             this._pauseAnimation()
           }
         } else {
-          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.globalTimeSlider.valueAsNumber, this.currentScreenFrameTime) == true) {
+          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
             this.animationIsPaused = false
             this._updateGeneralPlayPauseImg()
           }
@@ -118,11 +109,8 @@ class Player {
   fileLoadedCallBack() {
     $("#messagePlayer").hide()
 
-    this.bvhWithMaximumNbFrames = this.bvhAnimationsArray.getByMaxNbOfFrames()
-    this.globalTimeSlider.max = this.bvhWithMaximumNbFrames.nbFrames
-
     // Update par rapport au timer général actuel
-    this.bvhAnimationsArray.setAllBvhFrameTime(this.globalTimeSlider.valueAsNumber)
+    this.bvhAnimationsArray.setAllBvhFrameTime(0)
 
     updateEventListener()
 
@@ -186,10 +174,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -222,14 +210,60 @@ class Player {
   }
 
   /** TODO */
-  launchAdvancedControls(objectUuid_){
-    //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
+  launchAdvancedControls(objectUuid_) {
     if (this.bvhAnimationsArray.contain(objectUuid_)) {
-      $("body").append('<div id="advencedControlForBVH" title="'+objectUuid_+'"></div>')
+      //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
+      //TODO ajouter comportement si page déjà ouverte
+      $("body").append('<div id="advencedControlForBVH" title="' + this.bvhAnimationsArray.getByUUID(objectUuid_).name + "\t" + objectUuid_ + '"></div>')
+
+      //TODO parcourir dynamiquement arbre de squelette pour pouvoir en faire des listes de liste intégrable dans la fenêtre
+
+      //TODO voir comment rajouter l'UUID plus bas dans la hiérarchie de l'élément
+      //pour effacer l'horreur de IEM.updateElementAnimationSpeed
+      $("#advencedControlForBVH").append('\
+        <div id="advancedControlsTabsForBVH" data-uuid="'+objectUuid_+'">\
+          <ul> \
+            <li><a href="#graphs">Graphs</a></li>\
+            <li><a href="#rendering">Rendering Options</a></li>\
+            <li><a href="#selection">Display Selection</a></li>\
+          </ul>\
+          <div id="graphs">\
+          </div>\
+          <div id="rendering">\
+            <ul>\
+              <li><input id="speedRatioSelector" type="number" step="0.25"></li>\
+              <li>\
+                <label for="orthoEnabled"> Affichage d\'un repère orthonormé pour chaque articulation</label>\
+                <input type="checkbox" name="orthoEnabled" id="orthoEnabled">\
+              </li>\
+              <li>\
+                <p> Rendering mode: </p>\
+                <label for="WireFrame">WireFrame</label>\
+                <input type="radio" id="renderModeWireFrame" name="renderMode" value="WireFrame"><br>\
+                <label for="Cubic">Cubic</label>\
+                <input type="radio" id="renderModeCubic" name="renderMode" value="Cubic"><br>\
+              </li>\
+            </ul>\
+          </div>\
+          <div id="selection">\
+          </div>\
+        </div>\
+      ')
+
+      //ne marche pas car le passage entre deux frames ne prend pas les AnimationMixer en compte
+      $("#speedRatioSelector").change((object) => {
+        let uuid = object.target.parentNode.parentNode.parentNode.parentNode.getAttribute('data-uuid')
+        let newTimeScaleValue = object.target.valueAsNumber
+        console.log(newTimeScaleValue)
+        this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
+      })
+
+      $("#advancedControlsTabsForBVH").tabs()
+
       $("#advencedControlForBVH").dialog({
         height: 480,
         width: 640,
-        close: (event, ui) =>{
+        close: (event, ui) => {
           $("#advencedControlForBVH").remove()
         }
       })

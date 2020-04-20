@@ -55,7 +55,7 @@ class BVHAnimationArray extends Array {
     }
   }
 
-  /**TODO */
+  /**TODO À RENOMMER ! ON NE CHANGE PAS DE FRAME TIME MAIS DE FRAME (tout court)*/
   setAllBvhFrameTime(time) {
     this.forEach(bvh => {
       let newTime = bvh.nbFrames > time ? bvh.frameTime * time : bvh.frameTime * bvh.nbFrames
@@ -68,18 +68,22 @@ class BVHAnimationArray extends Array {
    * Prend en compte pour chaque élément si il est mis en pause
    * (TODO) et si il sont visible ou non
    * 
-   * @param {*} sliderReference_ le slider générale du lecteur
    * @param {*} frameTimeReference_ le frametime de référence du navigateur
    */
-  updateAllElementsAnimation(sliderReference_, frameTimeReference_) {
+  updateAllElementsAnimation(frameTimeReference_) {
     //TODO
     let atLeastOneElementToAnimate = false
     this.forEach(bvhElem => {
-      if (sliderReference_ < bvhElem.nbFrames && !bvhElem.isPaused) {
+      if(bvhElem.timeSlider.valueAsNumber >= bvhElem.nbFrames){
+        bvhElem.isPaused = true
+        bvhElem._updatePlayPauseImg()
+      }
+
+      if (!bvhElem.isPaused) {
         atLeastOneElementToAnimate = true
           //TODO prise en compte de bvhElem.isVisible
           //TODO prise en compte de la position du slider correspondant à bvhElem
-        bvhElem.clip.timeScale = frameTimeReference_ / bvhElem.frameTime
+        bvhElem.clip.timeScale = (bvhElem.speedRatio * frameTimeReference_) / bvhElem.frameTime
         bvhElem.clip.update(bvhElem.frameTime)
         bvhElem.modifyTimeSlider() // TODO à faire marcher correctement
       }
@@ -170,6 +174,10 @@ class BVHAnimationElement {
     this.name = name_
     this.isPaused = false
     this.resumeAnimationValue = this.isPaused
+    this.speedRatio = 1
+
+    // Pause/Play
+    this.playPauseButton = $("#" + this.uuid + " .playPause")[0]
 
     // Time Slider
     console.log($("#" + this.uuid))
@@ -302,7 +310,6 @@ class BVHAnimationElement {
 
   /**
    * Remet l'animation de l'objet à la première frame
-   * Attention de penser à reset la time bar global si cet élément est le plus long
    */
   restart() {
     this.clip.setTime(0)

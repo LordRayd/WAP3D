@@ -31,7 +31,6 @@ function _setAllEventListener() {
 
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
-  $("#globalTimeSlider").on("change", event => inputEventManager.modifyGlobalTimeSliderAction(event))
 
   $("#fileSelector").one("change", event => {
     // TODO bloquer IEM
@@ -43,7 +42,6 @@ function _setAllEventListener() {
 function updateEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
-  $("#globalTimeSlider").on("change", event => inputEventManager.modifyGlobalTimeSliderAction(event))
 
   $("#fileSelector").one("change", event => {
     // TODO bloquer IEM
