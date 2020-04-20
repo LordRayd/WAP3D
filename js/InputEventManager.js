@@ -1,3 +1,6 @@
+/**
+ * Objet responsable de gérer l'ensemble des interactions au clavier ou à la souris
+ */
 class IEM {
   constructor(player, cameraControls) {
     this.player = player
@@ -6,7 +9,7 @@ class IEM {
   }
 
   /**
-   * Fonction appellée pour "ouvrir" la div de sélection d'élements
+   * Fonction appellée pour ouvrir la div de sélection d'élements
    */
   _openObjectListAction() {
 
@@ -49,7 +52,9 @@ class IEM {
     })
   }
 
-  /** TODO */
+  /** 
+   * @param {*} keyEvent La touche pressée
+   */
   keydownAction(keyEvent) {
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
@@ -70,7 +75,9 @@ class IEM {
     }
   }
 
-  /** TODO */
+  /** 
+   * @param {*} keyEvent La touche relachée
+   */
   keyupAction(keyEvent) {
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
@@ -88,32 +95,42 @@ class IEM {
     }
   }
 
-  /** TODO */
+  /** 
+   * Demande au Player de toggle entre pause et play
+   */
   //TODO à modifier pour être utilisé dans les listes
   clickOnGlobalPlayPauseAction() {
     this.playerAnimating = this.player.toggleAnimation()
   }
 
-  /** TODO */
+  /** 
+   * Demande au player de mettre toutes les animations à leur première frames
+   */
   //TODO à modifier pour être utilisé dans les listes
   clickOnGlobalReplayAction() {
     this.player.bvhAnimationsArray.setAllBvhFrame(0)
     this.player.restartAnimation()
   }
 
-  /** TODO */
+  /** 
+   * Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické
+   */
   clickOnPlayPauseAction(event) {
     let objectId = event.target.parentNode.parentNode.parentNode.id
     this.player.toggleObjectInListAnimation(objectId)
   }
 
-  /** TODO */
+  /** 
+   * Demande au player de mettre à la première frame l'animation correspondante à l'élément dans lequel le bouton replay à été clické
+   */
   clickOnReplayAction(event) {
     let objectId = event.target.parentNode.parentNode.parentNode.id
     this.player.replayObjectInListAnimation(objectId)
   }
 
-  /** TODO */
+  /** 
+   * Demande au player de mettre à la frame donnée l'animation correspondante au point clické dans le time slider 
+   */
   modifyTimeSliderAction(event){
     let newValue = event.currentTarget.valueAsNumber
     let objectId = event.target.parentNode.parentNode.id
@@ -121,12 +138,13 @@ class IEM {
     this.player.modifyObjectInListTimeSlider(objectId, newValue)
   }
 
-  /** TODO */
   modifyWindowSizeAction() {
     this.player.updateRendererSize()
   }
 
-  /** TODO*/
+  /** 
+   * Demande au player d'afficher la fenêtre de contrôle avancé qui agira sur l'ensemble d'élément séléctionné par l'utilisateur
+   */
   selectElementFromListAction(objectId_){
     //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
     // en gros le cas où on fait CTRL+clic / shift+Clic sur plusieurs éléments puis entré
