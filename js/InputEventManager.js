@@ -97,7 +97,7 @@ class IEM {
   /** TODO */
   //TODO à modifier pour être utilisé dans les listes
   clickOnGlobalReplayAction() {
-    this.player.bvhAnimationsArray.setAllBvhFrameTime(0)
+    this.player.bvhAnimationsArray.setAllBvhFrame(0)
     this.player.restartAnimation()
   }
 
