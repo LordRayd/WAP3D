@@ -55,8 +55,8 @@ class BVHAnimationArray extends Array {
     }
   }
 
-  /**TODO À RENOMMER ! ON NE CHANGE PAS DE FRAME TIME MAIS DE FRAME (tout court)*/
-  setAllBvhFrameTime(time) {
+  /** TODO */
+  setAllBvhTime(time) {
     this.forEach(bvh => {
       let newTime = bvh.nbFrames > time ? bvh.frameTime * time : bvh.frameTime * bvh.nbFrames
       bvh.clip.setTime(newTime)

@@ -110,7 +110,7 @@ class Player {
     $("#messagePlayer").hide()
 
     // Update par rapport au timer général actuel
-    this.bvhAnimationsArray.setAllBvhFrameTime(0)
+    this.bvhAnimationsArray.setAllBvhTime(0)
 
     updateEventListener()
 

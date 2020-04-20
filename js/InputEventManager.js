@@ -89,13 +89,13 @@ class IEM {
   }
 
   /** TODO */
-  //TODO à modifier pour être utilisé dans les listes
+  // TODO à modifier pour être utilisé dans les listes
   clickOnGlobalPlayPauseAction() {
     this.playerAnimating = this.player.toggleAnimation()
   }
 
   /** TODO */
-  //TODO à modifier pour être utilisé dans les listes
+  // TODO à modifier pour être utilisé dans les listes
   clickOnGlobalReplayAction() {
     this.player.bvhAnimationsArray.setAllBvhFrameTime(0)
     this.player.restartAnimation()
