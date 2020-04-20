@@ -90,11 +90,13 @@ class IEM {
   }
 
   /** TODO */
+  //TODO à modifier pour être utilisé dans les listes
   clickOnGlobalPlayPauseAction() {
     this.playerAnimating = this.player.toggleAnimation()
   }
 
   /** TODO */
+  //TODO à modifier pour être utilisé dans les listes
   clickOnGlobalReplayAction() {
     let generalSliderMin = this.globalTimeSlider.min
     this.globalTimeSlider.valueAsNumber = generalSliderMin
@@ -112,22 +114,6 @@ class IEM {
   clickOnReplayAction(event) {
     let objectId = event.target.parentNode.parentNode.parentNode.id
     this.player.replayObjectInListAnimation(objectId)
-  }
-
-  /** TODO */
-  modifyGlobalTimeSliderAction(event) {
-    console.log(event.currentTarget.valueAsNumber)
-    let currPlayingAnim = this.playerAnimating
-    if (currPlayingAnim == true) {
-      this.playerAnimating = this.player.toggleAnimation()
-    }
-
-    let currGeneralTimerValue = this.globalTimeSlider.valueAsNumber
-    this.player.bvhAnimationsArray.setAllBvhFrameTime(currGeneralTimerValue)
-
-    if (currPlayingAnim == true) {
-      this.playerAnimating = this.player.toggleAnimation()
-    }
   }
 
   /** TODO */
@@ -149,4 +135,4 @@ class IEM {
     // en gros le cas où on fait CTRL+clic / shift+Clic sur plusieurs éléments puis entré
     this.player.launchAdvancedControls(objectId_)
   }
-}
+} 

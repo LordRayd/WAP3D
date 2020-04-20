@@ -10,7 +10,6 @@ class Player {
     this.camera = camera
     this.cameraControls = cameraControls
     this.bvhAnimationsArray = bvhAnimationsArray
-    this.globalTimeSlider = $("#globalTimeSlider")[0]
     this.framerateTimeReference = -1
     this.currentScreenFrameTime = 0.01667
     this.bvhWithMaximumNbFrames = { nbFrames: 0 }
@@ -31,8 +30,6 @@ class Player {
    * Initialise le lecteur avec une grille de référence
    */
   _initialisePlayer() {
-    this.globalTimeSlider.min = 1
-    this.globalTimeSlider.valueAsNumber = this.globalTimeSlider.min
 
     this.renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
     $("#player").append(this.renderer.domElement)
@@ -82,21 +79,17 @@ class Player {
       //BVH---
       if (this.bvhLoader.loadingState === "loaded") {
         if (this.animationIsPaused == false) {
-          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.globalTimeSlider.valueAsNumber, this.currentScreenFrameTime) == true) {
+          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
             // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
             // this.bvhAnimationsArray.setAllBvhFrameTime(this.globalTimeSlider.valueAsNumber)
             // this.bvhWithMaximumNbFrames.clip.timeScale = this.currentScreenFrameTime / this.bvhWithMaximumNbFrames.frameTime
             this._updateFrameTime()
-            if (this.globalTimeSlider.max > this.globalTimeSlider.valueAsNumber) {
-              this.globalTimeSlider.valueAsNumber += this.bvhWithMaximumNbFrames.clip.timeScale;
-              //console.log(this.globalTimeSlider.valueAsNumber)
-            }
-            if (console.DEBUG_MODE == true) $("#messagePlayer").text(this.globalTimeSlider.valueAsNumber).show()
+
           } else {
             this._pauseAnimation()
           }
         } else {
-          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.globalTimeSlider.valueAsNumber, this.currentScreenFrameTime) == true) {
+          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
             this.animationIsPaused = false
             this._updateGeneralPlayPauseImg()
           }
@@ -119,10 +112,9 @@ class Player {
     $("#messagePlayer").hide()
 
     this.bvhWithMaximumNbFrames = this.bvhAnimationsArray.getByMaxNbOfFrames()
-    this.globalTimeSlider.max = this.bvhWithMaximumNbFrames.nbFrames
 
     // Update par rapport au timer général actuel
-    this.bvhAnimationsArray.setAllBvhFrameTime(this.globalTimeSlider.valueAsNumber)
+    this.bvhAnimationsArray.setAllBvhFrameTime(0)
 
     updateEventListener()
 
@@ -226,12 +218,14 @@ class Player {
     if (this.bvhAnimationsArray.contain(objectUuid_)) {
       //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
       //TODO ajouter comportement si page déjà ouverte
-      $("body").append('<div id="advencedControlForBVH" title="' + this.bvhAnimationsArray.getByUUID(objectUuid_).name + '"></div>')
+      $("body").append('<div id="advencedControlForBVH" title="' + this.bvhAnimationsArray.getByUUID(objectUuid_).name + "\t" + objectUuid_ + '"></div>')
 
-      //todo parcourir dynamiquement arbre de squelette pour pouvoir en faire des listes de liste intégrable dans la fenêtre
+      //TODO parcourir dynamiquement arbre de squelette pour pouvoir en faire des listes de liste intégrable dans la fenêtre
 
+      //TODO voir comment rajouter l'UUID plus bas dans la hiérarchie de l'élément
+      //pour effacer l'horreur de IEM.updateElementAnimationSpeed
       $("#advencedControlForBVH").append('\
-        <div id="advancedControlsTabsForBVH">\
+        <div id="advancedControlsTabsForBVH" data-uuid="'+objectUuid_+'">\
           <ul> \
             <li><a href="#graphs">Graphs</a></li>\
             <li><a href="#rendering">Rendering Options</a></li>\
@@ -259,6 +253,14 @@ class Player {
           </div>\
         </div>\
       ')
+
+      //ne marche pas car le passage entre deux frames ne prend pas les AnimationMixer en compte
+      $("#speedRatioSelector").change((object) => {
+        let uuid = object.target.parentNode.parentNode.parentNode.parentNode.getAttribute('data-uuid')
+        let newTimeScaleValue = object.target.valueAsNumber
+        console.log(newTimeScaleValue)
+        this.bvhAnimationsArray.getByUUID(uuid).clip.timeScale = newTimeScaleValue
+      })
 
       $("#advancedControlsTabsForBVH").tabs()
 
