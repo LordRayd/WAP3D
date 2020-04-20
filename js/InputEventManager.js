@@ -3,7 +3,6 @@ class IEM {
     this.player = player
     this.cameraControls = cameraControls
     this.playerAnimating = true
-    this.globalTimeSlider = $("#globalTimeSlider")[0]
   }
 
   /**
@@ -98,9 +97,7 @@ class IEM {
   /** TODO */
   //TODO à modifier pour être utilisé dans les listes
   clickOnGlobalReplayAction() {
-    let generalSliderMin = this.globalTimeSlider.min
-    this.globalTimeSlider.valueAsNumber = generalSliderMin
-    this.player.bvhAnimationsArray.setAllBvhFrameTime(generalSliderMin)
+    this.player.bvhAnimationsArray.setAllBvhFrameTime(0)
     this.player.restartAnimation()
   }
 

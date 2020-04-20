@@ -76,6 +76,7 @@ class BVHAnimationArray extends Array {
     this.forEach(bvhElem => {
       if(bvhElem.timeSlider.valueAsNumber >= bvhElem.nbFrames){
         bvhElem.isPaused = true
+        bvhElem._updatePlayPauseImg()
       }
 
       if (!bvhElem.isPaused) {
@@ -174,6 +175,9 @@ class BVHAnimationElement {
     this.isPaused = false
     this.resumeAnimationValue = this.isPaused
     this.speedRatio = 1
+
+    // Pause/Play
+    this.playPauseButton = $("#" + this.uuid + " .playPause")[0]
 
     // Time Slider
     console.log($("#" + this.uuid))
