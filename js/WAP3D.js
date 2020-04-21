@@ -110,7 +110,8 @@ class Player {
     $("#messagePlayer").hide()
 
     // Update par rapport au timer général actuel
-    this.bvhAnimationsArray.setAllBvhTime(0)
+
+    this.bvhAnimationsArray.setAllBvhFrame(0)
 
     updateEventListener()
 
@@ -133,7 +134,7 @@ class Player {
   /** TODO */
   _pauseAnimation() {
     this.animationIsPaused = true
-    this.bvhAnimationsArray.pauseAllAnimation()
+    this.bvhAnimationsArray.pauseAllAnimations()
     this._updateGeneralPlayPauseImg()
   }
 
@@ -145,7 +146,7 @@ class Player {
       this._pauseAnimation()
     }
 
-    this.bvhAnimationsArray.replayAllAnimation(!animationWasPlaying)
+    this.bvhAnimationsArray.replayAllAnimations(!animationWasPlaying)
 
     if (animationWasPlaying) {
       this.resumeAnimation()
@@ -155,7 +156,7 @@ class Player {
   /** TODO */
   resumeAnimation() {
     this.animationIsPaused = false
-    if (this.bvhAnimationsArray.resumeAllAnimation() == false) {
+    if (this.bvhAnimationsArray.resumeAllAnimations() == false) {
       this._playAnimation()
     } else {
       this._updateGeneralPlayPauseImg()
@@ -165,7 +166,7 @@ class Player {
   /** TODO */
   _playAnimation() {
     this.animationIsPaused = false
-    this.bvhAnimationsArray.playAllAnimation()
+    this.bvhAnimationsArray.playAllAnimations()
     this._updateGeneralPlayPauseImg()
   }
 
@@ -183,7 +184,7 @@ class Player {
 
   /** TODO */
   toggleObjectInListAnimation(objectUuid_) {
-    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.toggleOneBVHAnimation(objectUuid_)
     } else {
       //FBX
@@ -192,7 +193,7 @@ class Player {
 
   /** TODO */
   replayObjectInListAnimation(objectUuid_) {
-    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.replayOneBVHAnimation(objectUuid_)
     } else {
       //FBX
@@ -201,7 +202,7 @@ class Player {
 
   /** TODO */
   modifyObjectInListTimeSlider(objectUuid_, newValue) {
-    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
       console.log(arguments)
       this.bvhAnimationsArray.modifyOneBVHFTimeSlider(objectUuid_, newValue)
     } else {
@@ -211,7 +212,7 @@ class Player {
 
   /** TODO */
   launchAdvancedControls(objectUuid_) {
-    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
       //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
       //TODO ajouter comportement si page déjà ouverte
       $("body").append('<div id="advencedControlForBVH" title="' + this.bvhAnimationsArray.getByUUID(objectUuid_).name + "\t" + objectUuid_ + '"></div>')
