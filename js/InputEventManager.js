@@ -103,6 +103,7 @@ class IEM {
     this.playerAnimating = this.player.toggleAnimation()
   }
 
+
   /** 
    * Demande au player de mettre toutes les animations à leur première frames
    */
