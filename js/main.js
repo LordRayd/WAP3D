@@ -32,10 +32,7 @@ function _setAllEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
 
-  $("#fileSelector").one("change", event => {
-    // TODO bloquer IEM
-    player.bvhLoader.loadBVH(event, player.fileLoadedCallBack.bind(player))
-  })
+  $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 
 /** TODO */
@@ -43,10 +40,7 @@ function updateEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
 
-  $("#fileSelector").one("change", event => {
-    // TODO bloquer IEM
-    player.bvhLoader.loadBVH(event, player.fileLoadedCallBack.bind(player))
-  })
+  $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 
   $(".playPause").off("click")
   $(".replay").off("click")

@@ -20,35 +20,35 @@ class BVHLoader {
   /** Charge des fichier BVH et leur associe leur animation correspondante dans le lecteur
    * 
    * @param filesToLoadEvent : evenement lié au clic sur un bouton de chargeement de fichier
-   * @param callBack : fonction appele a la fin du chargement du/des fichier(s)
    */
-  async loadBVH(filesToLoadEvent, callBack) {
-    let files = filesToLoadEvent.currentTarget.files;
-    this.nbFileToLoad = files.length
-
-    if (this.nbFileToLoad === 0) {
-      throw new Error('No file is selected');
-    } else {
-      console.info('Start loading ', this.nbFileToLoad, ' files');
-      try {
-        this.loadingState = "loading"
-        $("#messagePlayer").text("Chargement en cours : " + this.nbFileToLoad + " fichiers.")
-
-        this.oldNbLoadedFiles = this.nbLoadedFiles // sauvegarde du nombre de ficheir déjà chargé
-
-        // Barre de chargement
-        this._savePlayerContext()
-        $("#control").replaceWith(this.progressBar)
-        this._updateProgressBar(0)
-
-        await this._readBvhFilesAsText(files, this.oldNbLoadedFiles)
-        this._restorePlayerContext()
-      } catch (error) {
-        throw new Error(error)
-      } finally {
-        callBack()
+  loadBVH(filesToLoadEvent) {
+    return new Promise(async (resolve, reject) => {
+      let files = filesToLoadEvent.currentTarget.files;
+      this.nbFileToLoad = files.length
+  
+      if (this.nbFileToLoad === 0) {
+        throw new Error('No file is selected');
+      } else {
+        console.info('Start loading ', this.nbFileToLoad, ' files');
+        try {
+          this.loadingState = "loading"
+          $("#messagePlayer").text("Chargement en cours : " + this.nbFileToLoad + " fichiers.")
+  
+          this.oldNbLoadedFiles = this.nbLoadedFiles // sauvegarde du nombre de ficheir déjà chargé
+  
+          // Barre de chargement
+          this._savePlayerContext()
+          $("#control").replaceWith(this.progressBar)
+          this._updateProgressBar(0)
+  
+          await this._readBvhFilesAsText(files, this.oldNbLoadedFiles)
+          this._restorePlayerContext()
+          resolve()
+        } catch (error) {
+          reject(error)
+        }
       }
-    }
+    })
   }
 
   /** Retourne une promesse qui parse un fichier BVH et l'ajoute à la liste des BVH

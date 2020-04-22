@@ -118,7 +118,6 @@ class BVHAnimationArray extends Array {
 
   /** TODO */
   modifyOneBVHFTimeSlider(objectUuid_, newValue) {
-    console.log(newValue)
     this.getByUUID(objectUuid_).modifyTimeSlider(newValue)
   }
 
@@ -180,7 +179,6 @@ class BVHAnimationElement {
     this.playPauseButton = $("#" + this.uuid + " .playPause")[0]
 
     // Time Slider
-    console.log($("#" + this.uuid))
     this.timeSlider = $("#" + this.uuid + " .timeSlider")[0]
     this.timeSlider.max = this.nbFrames
     this.timeSlider.min = 1
