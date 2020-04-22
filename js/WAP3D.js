@@ -67,7 +67,7 @@ class Player {
     this.currentScreenFrameTime = delta;
   }
 
-  /** TODO */
+  /** Animation des element dans le player */
   _animate() {
     if (this.bvhLoader.loadingState !== "loading") {
       requestAnimationFrame(this._animate.bind(this))
@@ -105,39 +105,66 @@ class Player {
     this.renderer.render(this.scene, this.camera)
   }
 
-  /** TODO */
+  /** Lance le chargement de fichier a partir d'un evenement de selectioner de fichier entre en parametre
+   * 
+   * @param event evenement de selection de fichier
+   */
+  loadFile(event, objectType) {
+    return new Promise(async(resolve, reject) => {
+      if (objectType.toLowerCase() == "bvh") {
+        try {
+          await this.bvhLoader.loadBVH(event)
+        } catch (error) {
+          alert(error)
+        } finally {
+          this.fileLoadedCallBack()
+        }
+        resolve()
+      } else if (objectType.toLowerCase() == "fbx") {
+        alert(objectType, "not implemented")
+      } else {
+        alert(objectType, "not implemented")
+      }
+    })
+  }
+
+  /** Callback appeler a la fin du chargement de fichier
+   *  Il permet de mettre à jour les listener manquant sur le player
+   *  L'animation est relancé à la fin de l'appel
+   */
   fileLoadedCallBack() {
     $("#messagePlayer").hide()
 
     // Update par rapport au timer général actuel
-    this.bvhAnimationsArray.setAllBvhFrameTime(0)
+
+    this.bvhAnimationsArray.setAllBvhTime(0)
 
     updateEventListener()
 
     requestAnimationFrame(this._animate.bind(this))
   }
 
-  /** TODO */
+  /** Met a jour la taille du lecteur en fonction de la taille courrante de la page web */
   updateRendererSize() {
     let player = $("#player")[0]
     this.renderer.setSize(player.offsetWidth, player.offsetHeight)
     this.camera.aspect = player.offsetWidth / player.offsetHeight
   }
 
-  /** TODO */
+  /** Lance l'animation si elle est nen pause. Met l'animation en pause sinon pour l'ensemble des element du player */
   toggleAnimation() {
     if (this.animationIsPaused) this.resumeAnimation()
     else this._pauseAnimation()
   }
 
-  /** TODO */
+  /** Met l'animation en pause pour l'ensemble des element du player */
   _pauseAnimation() {
     this.animationIsPaused = true
-    this.bvhAnimationsArray.pauseAllAnimation()
+    this.bvhAnimationsArray.pauseAllAnimations()
     this._updateGeneralPlayPauseImg()
   }
 
-  /** TODO */
+  /** Relance l'animation depuis le debut pour l'ensemble des element du player */
   restartAnimation() {
     let animationWasPlaying = false
     if (this.animationIsPaused == false) {
@@ -145,73 +172,85 @@ class Player {
       this._pauseAnimation()
     }
 
-    this.bvhAnimationsArray.replayAllAnimation(!animationWasPlaying)
+    this.bvhAnimationsArray.replayAllAnimations(!animationWasPlaying)
 
     if (animationWasPlaying) {
       this.resumeAnimation()
     }
   }
 
-  /** TODO */
+  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des element du player */
   resumeAnimation() {
     this.animationIsPaused = false
-    if (this.bvhAnimationsArray.resumeAllAnimation() == false) {
+    if (this.bvhAnimationsArray.resumeAllAnimations() == false) {
       this._playAnimation()
     } else {
       this._updateGeneralPlayPauseImg()
     }
   }
 
-  /** TODO */
+  /** Lance l'animation pour l'ensemble des element du player */
   _playAnimation() {
     this.animationIsPaused = false
-    this.bvhAnimationsArray.playAllAnimation()
+    this.bvhAnimationsArray.playAllAnimations()
     this._updateGeneralPlayPauseImg()
   }
 
-  /** TODO */
+  /** Passe de l'image de pause a celle de lecture si le player est en pause. Passe de lecture a pause si le player est en lecture */
   _updateGeneralPlayPauseImg() {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
-  /** TODO */
+  /** Lance l'animation si elle est nen pause. Met l'animation en pause sinon pour un element selectionner du player
+   * 
+   * @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   */
   toggleObjectInListAnimation(objectUuid_) {
-    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.toggleOneBVHAnimation(objectUuid_)
     } else {
       //FBX
     }
   }
 
-  /** TODO */
+  /** Relance l'animation depuis le debut pour un element selectionner du player
+   * 
+   * @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   */
   replayObjectInListAnimation(objectUuid_) {
-    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.replayOneBVHAnimation(objectUuid_)
     } else {
       //FBX
     }
   }
 
-  /** TODO */
+  /** Met a jour le time slider d'un element du player slectionner avec la nouvelle valeur entré en paramètre
+   * 
+   * @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   * @param newValue Nouvelle valeur du time slider
+   */
   modifyObjectInListTimeSlider(objectUuid_, newValue) {
-    if (this.bvhAnimationsArray.contain(objectUuid_)) {
-      console.log(arguments)
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.modifyOneBVHFTimeSlider(objectUuid_, newValue)
     } else {
       //FBX
     }
   }
 
-  /** TODO */
+  /** Ajoute une fenetre de controle avancé pour un ou plusieurs objects selectionner du player
+   * 
+   * @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   */
   launchAdvancedControls(objectUuid_) {
-    if (this.bvhAnimationsArray.contain(objectUuid_)) {
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
       //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
       //TODO ajouter comportement si page déjà ouverte
       $("body").append('<div id="advencedControlForBVH" title="' + this.bvhAnimationsArray.getByUUID(objectUuid_).name + "\t" + objectUuid_ + '"></div>')
@@ -221,7 +260,7 @@ class Player {
       //TODO voir comment rajouter l'UUID plus bas dans la hiérarchie de l'élément
       //pour effacer l'horreur de IEM.updateElementAnimationSpeed
       $("#advencedControlForBVH").append('\
-        <div id="advancedControlsTabsForBVH" data-uuid="'+objectUuid_+'">\
+        <div id="advancedControlsTabsForBVH" data-uuid="' + objectUuid_ + '">\
           <ul> \
             <li><a href="#graphs">Graphs</a></li>\
             <li><a href="#rendering">Rendering Options</a></li>\
@@ -254,7 +293,6 @@ class Player {
       $("#speedRatioSelector").change((object) => {
         let uuid = object.target.parentNode.parentNode.parentNode.parentNode.getAttribute('data-uuid')
         let newTimeScaleValue = object.target.valueAsNumber
-        console.log(newTimeScaleValue)
         this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
       })
 
@@ -272,12 +310,12 @@ class Player {
     }
   }
 
-  /** TODO */
+  /** Retourne le frame time de reference actuel s'il existe. Retourne la date courrante en miliseconde sinon. */
   get framerateTimeReference() {
     return this._framerateTimeReference == -1 ? Date.now() : this._framerateTimeReference
   }
 
-  /** TODO */
+  /**  */
   set framerateTimeReference(newFrameTimeRef) {
     this._framerateTimeReference = newFrameTimeRef
   }
