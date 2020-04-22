@@ -1,3 +1,6 @@
+/**
+ * Objet responsable de gérer l'ensemble des interactions au clavier ou à la souris
+ */
 class IEM {
   constructor(player, cameraControls) {
     this.player = player
@@ -8,7 +11,7 @@ class IEM {
   }
 
   /**
-   * Fonction appellée pour "ouvrir" la div de sélection d'élements
+   * Fonction appellée pour ouvrir la div de sélection d'élements
    */
   _openObjectListAction() {
     if (this.iemIsBlocked) return
@@ -51,7 +54,9 @@ class IEM {
     })
   }
 
-  /** TODO */
+  /** 
+   * @param {*} keyEvent La touche pressée
+   */
   keydownAction(keyEvent) {
     if (this.iemIsBlocked) return
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
@@ -73,7 +78,9 @@ class IEM {
     }
   }
 
-  /** TODO */
+  /** 
+   * @param {*} keyEvent La touche relachée
+   */
   keyupAction(keyEvent) {
     if (this.iemIsBlocked) return
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
@@ -92,29 +99,38 @@ class IEM {
     }
   }
 
-  /** TODO */
-  // TODO à modifier pour être utilisé dans les listes
+  /** 
+   * Demande au Player de toggle entre pause et play
+   */
+  //TODO à modifier pour être utilisé dans les listes
   clickOnGlobalPlayPauseAction() {
     if (this.iemIsBlocked) return
     this.playerAnimating = this.player.toggleAnimation()
   }
 
-  /** TODO */
-  // TODO à modifier pour être utilisé dans les listes
+
+  /** 
+   * Demande au player de mettre toutes les animations à leur première frames
+   */
+  //TODO à modifier pour être utilisé dans les listes
   clickOnGlobalReplayAction() {
     if (this.iemIsBlocked) return
-    this.player.bvhAnimationsArray.setAllBvhFrameTime(0)
+    this.player.bvhAnimationsArray.setAllBvhTime(0)
     this.player.restartAnimation()
   }
 
-  /** TODO */
+  /** 
+   * Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické
+   */
   clickOnPlayPauseAction(event) {
     if (this.iemIsBlocked) return
     let objectId = event.target.parentNode.parentNode.parentNode.id
     this.player.toggleObjectInListAnimation(objectId)
   }
 
-  /** TODO */
+  /** 
+   * Demande au player de mettre à la première frame l'animation correspondante à l'élément dans lequel le bouton replay à été clické
+   */
   clickOnReplayAction(event) {
     if (this.iemIsBlocked) return
     let objectId = event.target.parentNode.parentNode.parentNode.id
@@ -129,7 +145,6 @@ class IEM {
     this.player.modifyObjectInListTimeSlider(objectId, newValue)
   }
 
-  /** TODO */
   modifyWindowSizeAction() {
     if (this.iemIsBlocked) return
     this.player.updateRendererSize()

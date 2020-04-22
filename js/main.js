@@ -1,7 +1,9 @@
 const pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
 const playDiv = $('<div><img src="./images/play_button.svg"></div>')
 
-/** TODO */
+/** 
+ * Code exécuté après le chargement de WAP3D.html
+ */
 $(_ => {
   $("#listTabs").tabs()
 
@@ -20,7 +22,9 @@ $(_ => {
 let player
 let inputEventManager
 
-/** TODO */
+/** 
+ * Associe toutes les méthodes liés aux modes d'interactions avec les objets de la page
+ */
 function _setAllEventListener() {
   $(document).on("keydown", event => inputEventManager.keydownAction(event))
   $(document).on("keyup", event => inputEventManager.keyupAction(event))
@@ -35,7 +39,9 @@ function _setAllEventListener() {
   $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 
-/** TODO */
+/** 
+ * Associe ou réassocie les méthodes liés aux modes d'interactions avec les objets de la page
+ */
 function updateEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))

@@ -1,10 +1,10 @@
 /**
- * Simple outil agissant comme un array classique auquels des fonctionnalité utiles au problèmes liées aux BVH ont été greffé.
+ * Array avec des méthodes et attributs en plus dans le but de stocker et d'interagir avec une collection de BVH.
  */
 class BVHAnimationArray extends Array {
 
   /**
-   * Retire l'élément de uuid correspondant de l'objet
+   * Retire l'élément de uuid correspondant de la collection
    * @param {*} uuid_ 
    */
   removeByUUID(uuid_) {
@@ -15,19 +15,10 @@ class BVHAnimationArray extends Array {
         return true
       }
     })
-
-    /*
-    for (let index in this) {
-        if (this[index].getuuid() === uuid_) {
-            this.splice(index, 1)
-            return index
-        }
-    }
-    */
   }
 
   /**
-   * Retourne l'OBJET ayant le plus grand nombre de frames
+   * @returns {BVHAnimationElement} l'OBJET ayant le plus grand nombre de frames dans la collection
    */
   getByMaxNbOfFrames() {
     return this.reduce((bvh0, bvh1) => {
@@ -36,7 +27,7 @@ class BVHAnimationArray extends Array {
   }
 
   /**
-   * Retourne l'OBJET ayant l'animation la plus longue de la collection
+   * @returns {BVHAnimationElement} l'OBJET ayant l'animation la plus longue (en secondes) de la collection
    */
   getByMaxOverallTime() {
     return this.reduce((bvh0, bvh1) => {
@@ -45,7 +36,8 @@ class BVHAnimationArray extends Array {
   }
 
   /**
-   * renvoie l'élément avec le UUID correspondant
+   * @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
+   * @returns {BVHAnimationElement} l'élément correspondant au UUID donné si il existe
    */
   getByUUID(uuid_) {
     for (let elem of this) {
@@ -55,8 +47,12 @@ class BVHAnimationArray extends Array {
     }
   }
 
-  /** TODO */
-  setAllBvhTime(time) {
+  /**
+   * Set la frame numéro *time* comme frame courante pour tout les éléments de la collection.
+   * Si la frame cible donnée par *time* est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
+   * @param {Number} time L'index de frame souhaité
+   */
+  setAllBvhFrame(time) {
     this.forEach(bvh => {
       let newTime = bvh.nbFrames > time ? bvh.frameTime * time : bvh.frameTime * bvh.nbFrames
       bvh.clip.setTime(newTime)
@@ -64,34 +60,32 @@ class BVHAnimationArray extends Array {
   }
 
   /**
-   * Met à jour l'ensemble des bvh chargé dans le lecteur.
-   * Prend en compte pour chaque élément si il est mis en pause
-   * (TODO) et si il sont visible ou non
+   * Avance l'animation de chacun des éléments de la collection en fonction de si ils sont censé être mis en pause ou non.
    * 
-   * @param {*} frameTimeReference_ le frametime de référence du navigateur
+   * @param {Number} frameTimeReference_ Le frametime de observé du navigateur
+   * @returns {Boolean} True si au moins un élément de la collection n'était pas encore fini, False sinon
    */
   updateAllElementsAnimation(frameTimeReference_) {
-    //TODO
     let atLeastOneElementToAnimate = false
     this.forEach(bvhElem => {
-      if(bvhElem.timeSlider.valueAsNumber >= bvhElem.nbFrames){
+      if (bvhElem.timeSlider.valueAsNumber >= bvhElem.nbFrames) {
         bvhElem.isPaused = true
         bvhElem._updatePlayPauseImg()
       }
 
       if (!bvhElem.isPaused) {
         atLeastOneElementToAnimate = true
-          //TODO prise en compte de bvhElem.isVisible
-          //TODO prise en compte de la position du slider correspondant à bvhElem
         bvhElem.clip.timeScale = (bvhElem.speedRatio * frameTimeReference_) / bvhElem.frameTime
         bvhElem.clip.update(bvhElem.frameTime)
-        bvhElem.modifyTimeSlider() // TODO à faire marcher correctement
+        bvhElem.modifyTimeSlider() // TODO Régler le problème d'imprécision du slider
       }
     });
     return atLeastOneElementToAnimate
   }
 
-  /** TODO */
+  /** 
+   * Met à jour le mode de rendu de l'ensemble des éléments de la collections en fonctions de leurs propriétés
+   */
   updateAllElementsProperties() {
     this.forEach(bvhElem => {
       if (bvhElem.isVisible) bvhElem.show()
@@ -99,44 +93,56 @@ class BVHAnimationArray extends Array {
     })
   }
 
-  /** TODO */
-  contain(objectUuid_) {
+  /** 
+   * @param {UUID} objectUuid_ le UUID à rechercher
+   * @returns {Boolean} True si la collection contient un élément correspondant au UUID donné
+   */
+  contains(objectUuid_) {
     return this.some((bvh_) => {
       return bvh_.uuid == objectUuid_
     })
   }
 
-  /** TODO */
+  /** 
+   * Toggle la mise en pause de l'élément correspondant dans la collection
+   * @param {UUID} objectUuid_ Le UUID de l'élément de la collection
+   */
   toggleOneBVHAnimation(objectUuid_) {
     this.getByUUID(objectUuid_).toggleAnimation()
   }
 
-  /** TODO */
+  /** 
+   * Remet l'élément correspondant dans la collection à sa première frame.
+   * @param {UUID} objectUuid_ Le UUID de l'élément de la collection
+   */
   replayOneBVHAnimation(objectUuid_) {
     this.getByUUID(objectUuid_).replayAnimation()
   }
 
-  /** TODO */
+  /** 
+   * @param {UUID} objectUuid_ Le UUID de l'élément de la collection
+   * @param {Number} newValue L'index de frame souhaité
+   */
   modifyOneBVHFTimeSlider(objectUuid_, newValue) {
     this.getByUUID(objectUuid_).modifyTimeSlider(newValue)
   }
 
-  /** TODO */
-  pauseAllAnimation() {
+  pauseAllAnimations() {
     this.forEach((bvh) => {
       bvh.pauseAnimation()
     })
   }
 
-  /** TODO */
-  playAllAnimation() {
+  playAllAnimations() {
     this.forEach((bvh) => {
       bvh.playAnimation()
     })
   }
 
-  /** TODO */
-  resumeAllAnimation() {
+  /** 
+   * @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
+   */
+  resumeAllAnimations() {
     let atLeastOneAnimationToPlay = false
     this.forEach((bvh) => {
       if (bvh.resumeAnimation() == true) {
@@ -146,24 +152,28 @@ class BVHAnimationArray extends Array {
     return atLeastOneAnimationToPlay
   }
 
-  /** TODO */
-  replayAllAnimation(resetResumeAnim = false) {
+  /** 
+   * Remet à la frame 0 l'ensemble des éléments de la collection.
+   * @param {Boolean} resetResumeAnim si True alors les animations se rejouent, sinon ils restent à la frame 0 (False par défaut).
+   */
+  replayAllAnimations(resetResumeAnim = false) {
     this.forEach((bvh) => {
       bvh.replayAnimation(resetResumeAnim)
     })
   }
 }
 
-
+/**
+ * Objet contenant l'ensembles des données nécéssaires aux traitement
+ * d'un BVH.
+ * Utilisé dans BVHAnimationArray
+ */
 class BVHAnimationElement {
   /**
-   * Objet contenant l'ensembles des données nécéssaires aux traitement
-   * d'un BVH.
-   * Utilisé en tandeme avec l'objet BVHAnimationArray
-   * @param {*} name_ 
-   * @param {*} skeleton_ 
-   * @param {*} animationMixer_ 
-   * @param {*} bvhFile_ 
+   * @param {*} name_ Le nom du BVH
+   * @param {THREE.SkeletonHelper} skeleton_
+   * @param {THREE.AnimationMixer} animationMixer_ 
+   * @param {BVHParser} bvhFile_ 
    */
   constructor(name_, skeleton_, animationMixer_, bvhFile_) {
     this.skeleton = skeleton_
@@ -189,28 +199,28 @@ class BVHAnimationElement {
   }
 
   /**
-   * @return True si la checkbox de l'élément dans la page est coché, false sinon.
+   * @return True si la checkbox de visibilité pour cet élément est coché, false sinon.
    */
   get isVisible() {
     return $('#' + this.uuid + " .display").is(":checked")
   }
 
   /**
-   * @param value_ : si true alors la checkbox est coché, inverse sinon
+   * @param value_ : si true alors la checkbox sera coché, inverse sinon
    */
   set isVisible(value_) {
     $('#' + this.uuid + " .display").prop('checked', value_)
   }
 
   /**
-   * Désactive le rendu du BVH
+   * Rend le BVH invisible
    */
   hide() {
     this.skeleton.visible = false
   }
 
   /**
-   * Active le rendu du BVH
+   * Rend le BVH visible
    */
   show() {
     this.skeleton.visible = true
@@ -218,13 +228,13 @@ class BVHAnimationElement {
 
   /**
    * Active ou non le rendu des ombres de l'objet
-   * @param {*} value_ 
+   * NON implémenté
+   * @param {Boolean} value_ 
    */
   enableShadows(value_) {
     //TODO  le rendu de des ombres pour les bvh et les fbx peuvent être activé avec les attribut (dans leur attribut Object3D) castShadow: bool et .receiveShadow: bool
   }
 
-  /** TODO */
   toggleAnimation() {
     if (this.isPaused) this.playAnimation()
     else this.pauseAnimation()
@@ -232,26 +242,25 @@ class BVHAnimationElement {
     this._updatePlayPauseImg()
   }
 
-  /** TODO */
   playAnimation() {
     this.isPaused = false
     this._updatePlayPauseImg()
   }
 
-  /** TODO */
   pauseAnimation() {
     this.isPaused = true
     this._updatePlayPauseImg()
   }
 
-  /** TODO */
   resumeAnimation() {
     this.isPaused = this.resumeAnimationValue
     this._updatePlayPauseImg()
     return !this.isPaused
   }
 
-  /** TODO */
+  /** 
+   * @param {Boolean} resetResumeAnim si True alors l'animation se rejoue, sinon elle reste à la frame 0.
+   */
   replayAnimation(resetResumeAnim) {
     if (resetResumeAnim == true) this.resumeAnimationValue = false
     this.timeSlider.valueAsNumber = this.timeSlider.min
@@ -259,7 +268,7 @@ class BVHAnimationElement {
     this._updatePlayPauseImg()
   }
 
-  /** TODO */
+  /** méthode privée */
   _updatePlayPauseImg() {
     let img = $('#' + this.uuid + " .playPause")[0].lastChild
     if (this.isPaused) {
@@ -269,14 +278,10 @@ class BVHAnimationElement {
     }
   }
 
-  /**  
-   * @return True si le bouton play/pause est reglé sur paus, false sinon
-   */
   get isPaused() {
     return this._isPaused
   }
 
-  /** TODO */
   set isPaused(newValue) {
     if (newValue == false || newValue == true) {
       this._isPaused = newValue
@@ -286,30 +291,21 @@ class BVHAnimationElement {
   /**
    * TODO : regler le bug du time slider lors d'un clique sur celui-ci
    * 
-   * Si target n'est pas spécifié, incrémente la position;
-   * Sinon set la position à la valeur donnée par target
-   * @param {*} target 
+   * Si target n'est pas spécifié, incrémente la position du time slider;
+   * Sinon set la position du time slider à la valeur donnée par target
+   * @param {Number} target 
    */
   modifyTimeSlider(target) {
-    if (target){
-       this.timeSlider.valueAsNumber = target
-       this.clip.setTime(target)
-      }
-    else this.timeSlider.valueAsNumber += this.clip.timeScale
+    if (target) {
+      this.timeSlider.valueAsNumber = target
+      this.clip.setTime(target)
+    } else {
+      this.timeSlider.valueAsNumber += this.clip.timeScale
+    }
   }
 
-  /**
-   * Renvoie le uuid correspondant à l'objet.
-   * Il s'agit en réalité du uuid du skeleton lié à l'objet
-   */
   get uuid() {
     return this.skeleton.uuid
   }
 
-  /**
-   * Remet l'animation de l'objet à la première frame
-   */
-  restart() {
-    this.clip.setTime(0)
-  }
 }
