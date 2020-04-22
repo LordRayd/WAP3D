@@ -55,17 +55,29 @@ function updateEventListener() {
   $(".replay").on("click", event => inputEventManager.clickOnReplayAction(event))
   $(".timeSlider").on("change", event => inputEventManager.modifyTimeSliderAction(event))
 
+  // Sélection unique d'éléments de liste
   $(".objectList .list .object").off("dblclick")
   $(".objectList .list .object").on("dblclick", event => {
-    if (event.target !== this) {//l'élément ayant reçue le signal est un fils du div
-      if (event.target.className !== "timeSlider" && event.target.className !== "display"
-        && event.target.parentNode.className !== "playPause" && event.target.parentNode.className !== "replay") {
+    let target = event.target
+    if (target.tagName === "P") {
+      $(target.parentNode.parentNode).css("background-color", "darkgrey")
+      inputEventManager.openAdvancedControls([target.parentNode.parentNode.id])
+    }else if(target.className === "titleArea" || target.className === "controlFunctions"){
+      $(target.parentNode).css("background-color", "darkgrey")
+      inputEventManager.openAdvancedControls([target.parentNode.id])
+    }
+  })
 
-        inputEventManager.selectElementFromListAction(event.target.parentNode.parentNode.id)
-
-      }
-    } else {//le parent a directement reçu le signal
-      inputEventManager.selectElementFromListAction(event.id)
+  //Sélection multiple
+  $(".objectList .list .object").off("click")
+  $(".objectList .list .object").on("click", event => {
+    let target = event.target
+    if (target.tagName === "P") {
+      $(target.parentNode.parentNode).css("background-color", "darkgrey")
+      inputEventManager.selectElementFromListAction(target.parentNode.parentNode.id)
+    }else if(target.className === "titleArea" || target.className === "controlFunctions"){
+      $(target.parentNode).css("background-color", "darkgrey")
+      inputEventManager.selectElementFromListAction(target.parentNode.id)
     }
   })
 }
