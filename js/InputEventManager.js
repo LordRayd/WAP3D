@@ -122,7 +122,6 @@ class IEM {
     this.playerAnimating = this.player.toggleAnimation()
   }
 
-
   /** 
    * Demande au player de mettre toutes les animations à leur première frames
    */
@@ -131,6 +130,30 @@ class IEM {
     if (this.iemIsBlocked) return
     this.player.bvhAnimationsArray.setAllBvhTime(0)
     this.player.restartAnimation()
+  }
+
+  /**
+   * Demande au player de mettre en route tout les BVH
+   */
+  clickOnBVHListPlayAction(){
+    if (this.iemIsBlocked) return
+    this.player.playBVHAnimation()
+  }
+
+  /**
+   * Demande au player de mettre en pause tout les BVH
+   */
+  clickOnBVHListPauseAction(){
+    if (this.iemIsBlocked) return
+    this.player.pauseBVHAnimation()
+  }
+
+  /**
+   * Demande au player de relancer tout les BVH
+   */
+  clickOnBVHListReplayAction(){
+    if (this.iemIsBlocked) return
+    this.player.restartBVHAnimation(false)
   }
 
   /** 

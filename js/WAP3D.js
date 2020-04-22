@@ -185,17 +185,49 @@ class Player {
     this.camera.aspect = player.offsetWidth / player.offsetHeight
   }
 
-  /** Lance l'animation si elle est nen pause. Met l'animation en pause sinon pour l'ensemble des element du player */
+  /** Lance l'animation si elle est en pause. Met l'animation en pause sinon pour l'ensemble des element du player */
   toggleAnimation() {
     if (this.animationIsPaused) this.resumeAnimation()
     else this._pauseAnimation()
   }
 
+  /** Met l'animation en pause pour l'ensemble des BVH du player */
+  pauseBVHAnimation() {
+    this.bvhAnimationsArray.pauseAllAnimations()
+  }
+
+  /** 
+   * Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des BVH du player 
+   * @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
+   */
+  playBVHAnimation() {
+    return this.bvhAnimationsArray.playAllAnimations()
+  }
+
+  /**
+   * Relance l'animation depuis le debut pour l'ensemble des element du player
+   * @param {Boolean} animationWasPLaying_ si True l'animation continue de jouer.
+   */
+  restartBVHAnimation(animationWasPLaying_){
+    this.bvhAnimationsArray.replayAllAnimations(animationWasPLaying_)
+  }
+
   /** Met l'animation en pause pour l'ensemble des element du player */
   _pauseAnimation() {
     this.animationIsPaused = true
-    this.bvhAnimationsArray.pauseAllAnimations()
+    this.pauseBVHAnimation()
     this._updateGeneralPlayPauseImg()
+  }
+
+  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des element du player */
+  resumeAnimation() {
+    //TODO gérer FBX
+    this.animationIsPaused = false
+    if (this.bvhAnimationsArray.resumeAllAnimations() == false) {
+      this._playAnimation()
+    } else {
+      this._updateGeneralPlayPauseImg()
+    }
   }
 
   /** Relance l'animation depuis le debut pour l'ensemble des element du player */
@@ -206,20 +238,10 @@ class Player {
       this._pauseAnimation()
     }
 
-    this.bvhAnimationsArray.replayAllAnimations(!animationWasPlaying)
+    this.restartBVHAnimation(!animationWasPlaying)
 
     if (animationWasPlaying) {
       this.resumeAnimation()
-    }
-  }
-
-  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des element du player */
-  resumeAnimation() {
-    this.animationIsPaused = false
-    if (this.bvhAnimationsArray.resumeAllAnimations() == false) {
-      this._playAnimation()
-    } else {
-      this._updateGeneralPlayPauseImg()
     }
   }
 

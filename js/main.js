@@ -36,6 +36,11 @@ function _setAllEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
 
+  $("#BVHListPlay").on("click", event => inputEventManager.clickOnBVHListPlayAction())
+  $("#BVHListPause").on("click", event => inputEventManager.clickOnBVHListPauseAction())
+  $("#BVHListReplay").on("click", event => inputEventManager.clickOnBVHListReplayAction())
+  //TODO rajouter action pour la checkbox
+
   $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 
