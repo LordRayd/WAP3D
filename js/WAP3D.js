@@ -279,7 +279,27 @@ class Player {
     }
   }
 
-  /** TODO */
+  /**
+   * Supprime les éléments correspondants à leurs animationArray, du player et des listes graphique.
+   * @param {UUID} objectUuids_ Set des UUID correspondant aux éléments à supprimer
+   */
+  deleteObjectsFromPlayer(objectUuids_){
+    objectUuids_.forEach((uuid) =>{
+      if(this.bvhAnimationsArray.contains(uuid)){
+        this.scene.remove(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
+        this.bvhAnimationsArray.removeByUUID(uuid)
+        $("#" + uuid).remove()
+      }else{
+        //FBX if ...
+      }
+    })
+  }
+
+  /**
+   * Lance la fenêtre de contrôle avancé qui agira sur l'ensemble des éléments correspondants aux UUIDs donnés
+   * Attention ne pas l'utiliser en hétérogène avec des BVH et des FBX
+   * @param {UUID} objectUuids_ 
+   */
   launchAdvancedControls(objectUuids_) {
     if ($("#advencedControlForBVH").length == 0) {
       let arrayClone = [...objectUuids_] //cast de set en array ou simple clone d'array

@@ -82,6 +82,9 @@ class IEM {
       case 'ENTER':
         this.openAdvancedControls(this.currentlySelectedElements)
         break
+      case 'DELETE':
+        this.player.deleteObjectsFromPlayer(this.currentlySelectedElements)
+        break
 
     }
   }
