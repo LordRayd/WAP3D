@@ -48,13 +48,13 @@ class BVHAnimationArray extends Array {
   }
 
   /**
-   * Set la frame numéro *time* comme frame courante pour tout les éléments de la collection.
+   * Set la frame entree en parametre comme frame courante pour tout les éléments de la collection.
    * Si la frame cible donnée par *time* est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
-   * @param {Number} time L'index de frame souhaité
+   * @param {Number} frame L'index de frame souhaité
    */
-  setAllBvhFrame(time) {
+  setAllBvhTime(frame) {
     this.forEach(bvh => {
-      let newTime = bvh.nbFrames > time ? bvh.frameTime * time : bvh.frameTime * bvh.nbFrames
+      let newTime = bvh.nbFrames > frame ? bvh.frameTime * frame : bvh.frameTime * bvh.nbFrames
       bvh.clip.setTime(newTime)
     });
   }
