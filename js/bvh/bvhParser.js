@@ -11,7 +11,7 @@ class BVHParser {
     }
   }
 
-  /** Permet de lire le bvh ligne par ligne
+  /** Permet la lecture d'un bvh ligne par ligne
    *  Chaque categorie fait appel a une fonction pour parser et recuperer les informations de cette categorie
    * 
    * categorie : 
