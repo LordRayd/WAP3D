@@ -77,10 +77,10 @@ class IEM {
         break
       case "CONTROL":
         //selection ctrl avancés
-        this.isOnAppendSelectionMode = true 
+        this.isOnAppendSelectionMode = true
         break
       case 'ENTER':
-        this.openAdvancedControls(this.currentlySelectedElements)
+        if (this.currentlySelectedElements.size > 0) this.openAdvancedControls(this.currentlySelectedElements)
         break
       case 'DELETE':
         this.player.deleteObjectsFromPlayer(this.currentlySelectedElements)
@@ -135,7 +135,7 @@ class IEM {
   /**
    * Demande au player de mettre en route tout les BVH
    */
-  clickOnBVHListPlayAction(){
+  clickOnBVHListPlayAction() {
     if (this.iemIsBlocked) return
     this.player.playBVHAnimation()
   }
@@ -143,7 +143,7 @@ class IEM {
   /**
    * Demande au player de mettre en pause tout les BVH
    */
-  clickOnBVHListPauseAction(){
+  clickOnBVHListPauseAction() {
     if (this.iemIsBlocked) return
     this.player.pauseBVHAnimation()
   }
@@ -151,7 +151,7 @@ class IEM {
   /**
    * Demande au player de relancer tout les BVH
    */
-  clickOnBVHListReplayAction(){
+  clickOnBVHListReplayAction() {
     if (this.iemIsBlocked) return
     this.player.restartBVHAnimation(false)
   }
@@ -174,7 +174,9 @@ class IEM {
     this.player.replayObjectInListAnimation(objectId)
   }
 
-  /** TODO */
+  /** 
+   * Demande au player de mettre à la frame correspondante l'animation correspondante à l'élément dans lequel le time slider à été clické
+   */
   modifyTimeSliderAction(event) {
     if (this.iemIsBlocked) return
     let newValue = event.currentTarget.valueAsNumber
@@ -191,22 +193,23 @@ class IEM {
    * Appelé pour rajouter des éléments à la liste des éléments modifiable par la fenêtre de ctrl avancés
    * @param {UUID} objectId_
    */
-  selectElementFromListAction(objectId_){
-    //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
-    // en gros le cas où on fait CTRL+clic / shift+Clic sur plusieurs éléments puis entré
-    //envoyer la liste des éléments sélectionné
-    if(this.isOnAppendSelectionMode){
+  selectElementFromListAction(objectId_) {
+    if (this.isOnAppendSelectionMode) {
       $("#" + objectId_).css("background-color", "darkgrey")
       this.currentlySelectedElements.add(objectId_)
-    }else{
-      this.currentlySelectedElements.forEach((uuid) =>{
+    } else {
+      this.currentlySelectedElements.forEach((uuid) => {
         $("#" + uuid).css("background-color", "white")
       })
-      this.currentlySelectedElements.clear()
-      $("#" + objectId_).css("background-color", "darkgrey")
-      this.currentlySelectedElements.add(objectId_)
+      if (!this.currentlySelectedElements.has(objectId_)) {
+        this.currentlySelectedElements.clear()
+        $("#" + objectId_).css("background-color", "darkgrey")
+        this.currentlySelectedElements.add(objectId_)
+      } else {
+        this.currentlySelectedElements.clear()
+      }
     }
-    console.log(this.isOnAppendSelectionMode)
+    this.player.bvhAnimationsArray.highlightElements(this.currentlySelectedElements)
     console.log(this.currentlySelectedElements)
   }
 
@@ -215,10 +218,10 @@ class IEM {
    * normalement appelé pour un "enter" ou un "dblClick"
    * @param {UUID} objectId_
    */
-  openAdvancedControls(objectId_){
-    if(objectId_){
+  openAdvancedControls(objectId_) {
+    if (objectId_) {
       this.player.launchAdvancedControls(objectId_)
-    }else{
+    } else {
       this.player.launchAdvancedControls(this.currentlySelectedElements)
     }
   }

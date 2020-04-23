@@ -161,6 +161,37 @@ class BVHAnimationArray extends Array {
       bvh.replayAnimation(resetResumeAnim)
     })
   }
+
+  /**
+   * Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+   * @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
+   */
+  highlightElements(Uuids_) {
+    let amount
+    if(Uuids_){
+      if(Uuids_.constructor.name === "Set") {
+          amount = Uuids_.size
+      }else{
+        amount = Uuids_.length
+      }
+    }else{
+      amount = 0
+    }
+    
+    if(amount > 0){
+      this.forEach((elem) => {
+        elem.opacity = 0.3
+      })
+
+      Uuids_.forEach((uuid) => {
+        this.getByUUID(uuid).opacity = 1.0
+      })
+    }else{
+      this.forEach((elem) => {
+        elem.opacity = 1.0
+      })
+    }
+  }
 }
 
 /**
@@ -210,6 +241,21 @@ class BVHAnimationElement {
    */
   set isVisible(value_) {
     $('#' + this.uuid + " .display").prop('checked', value_)
+  }
+
+  /**
+   * L'opacité de l'élément, compris entre 0 et 1
+   */
+  get opacity() {
+    return this.skeleton.material.opacity
+  }
+
+  /**
+   * L'opacité de l'élément, compris entre 0 et 1
+   * @param {Number} 
+   */
+  set opacity(value_) {
+    this.skeleton.material.opacity = value_
   }
 
   /**

@@ -352,6 +352,7 @@ class Player {
             })
             $("#advencedControlForBVH").empty()
             $("#advencedControlForBVH").remove()
+            this.bvhAnimationsArray.highlightElements()
           }
         })
 
