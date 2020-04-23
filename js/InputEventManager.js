@@ -6,15 +6,15 @@ class IEM {
     this.player = player
     this.cameraControls = cameraControls
     this.playerAnimating = true
-
-    this.iemIsBlocked = false
+    this.currentlySelectedElements = new Set()
+    this.isOnAppendSelectionMode = false
   }
 
   /**
    * Fonction appellée pour ouvrir la div de sélection d'élements
    */
   _openObjectListAction() {
-    if (this.iemIsBlocked) return
+
     $("#objectSelector").animate({ width: '30%', marginRight: '1%' }, {
       duration: 100
     })
@@ -36,7 +36,7 @@ class IEM {
    * Fonction appellée pour minimiser la div de sélection d'élements
    */
   closeObjectListAction() {
-    if (this.iemIsBlocked) return
+
     $("#objectSelector").animate({ width: '2%', marginRight: '0.5%' }, {
       duration: 100
     })
@@ -58,7 +58,6 @@ class IEM {
    * @param {*} keyEvent La touche pressée
    */
   keydownAction(keyEvent) {
-    if (this.iemIsBlocked) return
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
       case "Z":
@@ -68,13 +67,22 @@ class IEM {
         // Déjà utiliser par le déplacement de la caméra
         break
       case " ":
-        this.clickOnPlayAction()
+        this.clickOnGlobalPlayPauseAction()
         break
       case "SHIFT":
+        //player
         this.cameraControls.screenSpacePanning = true
         this.cameraControls.keys.UP = 90 // Z
         this.cameraControls.keys.BOTTOM = 83 // S
         break
+      case "CONTROL":
+        //selection ctrl avancés
+        this.isOnAppendSelectionMode = true 
+        break
+      case 'ENTER':
+        this.openAdvancedControls(this.currentlySelectedElements)
+        break
+
     }
   }
 
@@ -82,7 +90,6 @@ class IEM {
    * @param {*} keyEvent La touche relachée
    */
   keyupAction(keyEvent) {
-    if (this.iemIsBlocked) return
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
       case "Z":
@@ -95,6 +102,10 @@ class IEM {
         this.cameraControls.screenSpacePanning = false
         this.cameraControls.keys.UP = 90 // Z
         this.cameraControls.keys.BOTTOM = 83 // S
+        break
+      case "CONTROL":
+        //selection ctrls avancés
+        this.isOnAppendSelectionMode = false
         break
     }
   }
@@ -150,12 +161,40 @@ class IEM {
     this.player.updateRendererSize()
   }
 
-  /** TODO*/
-  selectElementFromListAction(objectId_) {
-    if (this.iemIsBlocked) return
+  /** 
+   * Appelé pour rajouter des éléments à la liste des éléments modifiable par la fenêtre de ctrl avancés
+   * @param {UUID} objectId_
+   */
+  selectElementFromListAction(objectId_){
     //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
     // en gros le cas où on fait CTRL+clic / shift+Clic sur plusieurs éléments puis entré
-    this.player.launchAdvancedControls(objectId_)
+    //envoyer la liste des éléments sélectionné
+    if(this.isOnAppendSelectionMode){
+      $("#" + objectId_).css("background-color", "darkgrey")
+      this.currentlySelectedElements.add(objectId_)
+    }else{
+      this.currentlySelectedElements.forEach((uuid) =>{
+        $("#" + uuid).css("background-color", "white")
+      })
+      this.currentlySelectedElements.clear()
+      $("#" + objectId_).css("background-color", "darkgrey")
+      this.currentlySelectedElements.add(objectId_)
+    }
+    console.log(this.isOnAppendSelectionMode)
+    console.log(this.currentlySelectedElements)
+  }
+
+  /**
+   * Appelé pour lancer la fenêtre de contrôles avancés
+   * normalement appelé pour un "enter" ou un "dblClick"
+   * @param {UUID} objectId_
+   */
+  openAdvancedControls(objectId_){
+    if(objectId_){
+      this.player.launchAdvancedControls(objectId_)
+    }else{
+      this.player.launchAdvancedControls(this.currentlySelectedElements)
+    }
   }
 
   /** TODO */
@@ -166,4 +205,4 @@ class IEM {
       this.iemIsBlocked = false
     )
   }
-}
+} 
