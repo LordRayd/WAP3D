@@ -1,8 +1,7 @@
 class Player {
 
-  /**
-   * Joue les animations quand elles existent
-   * Initialise les interactions à la souris et au clavier
+  /** Joue les animations quand elles existent
+   *  Initialise les interactions à la souris et au clavier
    */
   constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray) {
     this.scene = scene
@@ -59,9 +58,7 @@ class Player {
 
   }
 
-  /**
-   * Initialise le lecteur avec une grille de référence
-   */
+  /** Initialise le lecteur avec une grille de référence */
   _initialisePlayer() {
 
     this.renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
@@ -90,9 +87,8 @@ class Player {
     }
   }
 
-  /**
-   * Permet de récupérer le frame time du navigateur en secondes
-   * Estimation approximative à l'instant T
+  /** Permet de récupérer le frame time du navigateur en secondes
+   *  Estimation approximative à l'instant T
    */
   _updateFrameTime() {
     let currDateTime = Date.now()
