@@ -9,7 +9,7 @@ $(_ => {
 
   let scene = new THREE.Scene()
   let renderer = new THREE.WebGLRenderer({ antialias: true })
-  let camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 1000)
+  let camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 2000)
   let cameraControls = new THREE.OrbitControls(camera, renderer.domElement)
   let bvhAnimationsArray = new BVHAnimationArray()
 
@@ -35,6 +35,11 @@ function _setAllEventListener() {
 
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
+
+  $("#BVHListPlay").on("click", event => inputEventManager.clickOnBVHListPlayAction())
+  $("#BVHListPause").on("click", event => inputEventManager.clickOnBVHListPauseAction())
+  $("#BVHListReplay").on("click", event => inputEventManager.clickOnBVHListReplayAction())
+  //TODO rajouter action pour la checkbox
 
   $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }

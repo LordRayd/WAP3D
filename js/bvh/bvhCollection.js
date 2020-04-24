@@ -157,6 +157,37 @@ class BVHAnimationArray extends Array {
       bvh.replayAnimation(resetResumeAnim)
     })
   }
+
+  /**
+   * Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+   * @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
+   */
+  highlightElements(Uuids_) {
+    let amount
+    if (Uuids_) {
+      if (Uuids_.constructor.name === "Set") {
+        amount = Uuids_.size
+      } else {
+        amount = Uuids_.length
+      }
+    } else {
+      amount = 0
+    }
+
+    if (amount > 0) {
+      this.forEach((elem) => {
+        elem.opacity = 0.3
+      })
+
+      Uuids_.forEach((uuid) => {
+        this.getByUUID(uuid).opacity = 1.0
+      })
+    } else {
+      this.forEach((elem) => {
+        elem.opacity = 1.0
+      })
+    }
+  }
 }
 
 /** Objet contenant l'ensembles des données nécéssaires aux traitement d'un BVH.
@@ -171,6 +202,8 @@ class BVHAnimationElement {
    */
   constructor(name_, skeleton_, animationMixer_, bvhFile_) {
     this.skeleton = skeleton_
+    this.skeleton.receiveShadow = true
+    this.skeleton.castShadow = true
     this.clip = animationMixer_
     this.frameTime = bvhFile_.getFrameTime()
     this.nbFrames = bvhFile_.getNbFrames()
@@ -207,6 +240,19 @@ class BVHAnimationElement {
     $('#' + this.uuid + " .display").prop('checked', value_)
   }
 
+  /** L'opacité de l'élément, compris entre 0 et 1 */
+  get opacity() {
+    return this.skeleton.material.opacity
+  }
+
+  /** L'opacité de l'élément, compris entre 0 et 1
+   * 
+   *  @param {Number} 
+   */
+  set opacity(value_) {
+    this.skeleton.material.opacity = value_
+  }
+
   /** Rend le BVH invisible */
   hide() {
     this.skeleton.visible = false
@@ -217,13 +263,16 @@ class BVHAnimationElement {
     this.skeleton.visible = true
   }
 
-  /** Active ou non le rendu des ombres de l'objet
-   *  TODO NON implémenté
-   * 
-   *  @param {Boolean} value_ 
+  /** Si true alors le bvh produit des ombres */
+  get shadowEnabled() {
+    return this.skeleton.castShadow
+  }
+
+  /**
+   * @param {Boolean} value_ Si true alors le bvh produit des ombres
    */
-  enableShadows(value_) {
-    //TODO  le rendu de des ombres pour les bvh et les fbx peuvent être activé avec les attribut (dans leur attribut Object3D) castShadow: bool et .receiveShadow: bool
+  set shadowEnabled(value_) {
+    this.skeleton.castShadow = value_
   }
 
   /**  */
