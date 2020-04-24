@@ -71,7 +71,25 @@ class Player {
     this.camera.position.z = initialCameraPosition
     this.camera.position.y = initialCameraPosition
 
-    this.scene.add(new THREE.GridHelper(1000, 50))
+    //Éclairage
+    this.renderer.shadowMap.enabled = true
+    this.renderer.shadowMap.renderSingleSided = false; // permet d'avoir des accumulation d'ombres
+    let minimumLight = new THREE.AmbientLight(0xffffff, 0.5)
+    this.scene.add(minimumLight)
+    let mainLight = new THREE.SpotLight(0xffffff, 0.5, 0)
+    mainLight.position.set(0,450,0)
+    mainLight.castShadow = true
+    mainLight.shadow.mapSize.height = 2048
+    mainLight.shadow.mapSize.width = 2048
+    this.scene.add(mainLight)
+    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+
+    //Plan de présentation
+    let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
+    plane.rotateX(-Math.PI / 2)
+    plane.receiveShadow = true
+    plane.castShadow = true
+    this.scene.add(plane)
 
     this.cameraControls.enableKeys = true
     this.cameraControls.rotateSpeed = 0.3
@@ -144,7 +162,7 @@ class Player {
    * @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (objectType.toLowerCase() == "bvh") {
         try {
           await this.bvhLoader.loadBVH(event)
@@ -208,7 +226,7 @@ class Player {
    * Relance l'animation depuis le debut pour l'ensemble des element du player
    * @param {Boolean} animationWasPLaying_ si True l'animation continue de jouer.
    */
-  restartBVHAnimation(animationWasPLaying_){
+  restartBVHAnimation(animationWasPLaying_) {
     this.bvhAnimationsArray.replayAllAnimations(animationWasPLaying_)
   }
 
@@ -305,13 +323,13 @@ class Player {
    * Supprime les éléments correspondants à leurs animationArray, du player et des listes graphique.
    * @param {UUID} objectUuids_ Set des UUID correspondant aux éléments à supprimer
    */
-  deleteObjectsFromPlayer(objectUuids_){
-    objectUuids_.forEach((uuid) =>{
-      if(this.bvhAnimationsArray.contains(uuid)){
+  deleteObjectsFromPlayer(objectUuids_) {
+    objectUuids_.forEach((uuid) => {
+      if (this.bvhAnimationsArray.contains(uuid)) {
         this.scene.remove(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
         this.bvhAnimationsArray.removeByUUID(uuid)
         $("#" + uuid).remove()
-      }else{
+      } else {
         //FBX if ...
       }
     })
@@ -347,7 +365,7 @@ class Player {
           height: 480,
           width: 640,
           close: (event, ui) => {
-            arrayClone.forEach((uuid) =>{
+            arrayClone.forEach((uuid) => {
               $("#" + uuid).css("background-color", "white")
             })
             $("#advencedControlForBVH").empty()

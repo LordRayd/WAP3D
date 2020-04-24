@@ -9,7 +9,7 @@ $(_ => {
 
   let scene = new THREE.Scene()
   let renderer = new THREE.WebGLRenderer({ antialias: true })
-  let camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 1000)
+  let camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 2000)
   let cameraControls = new THREE.OrbitControls(camera, renderer.domElement)
   let bvhAnimationsArray = new BVHAnimationArray()
 

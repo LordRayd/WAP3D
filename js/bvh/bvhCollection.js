@@ -208,6 +208,8 @@ class BVHAnimationElement {
    */
   constructor(name_, skeleton_, animationMixer_, bvhFile_) {
     this.skeleton = skeleton_
+    this.skeleton.receiveShadow = true
+    this.skeleton.castShadow = true
     this.clip = animationMixer_
     this.frameTime = bvhFile_.getFrameTime()
     this.nbFrames = bvhFile_.getNbFrames()
@@ -272,13 +274,14 @@ class BVHAnimationElement {
     this.skeleton.visible = true
   }
 
-  /**
-   * Active ou non le rendu des ombres de l'objet
-   * NON implémenté
-   * @param {Boolean} value_ 
-   */
-  enableShadows(value_) {
-    //TODO  le rendu de des ombres pour les bvh et les fbx peuvent être activé avec les attribut (dans leur attribut Object3D) castShadow: bool et .receiveShadow: bool
+  /** Si true alors le bvh produit des ombres */
+  get shadowEnabled(){
+    return this.skeleton.castShadow
+  }
+
+  /** @param {Boolean} value_ Si true alors le bvh produit des ombres */
+  set shadowEnabled(value_){
+    this.skeleton.castShadow = value_
   }
 
   toggleAnimation() {
