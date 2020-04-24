@@ -16,6 +16,7 @@ class Player {
 
     /** TODO */
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
+    this.fbxLoader = new FbxLoader(this.scene);
 
     /** TODO */
     this.animating = true
@@ -169,7 +170,13 @@ class Player {
         }
         resolve()
       } else if (objectType.toLowerCase() == "fbx") {
-        alert(objectType, "not implemented")
+        try {
+          await this.fbxLoader.loadFbxModel()
+        } catch (error) {
+          alert(error)
+        } finally {
+          this.fileLoadedCallBack()
+        }
       } else {
         alert(objectType, "not implemented")
       }
