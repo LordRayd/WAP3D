@@ -77,7 +77,7 @@ class Player {
     let minimumLight = new THREE.AmbientLight(0xffffff, 0.5)
     this.scene.add(minimumLight)
     let mainLight = new THREE.SpotLight(0xffffff, 0.5, 0)
-    mainLight.position.set(0,450,0)
+    mainLight.position.set(0, 450, 0)
     mainLight.castShadow = true
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
@@ -335,6 +335,25 @@ class Player {
     })
   }
 
+  /**Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
+   * @param {THREE.Skeleton}
+   * @returns {String} le squelette sous forme de liste de liste HTML
+  */
+  _browseThroughBVHSkeleton(skeleton_) {
+    let recursiveNavigation = (object) => {
+      let result = ""
+      object.children.forEach((obj) => {
+        if (!(obj.name === "ENDSITE")) {
+          if (obj.children[0] === "ENDSITE") result = result + "<li><p>" + obj.name + "</p></li>"
+          else result = result + "<li><p>" + obj.name + "</p><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
+        }
+      })
+      return result
+    }
+
+    return "<p>" + skeleton_.bones[0].name+ "</p><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+  }
+
   /**
    * Lance la fenêtre de contrôle avancé qui agira sur l'ensemble des éléments correspondants aux UUIDs donnés
    * Attention ne pas l'utiliser en hétérogène avec des BVH et des FBX
@@ -357,6 +376,13 @@ class Player {
           arrayClone.forEach((uuid) => {
             this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
           })
+        })
+
+        arrayClone.forEach((uuid) => {
+          let hierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
+          console.log(hierarchyString)
+          $("#advencedControlForBVH #graphs").append(hierarchyString)
+          $("#advencedControlForBVH #selection").append(hierarchyString)
         })
 
         $("#advancedControlsTabsForBVH").tabs()
