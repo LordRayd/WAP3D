@@ -171,11 +171,11 @@ class Player {
         resolve()
       } else if (objectType.toLowerCase() == "fbx") {
         try {
-          await this.fbxLoader.loadFbxModel()
+          await this.fbxLoader.loadFBX(event);
         } catch (error) {
-          alert(error)
+          alert(error);
         } finally {
-          this.fileLoadedCallBack()
+          this.fileLoadedCallBack();
         }
       } else {
         alert(objectType, "not implemented")
