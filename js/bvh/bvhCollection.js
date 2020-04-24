@@ -3,9 +3,8 @@
  */
 class BVHAnimationArray extends Array {
 
-  /**
-   * Retire l'élément de uuid correspondant de la collection
-   * @param {*} uuid_ 
+  /** Retire l'élément de uuid correspondant de la collection
+   *  @param {*} uuid_ 
    */
   removeByUUID(uuid_) {
     this.some((bvhAnimationElem, index) => {
@@ -17,27 +16,22 @@ class BVHAnimationArray extends Array {
     })
   }
 
-  /**
-   * @returns {BVHAnimationElement} l'OBJET ayant le plus grand nombre de frames dans la collection
-   */
+  /** @returns {BVHAnimationElement} l'OBJET ayant le plus grand nombre de frames dans la collection */
   getByMaxNbOfFrames() {
     return this.reduce((bvh0, bvh1) => {
       return bvh0.nbFrames < bvh1.nbFrames ? bvh1 : bvh0
     })
   }
 
-  /**
-   * @returns {BVHAnimationElement} l'OBJET ayant l'animation la plus longue (en secondes) de la collection
-   */
+  /** @returns {BVHAnimationElement} l'OBJET ayant l'animation la plus longue (en secondes) de la collection */
   getByMaxOverallTime() {
     return this.reduce((bvh0, bvh1) => {
       return (bvh0.nbFrames * bvh0.frameTime) < (bvh1.nbFrames * bvh1.frameTime) ? bvh1 : bvh0
     })
   }
 
-  /**
-   * @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
-   * @returns {BVHAnimationElement} l'élément correspondant au UUID donné si il existe
+  /** @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
+   *  @returns {BVHAnimationElement} l'élément correspondant au UUID donné si il existe
    */
   getByUUID(uuid_) {
     for (let elem of this) {
@@ -47,10 +41,10 @@ class BVHAnimationArray extends Array {
     }
   }
 
-  /**
-   * Set la frame entree en parametre comme frame courante pour tout les éléments de la collection.
-   * Si la frame cible donnée par *time* est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
-   * @param {Number} frame L'index de frame souhaité
+  /** Set la frame entree en parametre comme frame courante pour tout les éléments de la collection.
+   *  Si la frame cible donnée par *time* est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
+   *  
+   *  @param {Number} frame L'index de frame souhaité
    */
   setAllBvhTime(frame) {
     this.forEach(bvh => {
@@ -59,11 +53,10 @@ class BVHAnimationArray extends Array {
     });
   }
 
-  /**
-   * Avance l'animation de chacun des éléments de la collection en fonction de si ils sont censé être mis en pause ou non.
+  /** Avance l'animation de chacun des éléments de la collection en fonction de si ils sont censé être mis en pause ou non.
    * 
-   * @param {Number} frameTimeReference_ Le frametime de observé du navigateur
-   * @returns {Boolean} True si au moins un élément de la collection n'était pas encore fini, False sinon
+   *  @param {Number} frameTimeReference_ Le frametime de observé du navigateur
+   *  @returns {Boolean} True si au moins un élément de la collection n'était pas encore fini, False sinon
    */
   updateAllElementsAnimation(frameTimeReference_) {
     let atLeastOneElementToAnimate = false
@@ -83,9 +76,7 @@ class BVHAnimationArray extends Array {
     return atLeastOneElementToAnimate
   }
 
-  /** 
-   * Met à jour le mode de rendu de l'ensemble des éléments de la collections en fonctions de leurs propriétés
-   */
+  /** Met à jour le mode de rendu de l'ensemble des éléments de la collections en fonctions de leurs propriétés */
   updateAllElementsProperties() {
     this.forEach(bvhElem => {
       if (bvhElem.isVisible) bvhElem.show()
@@ -93,8 +84,10 @@ class BVHAnimationArray extends Array {
     })
   }
 
-  /** 
+  /** Retourne si l'object entré en paramaetre est présent o non dans la liste. 
+   * 
    * @param {UUID} objectUuid_ le UUID à rechercher
+   * 
    * @returns {Boolean} True si la collection contient un élément correspondant au UUID donné
    */
   contains(objectUuid_) {
@@ -103,36 +96,39 @@ class BVHAnimationArray extends Array {
     })
   }
 
-  /** 
-   * Toggle la mise en pause de l'élément correspondant dans la collection
-   * @param {UUID} objectUuid_ Le UUID de l'élément de la collection
+  /** Met en pause lelement entré en parametre s'il est en lecture, le met en lecture sinon.
+   * 
+   *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
    */
   toggleOneBVHAnimation(objectUuid_) {
     this.getByUUID(objectUuid_).toggleAnimation()
   }
 
-  /** 
-   * Remet l'élément correspondant dans la collection à sa première frame.
-   * @param {UUID} objectUuid_ Le UUID de l'élément de la collection
+  /** Replace un élément entré en paramètre à sa première frame.
+   * 
+   *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
    */
   replayOneBVHAnimation(objectUuid_) {
     this.getByUUID(objectUuid_).replayAnimation()
   }
 
-  /** 
-   * @param {UUID} objectUuid_ Le UUID de l'élément de la collection
-   * @param {Number} newValue L'index de frame souhaité
+  /** Modifie le time slider d'un object avec sa nouvelle valeur
+   *  
+   *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
+   *  @param {Number} newValue L'index de frame souhaité
    */
   modifyOneBVHFTimeSlider(objectUuid_, newValue) {
     this.getByUUID(objectUuid_).modifyTimeSlider(newValue)
   }
 
+  /**  */
   pauseAllAnimations() {
     this.forEach((bvh) => {
       bvh.pauseAnimation()
     })
   }
 
+  /**  */
   playAllAnimations() {
     this.forEach((bvh) => {
       bvh.playAnimation()
@@ -140,7 +136,7 @@ class BVHAnimationArray extends Array {
   }
 
   /** 
-   * @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
+   *  @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
    */
   resumeAllAnimations() {
     let atLeastOneAnimationToPlay = false
@@ -152,8 +148,8 @@ class BVHAnimationArray extends Array {
     return atLeastOneAnimationToPlay
   }
 
-  /** 
-   * Remet à la frame 0 l'ensemble des éléments de la collection.
+  /** Replace l'ensemble des éléments de la collection à leur première frame.
+   * 
    * @param {Boolean} resetResumeAnim si True alors les animations se rejouent, sinon ils restent à la frame 0 (False par défaut).
    */
   replayAllAnimations(resetResumeAnim = false) {
@@ -161,22 +157,53 @@ class BVHAnimationArray extends Array {
       bvh.replayAnimation(resetResumeAnim)
     })
   }
+
+  /**
+   * Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+   * @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
+   */
+  highlightElements(Uuids_) {
+    let amount
+    if (Uuids_) {
+      if (Uuids_.constructor.name === "Set") {
+        amount = Uuids_.size
+      } else {
+        amount = Uuids_.length
+      }
+    } else {
+      amount = 0
+    }
+
+    if (amount > 0) {
+      this.forEach((elem) => {
+        elem.opacity = 0.3
+      })
+
+      Uuids_.forEach((uuid) => {
+        this.getByUUID(uuid).opacity = 1.0
+      })
+    } else {
+      this.forEach((elem) => {
+        elem.opacity = 1.0
+      })
+    }
+  }
 }
 
-/**
- * Objet contenant l'ensembles des données nécéssaires aux traitement
- * d'un BVH.
- * Utilisé dans BVHAnimationArray
+/** Objet contenant l'ensembles des données nécéssaires aux traitement d'un BVH.
+ *  Utilisé dans BVHAnimationArray
  */
 class BVHAnimationElement {
   /**
-   * @param {*} name_ Le nom du BVH
-   * @param {THREE.SkeletonHelper} skeleton_
-   * @param {THREE.AnimationMixer} animationMixer_ 
-   * @param {BVHParser} bvhFile_ 
+   *  @param {*} name_ Le nom du BVH
+   *  @param {THREE.SkeletonHelper} skeleton_
+   *  @param {THREE.AnimationMixer} animationMixer_ 
+   *  @param {BVHParser} bvhFile_ 
    */
   constructor(name_, skeleton_, animationMixer_, bvhFile_) {
     this.skeleton = skeleton_
+    this.skeleton.receiveShadow = true
+    this.skeleton.castShadow = true
     this.clip = animationMixer_
     this.frameTime = bvhFile_.getFrameTime()
     this.nbFrames = bvhFile_.getNbFrames()
@@ -198,43 +225,57 @@ class BVHAnimationElement {
     this.isVisible = true
   }
 
-  /**
+  /** Renvoie si l'object est visible ou non.
+   * 
    * @return True si la checkbox de visibilité pour cet élément est coché, false sinon.
    */
   get isVisible() {
     return $('#' + this.uuid + " .display").is(":checked")
   }
 
-  /**
-   * @param value_ : si true alors la checkbox sera coché, inverse sinon
+  /** 
+   *  @param value_ : si true alors la checkbox sera coché, inverse sinon
    */
   set isVisible(value_) {
     $('#' + this.uuid + " .display").prop('checked', value_)
   }
 
-  /**
-   * Rend le BVH invisible
+  /** L'opacité de l'élément, compris entre 0 et 1 */
+  get opacity() {
+    return this.skeleton.material.opacity
+  }
+
+  /** L'opacité de l'élément, compris entre 0 et 1
+   * 
+   *  @param {Number} 
    */
+  set opacity(value_) {
+    this.skeleton.material.opacity = value_
+  }
+
+  /** Rend le BVH invisible */
   hide() {
     this.skeleton.visible = false
   }
 
-  /**
-   * Rend le BVH visible
-   */
+  /** Rend le BVH visible */
   show() {
     this.skeleton.visible = true
   }
 
-  /**
-   * Active ou non le rendu des ombres de l'objet
-   * NON implémenté
-   * @param {Boolean} value_ 
-   */
-  enableShadows(value_) {
-    //TODO  le rendu de des ombres pour les bvh et les fbx peuvent être activé avec les attribut (dans leur attribut Object3D) castShadow: bool et .receiveShadow: bool
+  /** Si true alors le bvh produit des ombres */
+  get shadowEnabled() {
+    return this.skeleton.castShadow
   }
 
+  /**
+   * @param {Boolean} value_ Si true alors le bvh produit des ombres
+   */
+  set shadowEnabled(value_) {
+    this.skeleton.castShadow = value_
+  }
+
+  /**  */
   toggleAnimation() {
     if (this.isPaused) this.playAnimation()
     else this.pauseAnimation()
@@ -242,24 +283,28 @@ class BVHAnimationElement {
     this._updatePlayPauseImg()
   }
 
+  /**  */
   playAnimation() {
     this.isPaused = false
     this._updatePlayPauseImg()
   }
 
+  /**  */
   pauseAnimation() {
     this.isPaused = true
     this._updatePlayPauseImg()
   }
 
+  /**  */
   resumeAnimation() {
     this.isPaused = this.resumeAnimationValue
     this._updatePlayPauseImg()
     return !this.isPaused
   }
 
-  /** 
-   * @param {Boolean} resetResumeAnim si True alors l'animation se rejoue, sinon elle reste à la frame 0.
+  /** Replace le timeSlider du BVH au début et rejoue ou non lanimation en fonction du paramètre
+   * 
+   *  @param {Boolean} resetResumeAnim True si l'animation se rejoue, False si l'animation reste en pause.
    */
   replayAnimation(resetResumeAnim) {
     if (resetResumeAnim == true) this.resumeAnimationValue = false
@@ -268,7 +313,11 @@ class BVHAnimationElement {
     this._updatePlayPauseImg()
   }
 
-  /** méthode privée */
+  /** Met a jour l'image du bouton playPause
+   *  
+   *  Met l'image de pause si l'object passe en lecture
+   *  Met l'image de lecture si l'object passe en pause
+   */
   _updatePlayPauseImg() {
     let img = $('#' + this.uuid + " .playPause")[0].lastChild
     if (this.isPaused) {
@@ -278,21 +327,23 @@ class BVHAnimationElement {
     }
   }
 
+  /** Retourne si le BVH est en pause ou non */
   get isPaused() {
     return this._isPaused
   }
 
+  /**  */
   set isPaused(newValue) {
     if (newValue == false || newValue == true) {
       this._isPaused = newValue
     }
   }
 
-  /**
-   * TODO : regler le bug du time slider lors d'un clique sur celui-ci
+  /** TODO : regler le bug du time slider lors d'un clique sur celui-ci
    * 
-   * Si target n'est pas spécifié, incrémente la position du time slider;
-   * Sinon set la position du time slider à la valeur donnée par target
+   *  Si target n'est pas spécifié, incrémente la position du time slider;
+   *  Sinon set la position du time slider à la valeur donnée par target
+   *  
    * @param {Number} target 
    */
   modifyTimeSlider(target) {
@@ -304,8 +355,8 @@ class BVHAnimationElement {
     }
   }
 
+  /** Retourne l'uuid du BVH */
   get uuid() {
     return this.skeleton.uuid
   }
-
 }

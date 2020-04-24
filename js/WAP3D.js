@@ -1,8 +1,7 @@
 class Player {
 
-  /**
-   * Joue les animations quand elles existent
-   * Initialise les interactions à la souris et au clavier
+  /** Joue les animations quand elles existent
+   *  Initialise les interactions à la souris et au clavier
    */
   constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray) {
     this.scene = scene
@@ -23,11 +22,43 @@ class Player {
     this.animationIsPaused = true
 
     this._animate()
+
+
+    //contenu de la fenêtre de contrôles avancés
+    this.bvhAdvancedCtrlContent = '\
+      <div id="advancedControlsTabsForBVH">\
+        <ul> \
+          <li><a href="#graphs">Graphs</a></li>\
+          <li><a href="#rendering">Rendering Options</a></li>\
+          <li><a href="#selection">Display Selection</a></li>\
+        </ul>\
+        <div id="graphs">\
+        </div>\
+        <div id="rendering">\
+          <ul>\
+            <li><input id="speedRatioSelector" type="number" step="0.25"></li>\
+            <li>\
+              <label for="orthoEnabled"> Affichage d\'un repère orthonormé pour chaque articulation</label>\
+              <input type="checkbox" name="orthoEnabled" id="orthoEnabled">\
+            </li>\
+            <li>\
+              <p> Rendering mode: </p>\
+              <label for="WireFrame">WireFrame</label>\
+              <input type="radio" id="renderModeWireFrame" name="renderMode" value="WireFrame"><br>\
+              <label for="Cubic">Cubic</label>\
+              <input type="radio" id="renderModeCubic" name="renderMode" value="Cubic"><br>\
+            </li>\
+          </ul>\
+        </div>\
+        <div id="selection">\
+        </div>\
+      </div>\
+    ';
+
+
   }
 
-  /**
-   * Initialise le lecteur avec une grille de référence
-   */
+  /** Initialise le lecteur avec une grille de référence */
   _initialisePlayer() {
 
     this.renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
@@ -37,7 +68,25 @@ class Player {
     this.camera.position.z = initialCameraPosition
     this.camera.position.y = initialCameraPosition
 
-    this.scene.add(new THREE.GridHelper(1000, 50))
+    //Éclairage
+    this.renderer.shadowMap.enabled = true
+    this.renderer.shadowMap.renderSingleSided = false; // permet d'avoir des accumulation d'ombres
+    let minimumLight = new THREE.AmbientLight(0xffffff, 0.5)
+    this.scene.add(minimumLight)
+    let mainLight = new THREE.SpotLight(0xffffff, 0.5, 0)
+    mainLight.position.set(0,450,0)
+    mainLight.castShadow = true
+    mainLight.shadow.mapSize.height = 2048
+    mainLight.shadow.mapSize.width = 2048
+    this.scene.add(mainLight)
+    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+
+    //Plan de présentation
+    let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
+    plane.rotateX(-Math.PI / 2)
+    plane.receiveShadow = true
+    plane.castShadow = true
+    this.scene.add(plane)
 
     this.cameraControls.enableKeys = true
     this.cameraControls.rotateSpeed = 0.3
@@ -56,9 +105,8 @@ class Player {
     }
   }
 
-  /**
-   * Permet de récupérer le frame time du navigateur en secondes
-   * Estimation approximative à l'instant T
+  /** Permet de récupérer le frame time du navigateur en secondes
+   *  Estimation approximative à l'instant T
    */
   _updateFrameTime() {
     let currDateTime = Date.now()
@@ -110,7 +158,7 @@ class Player {
    * @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (objectType.toLowerCase() == "bvh") {
         try {
           await this.bvhLoader.loadBVH(event)
@@ -151,17 +199,49 @@ class Player {
     this.camera.aspect = player.offsetWidth / player.offsetHeight
   }
 
-  /** Lance l'animation si elle est nen pause. Met l'animation en pause sinon pour l'ensemble des element du player */
+  /** Lance l'animation si elle est en pause. Met l'animation en pause sinon pour l'ensemble des element du player */
   toggleAnimation() {
     if (this.animationIsPaused) this.resumeAnimation()
     else this._pauseAnimation()
   }
 
+  /** Met l'animation en pause pour l'ensemble des BVH du player */
+  pauseBVHAnimation() {
+    this.bvhAnimationsArray.pauseAllAnimations()
+  }
+
+  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des BVH du player 
+   *
+   *  @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
+   */
+  playBVHAnimation() {
+    return this.bvhAnimationsArray.playAllAnimations()
+  }
+
+  /** Relance l'animation depuis le debut pour l'ensemble des element du player
+   * 
+   *  @param {Boolean} animationWasPLaying_ si True l'animation continue de jouer.
+   */
+  restartBVHAnimation(animationWasPLaying_) {
+    this.bvhAnimationsArray.replayAllAnimations(animationWasPLaying_)
+  }
+
   /** Met l'animation en pause pour l'ensemble des element du player */
   _pauseAnimation() {
     this.animationIsPaused = true
-    this.bvhAnimationsArray.pauseAllAnimations()
+    this.pauseBVHAnimation()
     this._updateGeneralPlayPauseImg()
+  }
+
+  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des element du player */
+  resumeAnimation() {
+    //TODO gérer FBX
+    this.animationIsPaused = false
+    if (this.bvhAnimationsArray.resumeAllAnimations() == false) {
+      this._playAnimation()
+    } else {
+      this._updateGeneralPlayPauseImg()
+    }
   }
 
   /** Relance l'animation depuis le debut pour l'ensemble des element du player */
@@ -172,20 +252,10 @@ class Player {
       this._pauseAnimation()
     }
 
-    this.bvhAnimationsArray.replayAllAnimations(!animationWasPlaying)
+    this.restartBVHAnimation(!animationWasPlaying)
 
     if (animationWasPlaying) {
       this.resumeAnimation()
-    }
-  }
-
-  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des element du player */
-  resumeAnimation() {
-    this.animationIsPaused = false
-    if (this.bvhAnimationsArray.resumeAllAnimations() == false) {
-      this._playAnimation()
-    } else {
-      this._updateGeneralPlayPauseImg()
     }
   }
 
@@ -201,10 +271,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -245,68 +315,64 @@ class Player {
     }
   }
 
-  /** Ajoute une fenetre de controle avancé pour un ou plusieurs objects selectionner du player
-   * 
-   * @param objectUuid_ Identifiant de l'object selectionner dans la scene
+  /**
+   * Supprime les éléments correspondants à leurs animationArray, du player et des listes graphique.
+   * @param {UUID} objectUuids_ Set des UUID correspondant aux éléments à supprimer
    */
-  launchAdvancedControls(objectUuid_) {
-    if (this.bvhAnimationsArray.contains(objectUuid_)) {
-      //TODO prendre en compte si plusieurs éléments sont selectionné pour les contrôles avancés
-      //TODO ajouter comportement si page déjà ouverte
-      $("body").append('<div id="advencedControlForBVH" title="' + this.bvhAnimationsArray.getByUUID(objectUuid_).name + "\t" + objectUuid_ + '"></div>')
+  deleteObjectsFromPlayer(objectUuids_) {
+    objectUuids_.forEach((uuid) => {
+      if (this.bvhAnimationsArray.contains(uuid)) {
+        this.scene.remove(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
+        this.bvhAnimationsArray.removeByUUID(uuid)
+        $("#" + uuid).remove()
+      } else {
+        //FBX if ...
+      }
+    })
+  }
 
-      //TODO parcourir dynamiquement arbre de squelette pour pouvoir en faire des listes de liste intégrable dans la fenêtre
+  /**
+   * Lance la fenêtre de contrôle avancé qui agira sur l'ensemble des éléments correspondants aux UUIDs donnés
+   * Attention ne pas l'utiliser en hétérogène avec des BVH et des FBX
+   * @param {UUID} objectUuids_ 
+   */
+  launchAdvancedControls(objectUuids_) {
+    if ($("#advencedControlForBVH").length == 0) {
+      let arrayClone = [...objectUuids_] //cast de set en array ou simple clone d'array
+      console.log(arrayClone)
+      if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
+        if (arrayClone.length == 1) $("body").append('<div id="advencedControlForBVH" title="Advanced Controls"></div>')
+        else $("body").append('<div id="advencedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
 
-      //TODO voir comment rajouter l'UUID plus bas dans la hiérarchie de l'élément
-      //pour effacer l'horreur de IEM.updateElementAnimationSpeed
-      $("#advencedControlForBVH").append('\
-        <div id="advancedControlsTabsForBVH" data-uuid="' + objectUuid_ + '">\
-          <ul> \
-            <li><a href="#graphs">Graphs</a></li>\
-            <li><a href="#rendering">Rendering Options</a></li>\
-            <li><a href="#selection">Display Selection</a></li>\
-          </ul>\
-          <div id="graphs">\
-          </div>\
-          <div id="rendering">\
-            <ul>\
-              <li><input id="speedRatioSelector" type="number" step="0.25"></li>\
-              <li>\
-                <label for="orthoEnabled"> Affichage d\'un repère orthonormé pour chaque articulation</label>\
-                <input type="checkbox" name="orthoEnabled" id="orthoEnabled">\
-              </li>\
-              <li>\
-                <p> Rendering mode: </p>\
-                <label for="WireFrame">WireFrame</label>\
-                <input type="radio" id="renderModeWireFrame" name="renderMode" value="WireFrame"><br>\
-                <label for="Cubic">Cubic</label>\
-                <input type="radio" id="renderModeCubic" name="renderMode" value="Cubic"><br>\
-              </li>\
-            </ul>\
-          </div>\
-          <div id="selection">\
-          </div>\
-        </div>\
-      ')
+        //todo remettre éléments
+        $("#advencedControlForBVH").append(this.bvhAdvancedCtrlContent)
 
-      //ne marche pas car le passage entre deux frames ne prend pas les AnimationMixer en compte
-      $("#speedRatioSelector").change((object) => {
-        let uuid = object.target.parentNode.parentNode.parentNode.parentNode.getAttribute('data-uuid')
-        let newTimeScaleValue = object.target.valueAsNumber
-        this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
-      })
+        $("#speedRatioSelector").change((object) => {
+          let newTimeScaleValue = object.target.valueAsNumber
+          console.log(newTimeScaleValue)
+          arrayClone.forEach((uuid) => {
+            this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
+          })
+        })
 
-      $("#advancedControlsTabsForBVH").tabs()
+        $("#advancedControlsTabsForBVH").tabs()
 
-      $("#advencedControlForBVH").dialog({
-        height: 480,
-        width: 640,
-        close: (event, ui) => {
-          $("#advencedControlForBVH").remove()
-        }
-      })
-    } else {
-      //FBX
+        $("#advencedControlForBVH").dialog({
+          height: 480,
+          width: 640,
+          close: (event, ui) => {
+            arrayClone.forEach((uuid) => {
+              $("#" + uuid).css("background-color", "white")
+            })
+            $("#advencedControlForBVH").empty()
+            $("#advencedControlForBVH").remove()
+            this.bvhAnimationsArray.highlightElements()
+          }
+        })
+
+      }
+    } else { //if arrayClone.every((value) => this.fbxAnimationsArray.contains(value)) ...
+      //FBX ----
     }
   }
 

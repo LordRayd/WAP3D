@@ -29,7 +29,7 @@ img {
 
 #listTabs{
     width: 90%;
-    height: 90%;
+    height: 96%;
     margin-left: 2%;
     margin-top: 2%;
 }
@@ -45,16 +45,26 @@ img {
     padding-left: 0%;
 }
 
-/*.objectList div.title{
+.objectList div.title{
     width: 100%;
-    height: 10%;
-    background-color: green;
+    height: 7%;
+    background-color: #007fff;
     color: white;
-}*/
+}
+.objectList div.title div{
+    float: left;
+    width: 9%;
+    height: 90%;
+}
+.objectList div.title input{
+    float: left;
+    width: 9%;
+    height: 90%;
+}
 
 .objectList div.list{
     width: 100%;
-    height: 90%;
+    height: 84%;
     overflow-y: scroll;
 }
 
@@ -66,7 +76,7 @@ img {
     border-color: black;
 }
 .objectList div.list .object:hover{
-    background-color: gray;
+    background-color: lightgray;
 }
 .objectList div.list .object .titleArea{
     float: left;
