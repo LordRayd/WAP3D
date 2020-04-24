@@ -27,7 +27,7 @@ class BVHLoader {
       this.nbFileToLoad = files.length
   
       if (this.nbFileToLoad === 0) {
-        throw new Error('No file is selected');
+        reject(new Error('No file is selected'))
       } else {
         console.info('Start loading ', this.nbFileToLoad, ' files');
         try {

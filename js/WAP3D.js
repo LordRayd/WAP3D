@@ -210,17 +210,17 @@ class Player {
     this.bvhAnimationsArray.pauseAllAnimations()
   }
 
-  /** 
-   * Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des BVH du player 
-   * @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
+  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des BVH du player 
+   *
+   *  @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
    */
   playBVHAnimation() {
     return this.bvhAnimationsArray.playAllAnimations()
   }
 
-  /**
-   * Relance l'animation depuis le debut pour l'ensemble des element du player
-   * @param {Boolean} animationWasPLaying_ si True l'animation continue de jouer.
+  /** Relance l'animation depuis le debut pour l'ensemble des element du player
+   * 
+   *  @param {Boolean} animationWasPLaying_ si True l'animation continue de jouer.
    */
   restartBVHAnimation(animationWasPLaying_) {
     this.bvhAnimationsArray.replayAllAnimations(animationWasPLaying_)
