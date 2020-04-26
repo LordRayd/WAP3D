@@ -39,7 +39,7 @@ function _setAllEventListener() {
   $("#BVHListPlay").on("click", event => inputEventManager.clickOnBVHListPlayAction())
   $("#BVHListPause").on("click", event => inputEventManager.clickOnBVHListPauseAction())
   $("#BVHListReplay").on("click", event => inputEventManager.clickOnBVHListReplayAction())
-  //TODO rajouter action pour la checkbox
+  $("#BVHListdisplay").on("click", event => inputEventManager.clickOnBVHListdisplayAction())
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
