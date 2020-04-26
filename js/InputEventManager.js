@@ -182,14 +182,17 @@ class IEM {
    */
   selectElementFromListAction(event) {
     let target = event.target
-    console.log(target.tagName)
-    let object = null
+    let object = undefined
     if (target.tagName === "P") {
       object = target.parentNode.parentNode
-    } else if (target.className === "titleArea" || target.className === "controlFunctions") {
+    } else if (target.className === "titleArea") {
       object = target.parentNode
     }
     $(object).css("background-color", "darkgrey")
+
+    console.log(typeof object)
+
+    if (typeof object === "undefined") {return}
 
     if (this.isOnAppendSelectionMode) {
       $("#" + object.id).css("background-color", "darkgrey")
