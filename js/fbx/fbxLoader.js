@@ -7,6 +7,7 @@ class FbxLoader {
         this.scene = scene;
     }
 
+    /** TODO */
     loadFbxModel() {
         var loader = new THREE.FBXLoader();
         var scene = this.scene;

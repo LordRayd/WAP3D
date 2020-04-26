@@ -41,8 +41,7 @@ function _setAllEventListener() {
   $("#BVHListReplay").on("click", event => inputEventManager.clickOnBVHListReplayAction())
   //TODO rajouter action pour la checkbox
 
-  $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
-  $("#fileSelectorFbx").one("change", event => inputEventManager.fileSelectedAction(event))
+  $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 
 /** 
@@ -52,8 +51,8 @@ function updateEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
 
-  $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
-  $("#fileSelectorFbx").one("change", event => inputEventManager.fileSelectedAction(event))
+  $(".fileSelector").off("change")
+  $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 
   $(".playPause").off("click")
   $(".replay").off("click")
