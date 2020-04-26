@@ -143,9 +143,12 @@ class IEM {
     this.player.restartBVHAnimation(false)
   }
 
-  /**  */
-  clickOnBVHListdisplayAction(event) {
-
+  /** Demande au player de toggle la visibilité de tout les BVH */
+  toggleBVHListVisibilityCheckboxAction(event) {
+    if (this.iemIsBlocked) return
+    let isChecked = $(event.target).is(":checked")
+    this.player.toggleBVHVisibility(isChecked)
+    $("#bvhList .list .object .controlFunctions .display").prop('checked', isChecked)
   }
 
   /** Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické */
@@ -170,6 +173,13 @@ class IEM {
     this.player.modifyObjectInListTimeSlider(objectId, newValue)
   }
 
+  /** Demande au player de toggle la visibilité de l'élément correspondant */
+  toggleVisibilityCheckboxAction(event) {
+    if (this.iemIsBlocked) return
+    let objectId = event.target.parentNode.parentNode.id
+    this.player.toggleObjectInListVisibility(objectId, $(event.target).is(":checked"))
+  }
+
   /** TODO */
   modifyWindowSizeAction() {
     if (this.iemIsBlocked) return
@@ -189,8 +199,6 @@ class IEM {
       object = target.parentNode
     }
     $(object).css("background-color", "darkgrey")
-
-    console.log(typeof object)
 
     if (typeof object === "undefined") {return}
 

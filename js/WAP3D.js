@@ -80,7 +80,7 @@ class Player {
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
     this.scene.add(mainLight)
-      //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
 
     //Plan de présentation
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
@@ -120,7 +120,6 @@ class Player {
   _animate() {
     if (this.bvhLoader.loadingState !== "loading") {
       requestAnimationFrame(this._animate.bind(this))
-      this.bvhAnimationsArray.updateAllElementsProperties()
       this.cameraControls.update()
       this.animating = true
 
@@ -159,7 +158,7 @@ class Player {
    * @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
@@ -227,6 +226,21 @@ class Player {
     this.bvhAnimationsArray.replayAllAnimations(animationWasPLaying_)
   }
 
+  /** Modifie la visibilité de tout les bvh de la scène 
+   * @param {Boolean} newValue Tout les BVH sont visible si true, ils sont tous invisible sinon
+   */
+  toggleBVHVisibility(newValue) {
+    if (newValue === true) {
+      this.bvhAnimationsArray.forEach((bvh) => {
+        bvh.show()
+      })
+    } else {
+      this.bvhAnimationsArray.forEach((bvh) => {
+        bvh.hide()
+      })
+    }
+  }
+
   /** Met l'animation en pause pour l'ensemble des element du player */
   _pauseAnimation() {
     this.animationIsPaused = true
@@ -272,10 +286,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -316,6 +330,19 @@ class Player {
     }
   }
 
+  /** Modifie la visibilité de l'élément du player donné
+   * @param {UUID} objectUuid_ Identifiant de l'object à modifier dans la scene
+   * @param {Boolean} newValue Object devient visible si true, sinon il devient invisible
+   */
+  toggleObjectInListVisibility(objectUuid_, newValue) {
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
+      if (newValue === true) this.bvhAnimationsArray.getByUUID(objectUuid_).show()
+      else this.bvhAnimationsArray.getByUUID(objectUuid_).hide()
+    } else {
+      //FBX
+    }
+  }
+
   /**
    * Supprime les éléments correspondants à leurs animationArray, du player et des listes graphique.
    * @param {UUID} objectUuids_ Set des UUID correspondant aux éléments à supprimer
@@ -348,7 +375,7 @@ class Player {
       return result
     }
 
-    return "<p>" + skeleton_.bones[0].name+ "</p><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+    return "<p>" + skeleton_.bones[0].name + "</p><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
   }
 
   /**

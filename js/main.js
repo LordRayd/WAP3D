@@ -39,7 +39,7 @@ function _setAllEventListener() {
   $("#BVHListPlay").on("click", event => inputEventManager.clickOnBVHListPlayAction())
   $("#BVHListPause").on("click", event => inputEventManager.clickOnBVHListPauseAction())
   $("#BVHListReplay").on("click", event => inputEventManager.clickOnBVHListReplayAction())
-  $("#BVHListdisplay").on("click", event => inputEventManager.clickOnBVHListdisplayAction())
+  $("#BVHListdisplay").on("click", event => inputEventManager.toggleBVHListVisibilityCheckboxAction(event))
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
@@ -60,6 +60,7 @@ function updateEventListener() {
   $(".playPause").on("click", event => inputEventManager.clickOnPlayPauseAction(event))
   $(".replay").on("click", event => inputEventManager.clickOnReplayAction(event))
   $(".timeSlider").on("change", event => inputEventManager.modifyTimeSliderAction(event))
+  $(".display").on("click", event => inputEventManager.toggleVisibilityCheckboxAction(event))
 
   // Sélection unique d'éléments de liste
   $(".objectList .list .object").off("dblclick")
