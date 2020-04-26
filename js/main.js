@@ -42,6 +42,7 @@ function _setAllEventListener() {
   //TODO rajouter action pour la checkbox
 
   $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
+  $("#fileSelectorFbx").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 
 /** 
@@ -52,6 +53,7 @@ function updateEventListener() {
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
 
   $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
+  $("#fileSelectorFbx").one("change", event => inputEventManager.fileSelectedAction(event))
 
   $(".playPause").off("click")
   $(".replay").off("click")

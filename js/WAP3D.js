@@ -1,8 +1,7 @@
 class Player {
 
-  /**
-   * Joue les animations quand elles existent
-   * Initialise les interactions à la souris et au clavier
+  /** Joue les animations quand elles existent
+   *  Initialise les interactions à la souris et au clavier
    */
   constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray) {
     this.scene = scene
@@ -17,6 +16,7 @@ class Player {
 
     /** TODO */
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
+    this.fbxLoader = new FbxLoader(this.scene);
 
     /** TODO */
     this.animating = true
@@ -59,9 +59,7 @@ class Player {
 
   }
 
-  /**
-   * Initialise le lecteur avec une grille de référence
-   */
+  /** Initialise le lecteur avec une grille de référence */
   _initialisePlayer() {
 
     this.renderer.setSize($("#player")[0].offsetWidth, $("#player")[0].offsetHeight)
@@ -82,7 +80,7 @@ class Player {
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
     this.scene.add(mainLight)
-    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+      //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
 
     //Plan de présentation
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
@@ -108,9 +106,8 @@ class Player {
     }
   }
 
-  /**
-   * Permet de récupérer le frame time du navigateur en secondes
-   * Estimation approximative à l'instant T
+  /** Permet de récupérer le frame time du navigateur en secondes
+   *  Estimation approximative à l'instant T
    */
   _updateFrameTime() {
     let currDateTime = Date.now()
@@ -162,21 +159,21 @@ class Player {
    * @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async (resolve, reject) => {
-      if (objectType.toLowerCase() == "bvh") {
-        try {
+    return new Promise(async(resolve, reject) => {
+      try {
+        if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
-        } catch (error) {
-          alert(error)
-        } finally {
-          this.fileLoadedCallBack()
+        } else if (objectType.toLowerCase() == "fbx") {
+          this.fbxLoader.loadFbxModel()
+        } else {
+          throw new Error(objectType, " : Unknown file type.")
         }
-        resolve()
-      } else if (objectType.toLowerCase() == "fbx") {
-        alert(objectType, "not implemented")
-      } else {
-        alert(objectType, "not implemented")
+      } catch (error) {
+        alert(error)
+      } finally {
+        this.fileLoadedCallBack()
       }
+      resolve()
     })
   }
 
@@ -214,17 +211,17 @@ class Player {
     this.bvhAnimationsArray.pauseAllAnimations()
   }
 
-  /** 
-   * Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des BVH du player 
-   * @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
+  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des BVH du player 
+   *
+   *  @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
    */
   playBVHAnimation() {
     return this.bvhAnimationsArray.playAllAnimations()
   }
 
-  /**
-   * Relance l'animation depuis le debut pour l'ensemble des element du player
-   * @param {Boolean} animationWasPLaying_ si True l'animation continue de jouer.
+  /** Relance l'animation depuis le debut pour l'ensemble des element du player
+   * 
+   *  @param {Boolean} animationWasPLaying_ si True l'animation continue de jouer.
    */
   restartBVHAnimation(animationWasPLaying_) {
     this.bvhAnimationsArray.replayAllAnimations(animationWasPLaying_)
@@ -275,10 +272,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 

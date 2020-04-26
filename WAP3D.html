@@ -23,6 +23,9 @@
   <script src="./js/bvh/bvhCollection.js"></script>
 
   <!-- FBX -->
+  <script src="./node_modules/three/examples/js/libs/inflate.min.js"></script>
+  <script src="./node_modules/three/examples/js/loaders/FBXLoader.js"></script>
+  <script src="./js/fbx/fbxLoader.js"></script>
 
   <!-- WAP3D -->
   <script src="./js/wap3DUtil.js"></script>
@@ -57,6 +60,7 @@
         </div>
 
         <div class="objectList" id="fbxList">
+          <input id="fileSelectorFbx" type="file" multiple="multiple" accept=".fbx">
           <!--<div class="title">FBX</div>-->
           <div class="list"></div>
         </div>
