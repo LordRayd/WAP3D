@@ -39,10 +39,9 @@ function _setAllEventListener() {
   $("#BVHListPlay").on("click", event => inputEventManager.clickOnBVHListPlayAction())
   $("#BVHListPause").on("click", event => inputEventManager.clickOnBVHListPauseAction())
   $("#BVHListReplay").on("click", event => inputEventManager.clickOnBVHListReplayAction())
-  //TODO rajouter action pour la checkbox
+  $("#BVHListdisplay").on("click", event => inputEventManager.clickOnBVHListdisplayAction())
 
-  $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
-  $("#fileSelectorFbx").one("change", event => inputEventManager.fileSelectedAction(event))
+  $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 
 /** 
@@ -52,8 +51,8 @@ function updateEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
 
-  $("#fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
-  $("#fileSelectorFbx").one("change", event => inputEventManager.fileSelectedAction(event))
+  $(".fileSelector").off("change")
+  $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 
   $(".playPause").off("click")
   $(".replay").off("click")
@@ -64,27 +63,9 @@ function updateEventListener() {
 
   // Sélection unique d'éléments de liste
   $(".objectList .list .object").off("dblclick")
-  $(".objectList .list .object").on("dblclick", event => {
-    let target = event.target
-    if (target.tagName === "P") {
-      $(target.parentNode.parentNode).css("background-color", "darkgrey")
-      inputEventManager.openAdvancedControls([target.parentNode.parentNode.id])
-    }else if(target.className === "titleArea" || target.className === "controlFunctions"){
-      $(target.parentNode).css("background-color", "darkgrey")
-      inputEventManager.openAdvancedControls([target.parentNode.id])
-    }
-  })
+  $(".objectList .list .object").on("dblclick", event => inputEventManager.openAdvancedControlsAction(event))
 
   //Sélection multiple
   $(".objectList .list .object").off("click")
-  $(".objectList .list .object").on("click", event => {
-    let target = event.target
-    if (target.tagName === "P") {
-      $(target.parentNode.parentNode).css("background-color", "darkgrey")
-      inputEventManager.selectElementFromListAction(target.parentNode.parentNode.id)
-    }else if(target.className === "titleArea" || target.className === "controlFunctions"){
-      $(target.parentNode).css("background-color", "darkgrey")
-      inputEventManager.selectElementFromListAction(target.parentNode.id)
-    }
-  })
+  $(".objectList .list .object").on("click", event => inputEventManager.selectElementFromListAction(event))
 }

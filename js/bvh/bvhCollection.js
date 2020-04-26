@@ -158,8 +158,8 @@ class BVHAnimationArray extends Array {
     })
   }
 
-  /**
-   * Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+  /** Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+   *  
    * @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
    */
   highlightElements(Uuids_) {

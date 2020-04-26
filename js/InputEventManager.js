@@ -2,6 +2,7 @@
  * Objet responsable de gérer l'ensemble des interactions au clavier ou à la souris
  */
 class IEM {
+  /**  */
   constructor(player, cameraControls) {
     this.player = player
     this.cameraControls = cameraControls
@@ -10,9 +11,7 @@ class IEM {
     this.isOnAppendSelectionMode = false
   }
 
-  /**
-   * Fonction appellée pour ouvrir la div de sélection d'élements
-   */
+  /** Fonction appellée pour ouvrir la div de sélection d'élements */
   _openObjectListAction() {
 
     $("#objectSelector").animate({ width: '30%', marginRight: '1%' }, {
@@ -32,9 +31,7 @@ class IEM {
     })
   }
 
-  /**
-   * Fonction appellée pour minimiser la div de sélection d'élements
-   */
+  /** Fonction appellée pour minimiser la div de sélection d'élements */
   closeObjectListAction() {
 
     $("#objectSelector").animate({ width: '2%', marginRight: '0.5%' }, {
@@ -89,8 +86,8 @@ class IEM {
     }
   }
 
-  /** 
-   * @param {*} keyEvent La touche relachée
+  /**
+   *  @param {*} keyEvent La touche relachée
    */
   keyupAction(keyEvent) {
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
@@ -113,70 +110,59 @@ class IEM {
     }
   }
 
-  /** 
-   * Demande au Player de toggle entre pause et play
-   */
+  /** Demande au Player de toggle entre pause et play */
   //TODO à modifier pour être utilisé dans les listes
-  clickOnGlobalPlayPauseAction() {
+  clickOnGlobalPlayPauseAction(event) {
     if (this.iemIsBlocked) return
     this.playerAnimating = this.player.toggleAnimation()
   }
 
-  /** 
-   * Demande au player de mettre toutes les animations à leur première frames
-   */
+  /** Demande au player de mettre toutes les animations à leur première frames */
   //TODO à modifier pour être utilisé dans les listes
-  clickOnGlobalReplayAction() {
+  clickOnGlobalReplayAction(event) {
     if (this.iemIsBlocked) return
     this.player.bvhAnimationsArray.setAllBvhTime(0)
     this.player.restartAnimation()
   }
 
-  /**
-   * Demande au player de mettre en route tout les BVH
-   */
-  clickOnBVHListPlayAction() {
+  /** Demande au player de mettre en route tout les BVH */
+  clickOnBVHListPlayAction(event) {
     if (this.iemIsBlocked) return
     this.player.playBVHAnimation()
   }
 
-  /**
-   * Demande au player de mettre en pause tout les BVH
-   */
-  clickOnBVHListPauseAction() {
+  /** Demande au player de mettre en pause tout les BVH */
+  clickOnBVHListPauseAction(event) {
     if (this.iemIsBlocked) return
     this.player.pauseBVHAnimation()
   }
 
-  /**
-   * Demande au player de relancer tout les BVH
-   */
-  clickOnBVHListReplayAction() {
+  /** Demande au player de relancer tout les BVH */
+  clickOnBVHListReplayAction(event) {
     if (this.iemIsBlocked) return
     this.player.restartBVHAnimation(false)
   }
 
-  /** 
-   * Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické
-   */
+  /**  */
+  clickOnBVHListdisplayAction(event) {
+
+  }
+
+  /** Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické */
   clickOnPlayPauseAction(event) {
     if (this.iemIsBlocked) return
     let objectId = event.target.parentNode.parentNode.parentNode.id
     this.player.toggleObjectInListAnimation(objectId)
   }
 
-  /** 
-   * Demande au player de mettre à la première frame l'animation correspondante à l'élément dans lequel le bouton replay à été clické
-   */
+  /** Demande au player de mettre à la première frame l'animation correspondante à l'élément dans lequel le bouton replay à été clické */
   clickOnReplayAction(event) {
     if (this.iemIsBlocked) return
     let objectId = event.target.parentNode.parentNode.parentNode.id
     this.player.replayObjectInListAnimation(objectId)
   }
 
-  /** 
-   * Demande au player de mettre à la frame correspondante l'animation correspondante à l'élément dans lequel le time slider à été clické
-   */
+  /** Demande au player de mettre à la frame correspondante l'animation correspondante à l'élément dans lequel le time slider à été clické */
   modifyTimeSliderAction(event) {
     if (this.iemIsBlocked) return
     let newValue = event.currentTarget.valueAsNumber
@@ -184,46 +170,66 @@ class IEM {
     this.player.modifyObjectInListTimeSlider(objectId, newValue)
   }
 
+  /** TODO */
   modifyWindowSizeAction() {
     if (this.iemIsBlocked) return
     this.player.updateRendererSize()
   }
 
-  /** 
-   * Appelé pour rajouter des éléments à la liste des éléments modifiable par la fenêtre de ctrl avancés
-   * @param {UUID} objectId_
+  /** Demande au player de rajouter des éléments à la liste des éléments modifiable par la fenêtre de ctrl avancés
+   * 
+   *  @param {event} event
    */
-  selectElementFromListAction(objectId_) {
+  selectElementFromListAction(event) {
+    let target = event.target
+    console.log(target.tagName)
+    let object = null
+    if (target.tagName === "P") {
+      object = target.parentNode.parentNode
+    } else if (target.className === "titleArea" || target.className === "controlFunctions") {
+      object = target.parentNode
+    }
+    $(object).css("background-color", "darkgrey")
+
     if (this.isOnAppendSelectionMode) {
-      $("#" + objectId_).css("background-color", "darkgrey")
-      this.currentlySelectedElements.add(objectId_)
+      $("#" + object.id).css("background-color", "darkgrey")
+      this.currentlySelectedElements.add(object.id)
     } else {
       this.currentlySelectedElements.forEach((uuid) => {
         $("#" + uuid).css("background-color", "white")
       })
-      if (!this.currentlySelectedElements.has(objectId_)) {
+      if (!this.currentlySelectedElements.has(object.id)) {
         this.currentlySelectedElements.clear()
-        $("#" + objectId_).css("background-color", "darkgrey")
-        this.currentlySelectedElements.add(objectId_)
+        $("#" + object.id).css("background-color", "darkgrey")
+        this.currentlySelectedElements.add(object.id)
       } else {
         this.currentlySelectedElements.clear()
       }
     }
     this.player.bvhAnimationsArray.highlightElements(this.currentlySelectedElements)
-    console.log(this.currentlySelectedElements)
   }
 
-  /**
-   * Appelé pour lancer la fenêtre de contrôles avancés
-   * normalement appelé pour un "enter" ou un "dblClick"
-   * @param {UUID} objectId_
+
+  /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick"
+   * 
+   * @param {event} event
    */
-  openAdvancedControls(objectId_) {
-    if (objectId_) {
-      this.player.launchAdvancedControls(objectId_)
-    } else {
-      this.player.launchAdvancedControls(this.currentlySelectedElements)
+  openAdvancedControlsAction(event) {
+    let target = event.target
+    if (target.tagName === "P") {
+      $(target.parentNode.parentNode).css("background-color", "darkgrey")
+      this.player.launchAdvancedControls([target.parentNode.parentNode.id])
+    } else if (target.className === "titleArea" || target.className === "controlFunctions") {
+      $(target.parentNode).css("background-color", "darkgrey")
+      this.player.launchAdvancedControls([target.parentNode.id])
     }
+  }
+
+  /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick"
+   * 
+   */
+  openAdvancedControls() {
+    this.player.launchAdvancedControls(this.currentlySelectedElements)
   }
 
   /** TODO */
@@ -234,4 +240,4 @@ class IEM {
       this.iemIsBlocked = false
     )
   }
-} 
+}
