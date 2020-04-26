@@ -166,7 +166,7 @@ class Player {
         } else if (objectType.toLowerCase() == "fbx") {
           this.fbxLoader.loadFbxModel()
         } else {
-          alert(objectType, "not implemented")
+          throw new Error(objectType, " : Unknown file type.")
         }
       } catch (error) {
         alert(error)
