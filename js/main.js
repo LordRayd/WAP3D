@@ -63,27 +63,9 @@ function updateEventListener() {
 
   // Sélection unique d'éléments de liste
   $(".objectList .list .object").off("dblclick")
-  $(".objectList .list .object").on("dblclick", event => {
-    let target = event.target
-    if (target.tagName === "P") {
-      $(target.parentNode.parentNode).css("background-color", "darkgrey")
-      inputEventManager.openAdvancedControls([target.parentNode.parentNode.id])
-    }else if(target.className === "titleArea" || target.className === "controlFunctions"){
-      $(target.parentNode).css("background-color", "darkgrey")
-      inputEventManager.openAdvancedControls([target.parentNode.id])
-    }
-  })
+  $(".objectList .list .object").on("dblclick", event => inputEventManager.openAdvancedControlsAction(event))
 
   //Sélection multiple
   $(".objectList .list .object").off("click")
-  $(".objectList .list .object").on("click", event => {
-    let target = event.target
-    if (target.tagName === "P") {
-      $(target.parentNode.parentNode).css("background-color", "darkgrey")
-      inputEventManager.selectElementFromListAction(target.parentNode.parentNode.id)
-    }else if(target.className === "titleArea" || target.className === "controlFunctions"){
-      $(target.parentNode).css("background-color", "darkgrey")
-      inputEventManager.selectElementFromListAction(target.parentNode.id)
-    }
-  })
+  $(".objectList .list .object").on("click", event => inputEventManager.selectElementFromListAction(event))
 }

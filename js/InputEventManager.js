@@ -178,38 +178,58 @@ class IEM {
 
   /** Demande au player de rajouter des éléments à la liste des éléments modifiable par la fenêtre de ctrl avancés
    * 
-   *  @param {UUID} objectId_
+   *  @param {event} event
    */
-  selectElementFromListAction(objectId_) {
+  selectElementFromListAction(event) {
+    let target = event.target
+    console.log(target.tagName)
+    let object = null
+    if (target.tagName === "P") {
+      object = target.parentNode.parentNode
+    } else if (target.className === "titleArea" || target.className === "controlFunctions") {
+      object = target.parentNode
+    }
+    $(object).css("background-color", "darkgrey")
+
     if (this.isOnAppendSelectionMode) {
-      $("#" + objectId_).css("background-color", "darkgrey")
-      this.currentlySelectedElements.add(objectId_)
+      $("#" + object.id).css("background-color", "darkgrey")
+      this.currentlySelectedElements.add(object.id)
     } else {
       this.currentlySelectedElements.forEach((uuid) => {
         $("#" + uuid).css("background-color", "white")
       })
-      if (!this.currentlySelectedElements.has(objectId_)) {
+      if (!this.currentlySelectedElements.has(object.id)) {
         this.currentlySelectedElements.clear()
-        $("#" + objectId_).css("background-color", "darkgrey")
-        this.currentlySelectedElements.add(objectId_)
+        $("#" + object.id).css("background-color", "darkgrey")
+        this.currentlySelectedElements.add(object.id)
       } else {
         this.currentlySelectedElements.clear()
       }
     }
     this.player.bvhAnimationsArray.highlightElements(this.currentlySelectedElements)
-    console.log(this.currentlySelectedElements)
+  }
+
+
+  /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick"
+   * 
+   * @param {event} event
+   */
+  openAdvancedControlsAction(event) {
+    let target = event.target
+    if (target.tagName === "P") {
+      $(target.parentNode.parentNode).css("background-color", "darkgrey")
+      this.player.launchAdvancedControls([target.parentNode.parentNode.id])
+    } else if (target.className === "titleArea" || target.className === "controlFunctions") {
+      $(target.parentNode).css("background-color", "darkgrey")
+      this.player.launchAdvancedControls([target.parentNode.id])
+    }
   }
 
   /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick"
    * 
-   * @param {UUID} objectId_
    */
-  openAdvancedControls(objectId_) {
-    if (objectId_) {
-      this.player.launchAdvancedControls(objectId_)
-    } else {
-      this.player.launchAdvancedControls(this.currentlySelectedElements)
-    }
+  openAdvancedControls() {
+    this.player.launchAdvancedControls(this.currentlySelectedElements)
   }
 
   /** TODO */
