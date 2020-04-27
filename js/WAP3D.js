@@ -79,7 +79,7 @@ class Player {
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
     this.scene.add(mainLight)
-      //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
 
     //Plan de présentation
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
@@ -154,7 +154,7 @@ class Player {
    * @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
@@ -282,10 +282,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -364,14 +364,14 @@ class Player {
       let result = ""
       object.children.forEach((obj) => {
         if (!(obj.name === "ENDSITE")) {
-          if (obj.children[0] === "ENDSITE") result = result + "<li><p>" + obj.name + "</p></li>"
-          else result = result + "<li><p>" + obj.name + "</p><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
+          if (obj.children[0] === "ENDSITE") result = result + "<li><div><p>" + obj.name + "</p></div></li>"
+          else result = result + "<li><div><p>" + obj.name + "</p></div><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
         }
       })
       return result
     }
 
-    return "<p>" + skeleton_.bones[0].name + "</p><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+    return "<div><p>" + skeleton_.bones[0].name + "</p></div><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
   }
 
   /**
@@ -380,15 +380,15 @@ class Player {
    * @param {UUID} objectUuids_ 
    */
   launchAdvancedControls(objectUuids_) {
-    if ($("#advencedControlForBVH").length == 0) {
+    if ($("#advancedControlForBVH").length == 0) {
       let arrayClone = [...objectUuids_] //cast de set en array ou simple clone d'array
       console.log(arrayClone)
       if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
-        if (arrayClone.length == 1) $("body").append('<div id="advencedControlForBVH" title="Advanced Controls"></div>')
-        else $("body").append('<div id="advencedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
+        if (arrayClone.length == 1) $("body").append('<div id="advancedControlForBVH" title="Advanced Controls"></div>')
+        else $("body").append('<div id="advancedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
 
         //todo remettre éléments
-        $("#advencedControlForBVH").append(this.bvhAdvancedCtrlContent)
+        $("#advancedControlForBVH").append(this.bvhAdvancedCtrlContent)
 
         $("#speedRatioSelector").change((object) => {
           let newTimeScaleValue = object.target.valueAsNumber
@@ -401,21 +401,64 @@ class Player {
         arrayClone.forEach((uuid) => {
           let hierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
           console.log(hierarchyString)
-          $("#advencedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">'+this.bvhAnimationsArray.getByUUID(uuid).name+'</p>'+hierarchyString + '</div>')
-          $("#advencedControlForBVH #selection").append(hierarchyString)
+          $("#advancedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + hierarchyString + '</div>')
+          $("#advancedControlForBVH #selection").append(hierarchyString)
+        })
+
+        $("#advancedControlForBVH #graphs .BVHCtrlList div").on("dblclick", (event) => {
+          $("body").append('<div id="nodeGraph" title="Observation Graph Window (' + event.target.textContent + ')"></div>')
+          $("#nodeGraph").dialog({
+            height: 640,
+            width: 640,
+            close: (event, ui) => {
+              $("#nodeGraph").empty()
+              $("#nodeGraph").remove()
+            }
+          })
+          //TODO  
+          //let targetUUID = $(event.target).attr("")
+          let graphData = [...player.bvhAnimationsArray[0].clip._actions[0]._clip.tracks[0].values.values()]
+          let xData = graphData.map((val, index) =>{if(index % 3 === 0) return val})
+          let yData = graphData.map((val, index) =>{if(index % 3 === 1) return val})
+          let zData = graphData.map((val, index) =>{if(index % 3 === 2) return val})
+          let xAxis = Array(Math.floor(graphData.length/3)).keys()
+          Plotly.react($("#nodeGraph")[0], [{
+            x: xAxis,
+            y: xData,
+            marker: { color: 'red' },
+            name: 'X',
+            mode: 'markers',
+            simplify: true
+          }, {
+            x: xAxis,
+            y: yData,
+            marker: { color: 'green' },
+            name: 'Y',
+            mode: 'markers',
+            simplify: true
+          }, {
+            x: xAxis,
+            y: zData,
+            marker: { color: 'blue' },
+            name: 'Z',
+            mode: 'markers',
+            simplify: true
+          }]);
+
+
         })
 
         $("#advancedControlsTabsForBVH").tabs()
 
-        $("#advencedControlForBVH").dialog({
+        $("#advancedControlForBVH").dialog({
           height: 480,
           width: 640,
           close: (event, ui) => {
             arrayClone.forEach((uuid) => {
               $("#" + uuid).css("background-color", "white")
             })
-            $("#advencedControlForBVH").empty()
-            $("#advencedControlForBVH").remove()
+            $("#advancedControlForBVH").empty()
+            $("#advancedControlForBVH").remove()
             this.bvhAnimationsArray.highlightElements()
           }
         })
