@@ -37,7 +37,7 @@ class Player {
         </div>\
         <div id="rendering">\
           <ul>\
-            <li><input id="speedRatioSelector" type="number" step="0.25"></li>\
+            <li><input id="speedRatioSelector" type="number" step="0.25" min="0" onkeypress="return event.charCode != 45"></li>\
             <li>\
               <label for="orthoEnabled"> Affichage d\'un repère orthonormé pour chaque articulation</label>\
               <input type="checkbox" name="orthoEnabled" id="orthoEnabled">\
