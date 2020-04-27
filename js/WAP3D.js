@@ -123,14 +123,11 @@ class Player {
       this.cameraControls.update()
       this.animating = true
 
-      //BVH---
+      // BVH ---
       if (this.bvhLoader.loadingState === "loaded") {
         if (this.animationIsPaused == false) {
           if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
-            // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
-
-            this._updateFrameTime()
-
+            this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
           } else {
             this._pauseAnimation()
           }
@@ -142,7 +139,7 @@ class Player {
         }
       }
 
-      // FBX---
+      // FBX ---
       // TODO
 
       this.animating = false

@@ -1,54 +1,59 @@
 class FbxLoader {
 
-    /**
-     * @param scene La scene associer
-    */
-    constructor(scene) {
-        this.scene = scene;
-    }
+  /**
+   * @param scene La scene associer
+   */
+  constructor(scene) {
+    this.scene = scene;
+  }
 
-    loadFBX(filesToLoadEvent) {
-        return new Promise(async (resolve, reject) => {
-            let files = filesToLoadEvent.currentTarget.files;
-            try {
-                await this._readFBXFiles(files)
-                resolve()
-            } catch (error) {
-                reject(error)
+  /** TODO */
+  loadFBX(filesToLoadEvent) {
+    return new Promise(async(resolve, reject) => {
+      let files = filesToLoadEvent.currentTarget.files;
+      try {
+        await this._readFBXFiles(files)
+        resolve()
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  /** TODO */
+  _readFBXFiles(files) {
+    return Promise.all([...files].map((file) => {
+      return this.loadFbxModel(file)
+    }))
+  }
+
+  /** TODO */
+  loadFbxModel(fbxFile) {
+    return new Promise((resolve, reject) => {
+      var extraFiles = [];
+      extraFiles[fbxFile.name] = fbxFile;
+      const manager = new THREE.LoadingManager();
+
+      manager.setURLModifier(function(url, path) {
+        return URL.createObjectURL(extraFiles[url.lastOf('/')]);
+      });
+
+      let loader = new THREE.FBXLoader(manager);
+
+      // loader.load(url, onLoad, onProgress, onError)
+      loader.load(fbxFile.name,
+        (loadedFbxObject) => {
+          loadedFbxObject.traverse(function(child) {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
             }
-        })
-    }
-    async _readFBXFiles(files) {
-        return Promise.all([...files].map(async(file) => {
-            return this.loadFbxModel(file)
-        }))
-    }
-
-    loadFbxModel(fbxFile) {
-        var extraFiles = {};
-        extraFiles[fbxFile.name] = fbxFile;
-        const manager = new THREE.LoadingManager();
-        manager.setURLModifier(function (url, path) {
-            url = url.split('/');
-            url = url[url.length - 1];
-            console.log(url)
-            var blobURL = URL.createObjectURL(extraFiles[url]);
-            return blobURL;
-        });
-
-
-        var loader = new THREE.FBXLoader(manager);
-        var scene = this.scene;
-
-        loader.load(fbxFile.name, function (object) {
-            console.log(object.animations.length);
-            object.traverse(function (child) {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
-            scene.add(object);
-        });
-    }
+          });
+          this.scene.add(loadedFbxObject);
+          resolve()
+        },
+        null,
+        error => reject(error))
+    })
+  }
 }
