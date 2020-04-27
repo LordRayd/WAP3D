@@ -24,7 +24,6 @@ class Player {
 
     this._animate()
 
-
     //contenu de la fenêtre de contrôles avancés
     this.bvhAdvancedCtrlContent = '\
       <div id="advancedControlsTabsForBVH">\
@@ -402,7 +401,7 @@ class Player {
         arrayClone.forEach((uuid) => {
           let hierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
           console.log(hierarchyString)
-          $("#advencedControlForBVH #graphs").append(hierarchyString)
+          $("#advencedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">'+this.bvhAnimationsArray.getByUUID(uuid).name+'</p>'+hierarchyString + '</div>')
           $("#advencedControlForBVH #selection").append(hierarchyString)
         })
 
