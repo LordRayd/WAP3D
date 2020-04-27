@@ -80,7 +80,7 @@ class Player {
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
     this.scene.add(mainLight)
-    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+      //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
 
     //Plan de présentation
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
@@ -158,12 +158,12 @@ class Player {
    * @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
       try {
         if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
         } else if (objectType.toLowerCase() == "fbx") {
-          this.fbxLoader.loadFbxModel()
+          await this.fbxLoader.loadFBX(event);
         } else {
           throw new Error(objectType, " : Unknown file type.")
         }
@@ -286,10 +286,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -362,7 +362,7 @@ class Player {
   /**Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
    * @param {THREE.Skeleton}
    * @returns {String} le squelette sous forme de liste de liste HTML
-  */
+   */
   _browseThroughBVHSkeleton(skeleton_) {
     let recursiveNavigation = (object) => {
       let result = ""
