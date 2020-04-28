@@ -117,6 +117,24 @@ img {
     height: 90%;
 }
 
+#advancedControlForBVH #graphs .BVHCtrlList{
+    width: 100%;
+    border-style: none solid solid solid;
+    border-color: #8e8e8e;
+    margin-bottom: 20px;
+}  
+#advancedControlForBVH #graphs .BVHCtrlList .title{
+    text-align: center;
+    border-style: solid;
+    border-color: #8e8e8e;
+    background-color: #8e8e8e;
+    color: #ffffff;
+    margin-top: -10px;
+} 
+#advancedControlForBVH #graphs .BVHCtrlList div:hover{
+    background-color: #6e6e6e;
+} 
+
 #closeOpenButton{
     background-color: red;
     width: 10px;

@@ -14,6 +14,11 @@
       "resolved": "https://registry.npmjs.org/jquery-ui-dist/-/jquery-ui-dist-1.12.1.tgz",
       "integrity": "sha1-XAgV08xvkP9fqvWyaKbiO0ypBPo="
     },
+    "plotly.js-basic-dist-min": {
+      "version": "1.53.0",
+      "resolved": "https://registry.npmjs.org/plotly.js-basic-dist-min/-/plotly.js-basic-dist-min-1.53.0.tgz",
+      "integrity": "sha512-54DKxLOP1/vlloGnEsbxAXtZzOxvqSsMCWm5FsjNb6HIlZXDSg6H8XniimXRev04IdyKesVobPpmtU063MWeiA=="
+    },
     "three": {
       "version": "0.114.0",
       "resolved": "https://registry.npmjs.org/three/-/three-0.114.0.tgz",
