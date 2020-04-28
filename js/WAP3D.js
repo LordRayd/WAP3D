@@ -369,7 +369,7 @@ class Player {
       return result
     }
 
-    return '<div data-uuid="' + uuid + '"><p>' + skeleton_.bones[0].name + "</p></div><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+    return '<div data-uuid="' + uuid + '"><p>Hips</p></div><ul>' + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
   }
 
   /** Renvoie le graph des translations X Y Z de la node "Hips" du BVH correspondant au UUID donné, exploitable par plotly.js

@@ -16,14 +16,12 @@ class IEM {
 
     $("#closeOpenButton img").attr("src", "./images/close_button.svg")
 
-    $("#objectSelector").animate({ width: '30%', marginRight: '1%' }, {
-      duration: 100
-    })
-
-    $("#player").animate({ width: '59%' }, {
+    $("#objectSelector").animate({ width: '30%', height: '90%', top: '0' }, {
       duration: 100,
-      progress: _ => this.player.updateRendererSize(),
-      complete: _ => $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
+      complete: _ =>{
+        $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
+        $("#closeOpenButton").css({"width": "1.5vw", "height": "3vh", "top": "50%"})
+      } 
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeIn(100)
@@ -38,14 +36,12 @@ class IEM {
 
     $("#closeOpenButton img").attr("src", "./images/open_button.svg")
 
-    $("#objectSelector").animate({ width: '2%', marginRight: '0.5%' }, {
-      duration: 100
-    })
-
-    $("#player").animate({ width: '87.5%' }, {
+    $("#objectSelector").animate({ width: '1.5%', height: '5%', top: '47.5%'}, {
       duration: 100,
-      progress: _ => this.player.updateRendererSize(),
-      complete: _ => $("#closeOpenButton").one("click", event => this._openObjectListAction(event))
+      complete: _ => {
+        $("#closeOpenButton").one("click", event => this._openObjectListAction(event))
+        $("#closeOpenButton").css({"width": "100%", "height": "100%", "top": "0"})
+      }
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeOut(100)
