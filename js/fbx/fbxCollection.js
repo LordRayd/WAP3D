@@ -3,7 +3,7 @@
  */
 class FBXAnimationArray extends Array {
 
-  /** Retire l'élément de uuid correspondant de la collection
+    /** Retire l'élément de uuid correspondant de la collection
    *  @param {*} uuid_ 
    */
   removeByUUID(uuid_) {

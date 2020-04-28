@@ -136,9 +136,9 @@ img {
 } 
 
 #closeOpenButton{
-    background-color: red;
-    width: 10px;
-    height: 10px;
+    background-color: white;
+    width: 1.5vw;
+    height: 3vh;
     top: 50%;
     position: relative;
     float: right;

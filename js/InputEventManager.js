@@ -14,6 +14,8 @@ class IEM {
   /** Fonction appellée pour ouvrir la div de sélection d'élements */
   _openObjectListAction() {
 
+    $("#closeOpenButton img").attr("src", "./images/close_button.svg")
+
     $("#objectSelector").animate({ width: '30%', marginRight: '1%' }, {
       duration: 100
     })
@@ -33,6 +35,8 @@ class IEM {
 
   /** Fonction appellée pour minimiser la div de sélection d'élements */
   closeObjectListAction() {
+
+    $("#closeOpenButton img").attr("src", "./images/open_button.svg")
 
     $("#objectSelector").animate({ width: '2%', marginRight: '0.5%' }, {
       duration: 100
@@ -200,7 +204,7 @@ class IEM {
     }
     $(object).css("background-color", "darkgrey")
 
-    if (typeof object === "undefined") {return}
+    if (typeof object === "undefined") { return }
 
     if (this.isOnAppendSelectionMode) {
       $("#" + object.id).css("background-color", "darkgrey")

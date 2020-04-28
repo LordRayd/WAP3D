@@ -16,7 +16,7 @@ class Player {
 
     /** TODO */
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
-    this.fbxLoader = new FbxLoader(this.scene);
+    this.fbxLoader = new FBXLoader(this.scene);
 
     /** TODO */
     this.animating = true
@@ -52,10 +52,7 @@ class Player {
         </div>\
         <div id="selection">\
         </div>\
-      </div>\
-    ';
-
-
+      </div>'
   }
 
   /** Initialise le lecteur avec une grille de référence */
@@ -79,7 +76,7 @@ class Player {
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
     this.scene.add(mainLight)
-    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+      //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
 
     //Plan de présentation
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
@@ -117,36 +114,41 @@ class Player {
 
   /** Animation des element dans le player */
   _animate() {
-    if (this.bvhLoader.loadingState !== "loading") {
-      requestAnimationFrame(this._animate.bind(this))
-      this.cameraControls.update()
-      this.animating = true
-
-      // BVH ---
-      if (this.bvhLoader.loadingState === "loaded") {
-        if (this.animationIsPaused == false) {
-          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
-            this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
-          } else {
-            this._pauseAnimation()
-          }
-        } else {
-          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
-            this.animationIsPaused = false
-            this._updateGeneralPlayPauseImg()
-          }
-        }
-      }
-
-      // FBX ---
-      // TODO
-
-      this.animating = false
-    } else {
+    if (this.bvhLoader.loadingState === "loading" || this.fbxLoader.loadingState === "loading") {
       this.framerateTimeReference = -1
       $("#messagePlayer").text("Chargement en cours").show()
+      return
     }
+
+    requestAnimationFrame(this._animate.bind(this))
+    this.cameraControls.update()
+    this.animating = true
+
+    this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
+
+    // BVH ---
+    this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray)
+
+    // FBX ---
+    // TODO Décommenter
+    // this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
+
+    this.animating = false
     this.renderer.render(this.scene, this.camera)
+  }
+
+  _updateAnimation(loader, animationArray) {
+    if (loader.loadingState !== "loading") {
+      if (loader.loadingState === "loaded") {
+        if (this.animationIsPaused == false) {
+          if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == false) { this._pauseAnimation() } // toutes les animations ont fini de jouer
+        } else if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
+          // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
+          this.animationIsPaused = false
+          this._updateGeneralPlayPauseImg()
+        }
+      }
+    }
   }
 
   /** Lance le chargement de fichier a partir d'un evenement de selectioner de fichier entre en parametre
@@ -154,7 +156,7 @@ class Player {
    * @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
       try {
         if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
@@ -166,7 +168,8 @@ class Player {
       } catch (error) {
         alert(error)
       } finally {
-        this.fileLoadedCallBack()
+        console.log("finally CB")
+        this._fileLoadedCallBack()
       }
       resolve()
     })
@@ -176,12 +179,8 @@ class Player {
    *  Il permet de mettre à jour les listener manquant sur le player
    *  L'animation est relancé à la fin de l'appel
    */
-  fileLoadedCallBack() {
+  _fileLoadedCallBack() {
     $("#messagePlayer").hide()
-
-    // Update par rapport au timer général actuel
-
-    this.bvhAnimationsArray.setAllBvhTime(0)
 
     updateEventListener()
 
@@ -282,10 +281,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -406,15 +405,15 @@ class Player {
     }]
   }
 
-  /**
-   * Lance la fenêtre de contrôle avancé qui agira sur l'ensemble des éléments correspondants aux UUIDs donnés
-   * Attention ne pas l'utiliser en hétérogène avec des BVH et des FBX
+  /** Lance la fenêtre de contrôle avancé qui agira sur l'ensemble des éléments correspondants aux UUIDs donnés
+   *  Attention ne pas l'utiliser en hétérogène avec des BVH et des FBX
+   * 
    * @param {UUID} objectUuids_ 
    */
   launchAdvancedControls(objectUuids_) {
     if ($("#advancedControlForBVH").length == 0) {
       let arrayClone = [...objectUuids_] //cast de set en array ou simple clone d'array
-      
+
       if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
         if (arrayClone.length == 1) $("body").append('<div id="advancedControlForBVH" title="Advanced Controls"></div>')
         else $("body").append('<div id="advancedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
@@ -423,7 +422,6 @@ class Player {
 
         $("#speedRatioSelector").change((object) => {
           let newTimeScaleValue = object.target.valueAsNumber
-          console.log(newTimeScaleValue)
           arrayClone.forEach((uuid) => {
             this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
           })
@@ -437,7 +435,7 @@ class Player {
 
         $("#advancedControlForBVH #graphs .BVHCtrlList div").on("dblclick", (event) => {
           let nodeName = event.target.textContent
-          //TODO Déplacer tout ça dans IEM
+            //TODO Déplacer tout ça dans IEM
           $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
           $("#nodeGraph").dialog({
             height: 640,
@@ -450,7 +448,7 @@ class Player {
           let targetUUID = $(event.target.parentElement).attr("data-uuid")
           if (nodeName == "Hips") {
             Plotly.react($("#nodeGraph")[0], this._bvhTranslationGraphData(targetUUID));
-          }else{ 
+          } else {
             //TODO visualisation des rotations des articulations
           }
         })

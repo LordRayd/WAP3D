@@ -41,22 +41,24 @@ class BVHAnimationArray extends Array {
     }
   }
 
-  /** Set la frame entree en parametre comme frame courante pour tout les éléments de la collection.
-   *  Si la frame cible donnée par *time* est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
+  /** Set la frame entree en parametre comme frame courante pour tous les éléments de la collection.
+   *  Si la frame est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
    *  
    *  @param {Number} frame L'index de frame souhaité
    */
   setAllBvhTime(frame) {
+    console.log(frame)
     this.forEach(bvh => {
       let newTime = bvh.nbFrames > frame ? bvh.frameTime * frame : bvh.frameTime * bvh.nbFrames
       bvh.clip.setTime(newTime)
     });
   }
 
-  /** Avance l'animation de chacun des éléments de la collection en fonction de si ils sont censé être mis en pause ou non.
+  /** Avance l'animation de chacun des éléments de la collection dans le temps s'il ne sont pas en pause.
    * 
    *  @param {Number} frameTimeReference_ Le frametime de observé du navigateur
-   *  @returns {Boolean} True si au moins un élément de la collection n'était pas encore fini, False sinon
+   * 
+   *  @returns {Boolean} True si au moins un élément de la collection est toujours en lecture, False sinon
    */
   updateAllElementsAnimation(frameTimeReference_) {
     let atLeastOneElementToAnimate = false
