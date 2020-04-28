@@ -16,14 +16,13 @@ class Player {
 
     /** TODO */
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
-    this.fbxLoader = new FbxLoader(this.scene);
+    this.fbxLoader = new FBXLoader(this.scene);
 
     /** TODO */
     this.animating = true
     this.animationIsPaused = true
 
     this._animate()
-
 
     //contenu de la fenêtre de contrôles avancés
     this.bvhAdvancedCtrlContent = '\
@@ -53,10 +52,7 @@ class Player {
         </div>\
         <div id="selection">\
         </div>\
-      </div>\
-    ';
-
-
+      </div>'
   }
 
   /** Initialise le lecteur avec une grille de référence */
@@ -118,36 +114,41 @@ class Player {
 
   /** Animation des element dans le player */
   _animate() {
-    if (this.bvhLoader.loadingState !== "loading") {
-      requestAnimationFrame(this._animate.bind(this))
-      this.cameraControls.update()
-      this.animating = true
-
-      // BVH ---
-      if (this.bvhLoader.loadingState === "loaded") {
-        if (this.animationIsPaused == false) {
-          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
-            this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
-          } else {
-            this._pauseAnimation()
-          }
-        } else {
-          if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
-            this.animationIsPaused = false
-            this._updateGeneralPlayPauseImg()
-          }
-        }
-      }
-
-      // FBX ---
-      // TODO
-
-      this.animating = false
-    } else {
+    if (this.bvhLoader.loadingState === "loading" || this.fbxLoader.loadingState === "loading") {
       this.framerateTimeReference = -1
       $("#messagePlayer").text("Chargement en cours").show()
+      return
     }
+
+    requestAnimationFrame(this._animate.bind(this))
+    this.cameraControls.update()
+    this.animating = true
+
+    this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
+
+    // BVH ---
+    this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray)
+
+    // FBX ---
+    // TODO Décommenter
+    // this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
+    
+    this.animating = false
     this.renderer.render(this.scene, this.camera)
+  }
+
+  _updateAnimation(loader, animationArray){
+    if (loader.loadingState !== "loading") {
+      if (loader.loadingState === "loaded") {
+        if (this.animationIsPaused == false) {
+          if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == false) { this._pauseAnimation() } // toutes les animations ont fini de jouer
+        } else if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
+          // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
+          this.animationIsPaused = false
+          this._updateGeneralPlayPauseImg()
+        }
+      }
+    }
   }
 
   /** Lance le chargement de fichier a partir d'un evenement de selectioner de fichier entre en parametre
@@ -167,7 +168,8 @@ class Player {
       } catch (error) {
         alert(error)
       } finally {
-        this.fileLoadedCallBack()
+        console.log("finally CB")
+        this._fileLoadedCallBack()
       }
       resolve()
     })
@@ -177,12 +179,8 @@ class Player {
    *  Il permet de mettre à jour les listener manquant sur le player
    *  L'animation est relancé à la fin de l'appel
    */
-  fileLoadedCallBack() {
+  _fileLoadedCallBack() {
     $("#messagePlayer").hide()
-
-    // Update par rapport au timer général actuel
-
-    this.bvhAnimationsArray.setAllBvhTime(0)
 
     updateEventListener()
 
