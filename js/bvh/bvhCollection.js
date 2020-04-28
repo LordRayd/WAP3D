@@ -41,22 +41,24 @@ class BVHAnimationArray extends Array {
     }
   }
 
-  /** Set la frame entree en parametre comme frame courante pour tout les éléments de la collection.
-   *  Si la frame cible donnée par *time* est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
+  /** Set la frame entree en parametre comme frame courante pour tous les éléments de la collection.
+   *  Si la frame est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
    *  
    *  @param {Number} frame L'index de frame souhaité
    */
   setAllBvhTime(frame) {
+    console.log(frame)
     this.forEach(bvh => {
       let newTime = bvh.nbFrames > frame ? bvh.frameTime * frame : bvh.frameTime * bvh.nbFrames
       bvh.clip.setTime(newTime)
     });
   }
 
-  /** Avance l'animation de chacun des éléments de la collection en fonction de si ils sont censé être mis en pause ou non.
+  /** Avance l'animation de chacun des éléments de la collection dans le temps s'il ne sont pas en pause.
    * 
    *  @param {Number} frameTimeReference_ Le frametime de observé du navigateur
-   *  @returns {Boolean} True si au moins un élément de la collection n'était pas encore fini, False sinon
+   * 
+   *  @returns {Boolean} True si au moins un élément de la collection est toujours en lecture, False sinon
    */
   updateAllElementsAnimation(frameTimeReference_) {
     let atLeastOneElementToAnimate = false
@@ -74,14 +76,6 @@ class BVHAnimationArray extends Array {
       }
     });
     return atLeastOneElementToAnimate
-  }
-
-  /** Met à jour le mode de rendu de l'ensemble des éléments de la collections en fonctions de leurs propriétés */
-  updateAllElementsProperties() {
-    this.forEach(bvhElem => {
-      if (bvhElem.isVisible) bvhElem.show()
-      else bvhElem.hide()
-    })
   }
 
   /** Retourne si l'object entré en paramaetre est présent o non dans la liste. 
@@ -158,8 +152,8 @@ class BVHAnimationArray extends Array {
     })
   }
 
-  /**
-   * Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+  /** Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+   *  
    * @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
    */
   highlightElements(Uuids_) {
@@ -223,21 +217,6 @@ class BVHAnimationElement {
 
     // Affichage a lecran
     this.isVisible = true
-  }
-
-  /** Renvoie si l'object est visible ou non.
-   * 
-   * @return True si la checkbox de visibilité pour cet élément est coché, false sinon.
-   */
-  get isVisible() {
-    return $('#' + this.uuid + " .display").is(":checked")
-  }
-
-  /** 
-   *  @param value_ : si true alors la checkbox sera coché, inverse sinon
-   */
-  set isVisible(value_) {
-    $('#' + this.uuid + " .display").prop('checked', value_)
   }
 
   /** L'opacité de l'élément, compris entre 0 et 1 */

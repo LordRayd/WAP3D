@@ -1,4 +1,4 @@
-class BVHLoader {
+class BVHLoader extends FileLoader {
 
   /** Contructeur de BVHLoader prenant en parametre la scene du player ainsi que la liste des Animations des BVH
    * 
@@ -6,15 +6,7 @@ class BVHLoader {
    * @param bvhAnimationsArray liste des animations des BVH
    */
   constructor(scene, bvhAnimationsArray) {
-    this.loadingState = false
-    this.scene = scene
-    this.bvhAnimations = bvhAnimationsArray
-    this.nbFileToLoad = 0
-    this.totalNbLoadedFiles = 0
-    this.oldNbLoadedFiles = 0
-    this.progressBar = $('<div id="progressBar"></div>')
-    this.progressBar.append('<div id="progressValue"></div>')
-    this.progressBar.append('<div id="currProgress"></div>')
+    super(scene, bvhAnimationsArray)
   }
 
   /** Charge des fichier BVH et leur associe leur animation correspondante dans le lecteur
@@ -22,27 +14,16 @@ class BVHLoader {
    * @param filesToLoadEvent : evenement lié au clic sur un bouton de chargeement de fichier
    */
   loadBVH(filesToLoadEvent) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
       let files = filesToLoadEvent.currentTarget.files;
       this.nbFileToLoad = files.length
-  
+
       if (this.nbFileToLoad === 0) {
         reject(new Error('No file is selected'))
       } else {
         console.info('Start loading ', this.nbFileToLoad, ' files');
         try {
-          this.loadingState = "loading"
-          $("#messagePlayer").text("Chargement en cours : " + this.nbFileToLoad + " fichiers.")
-  
-          this.oldNbLoadedFiles = this.nbLoadedFiles // sauvegarde du nombre de ficheir déjà chargé
-  
-          // Barre de chargement
-          this._savePlayerContext()
-          $("#control").replaceWith(this.progressBar)
-          this._updateProgressBar(0)
-  
-          await this._readBvhFilesAsText(files, this.oldNbLoadedFiles)
-          this._restorePlayerContext()
+          await this.loadNewFiles(files)
           resolve()
         } catch (error) {
           reject(error)
@@ -51,10 +32,25 @@ class BVHLoader {
     })
   }
 
+  /** Retourne une liste de promesses correspondant à l'ensemble des chargement de fichier BVH entré en paramètre
+   * 
+   * @param files la liste des fichiers à charger
+   * 
+   * @returns une liste de promesse
+   *  - resolue lorsque l'ensemble des promesses de la liste sont resolues
+   *  - rejetée lorsqu'une des promesse de la liste est rejeté
+   */
+  _load(files) {
+    let currNbLoadedFile = this.currNbLoadedFile
+    return Promise.all([...files].map(async(file, index) => {
+      return this._loadBvhfile(file, currNbLoadedFile + index)
+    }))
+  }
+
   /** Retourne une promesse qui parse un fichier BVH et l'ajoute à la liste des BVH
    * 
    * @param event evenement de la methofde onload du FileReader
-   * @param bvhAnimationsIndex index du bvh dans la liste de BVH (this.bvhAnimations
+   * @param bvhAnimationsIndex index du bvh dans la liste de BVH (this.animations)
    * @param bvhFileName nom du fichier BVH
    * 
    * @returns Une promesse :
@@ -99,7 +95,7 @@ class BVHLoader {
 
         this._addBVHToObjectList(skeletonHelper.uuid, bvhFileName, bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
 
-        this.bvhAnimations.push(new BVHAnimationElement(bvhFileName, skeletonHelper, mixer, bvhFile))
+        this.animations.push(new BVHAnimationElement(bvhFileName, skeletonHelper, mixer, bvhFile))
 
         this.nbLoadedFiles += 1
         resolve()
@@ -109,25 +105,9 @@ class BVHLoader {
     })
   }
 
-  /** Retourne une liste de promesses correspondant a l'ensemble des chargement de fichier BVH entré en paramètre
-   * 
-   * @param files la liste des fichiers bvh à charger
-   * @param currNbLoadedFile nombre courrant de fichier déjà chargé par BVHLoader au moment de l'appel de la méthode
-   * 
-   * @returns une liste de promesse
-   *  - resolue lorsque l'ensemble des promesses de la liste sont resolues
-   *  - rejetée lorsqu'une des promesse de la liste est rejeté
-   */
-  async _readBvhFilesAsText(files, currNbLoadedFile) {
-    return Promise.all([...files].map(async(file, index) => {
-      return this._loadBvhfile(file, currNbLoadedFile + index)
-    }))
-
-  }
-
   /** Retourne un promesse chargeant un fichier bvh entré en parametre.
    * @param file fichier bvh a chargé
-   * @param bvhAnimationsIndex index du bvh dans la liste de BVH (this.bvhAnimations
+   * @param bvhAnimationsIndex index du bvh dans la liste de BVH (this.animations
    * 
    * @returns Une promesse :
    *  - résolu lorsque le fichier est chargé.
@@ -150,27 +130,6 @@ class BVHLoader {
     })
   }
 
-  /** Sauvegarde le contexte courrant de la div "control" du player */
-  _savePlayerContext() {
-    this.controlDiv = $("#control")
-  }
-
-  /** Restaure le contexte du player sauvegarder au début du chargment de fichier (voir _savePlayerContext) */
-  _restorePlayerContext() {
-    $("#progressBar").replaceWith(this.controlDiv)
-    this.loadingState = "loaded"
-  }
-
-  /** Met a jour l'affichage de la barre de progression a partir du poucentage entre en parametre
-   * 
-   * @param loadingPercentage nouvelle valeur de progression (en %)
-   */
-  _updateProgressBar(loadingPercentage) {
-    loadingPercentage = parseInt(((this.nbLoadedFiles - this.oldNbLoadedFiles) * 100) / this.nbFileToLoad, 10) + "%"
-    $("#currProgress")[0].style.width = loadingPercentage
-    $("#progressValue").text(loadingPercentage)
-  }
-
   /** Ajoute une element dans la liste des BVH contenant le nom et l'UUID du BVH a ajouter
    * 
    * @param uuid_ identifiant du bvh a afficher
@@ -189,30 +148,5 @@ class BVHLoader {
     $(controlDivToAppendTo).append('<input class="timeSlider" step="any" type="range">')
     $(controlDivToAppendTo).append('<div   class="replay"> <img src="./images/replay_button.svg"></div>')
     $(controlDivToAppendTo).append('<input class="display" type="checkbox" checked>')
-  }
-
-  /** Retourne le nombre total dede fichier (bvh) chargé depuis le debut */
-  get nbLoadedFiles() {
-    return this.totalNbLoadedFiles
-  }
-
-  /**  */
-  set nbLoadedFiles(value) {
-    this.totalNbLoadedFiles = value
-    this._updateProgressBar(value)
-    if (console.DEBUG_MODE) {
-      console.clear()
-      this.bvhAnimations.forEach(console.debug)
-    }
-  }
-
-  /** Retourne l'état actuel du chargment (false, loading, loaded) */
-  get loadingState() {
-    return this.bvhFilesloadingState
-  }
-
-  /**  */
-  set loadingState(state) {
-    this.bvhFilesloadingState = state
   }
 }

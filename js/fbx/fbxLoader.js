@@ -1,59 +1,74 @@
-class FbxLoader {
+class FBXLoader extends FileLoader {
 
-    /**
-     * @param scene La scene associer
-    */
-    constructor(scene) {
-        this.scene = scene;
-        this.testarray = [];
-        this.loadingState = false
-    }
+  /**
+   * @param scene La scene associer
+   */
+  constructor(scene, fbxAnimationsArray) {
+    super(scene, fbxAnimationsArray)
+  }
 
-    loadFBX(filesToLoadEvent) {
-        return new Promise(async (resolve, reject) => {
-            let files = filesToLoadEvent.currentTarget.files;
-            try {
-                await this._readFBXFiles(files)
-                resolve()
-            } catch (error) {
-                reject(error)
+  /** TODO */
+  loadFBX(filesToLoadEvent) {
+    return new Promise(async(resolve, reject) => {
+      let files = filesToLoadEvent.currentTarget.files;
+      this.nbFileToLoad = files.length
+
+      if (this.nbFileToLoad === 0) {
+        reject(new Error('No file is selected'))
+      } else {
+        console.info('Start loading ', this.nbFileToLoad, ' files');
+        try {
+          await this.loadNewFiles(files)
+          resolve()
+        } catch (error) {
+          reject(error)
+        }
+      }
+    })
+  }
+
+  /** Retourne une liste de promesses correspondant à l'ensemble des chargement de fichier BVH entré en paramètre
+   * 
+   * @param files la liste des fichiers à charger
+   * 
+   * @returns une liste de promesse
+   *  - resolue lorsque l'ensemble des promesses de la liste sont resolues
+   *  - rejetée lorsqu'une des promesse de la liste est rejeté
+   */
+  _load(files) {
+    return Promise.all([...files].map((file) => {
+      return this.loadFbxModel(file)
+    }))
+  }
+
+  /** TODO */
+  loadFbxModel(fbxFile) {
+    return new Promise((resolve, reject) => {
+      var extraFiles = [];
+      extraFiles[fbxFile.name] = fbxFile;
+      const manager = new THREE.LoadingManager();
+
+      manager.setURLModifier(function(url, path) {
+        return URL.createObjectURL(extraFiles[url.lastOf('/')]);
+      });
+
+      let loader = new THREE.FBXLoader(manager);
+
+      // loader.load(url, onLoad, onProgress, onError)
+      loader.load(fbxFile.name,
+        (loadedFbxObject) => {
+          loadedFbxObject.traverse(function(child) {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
             }
-            this.loadingState = "loaded";
-        });
-    }
-
-    async _readFBXFiles(files) {
-        return Promise.all([...files].map(async(file) => {
-            return this.loadFbxModel(file)
-        }))
-    }
-
-    loadFbxModel(fbxFile) {
-        var extraFiles = {};
-        extraFiles[fbxFile.name] = fbxFile;
-        const manager = new THREE.LoadingManager();
-        manager.setURLModifier(function (url, path) {
-            url = url.split('/');
-            url = url[url.length - 1];
-            var blobURL = URL.createObjectURL(extraFiles[url]);
-            return blobURL;
-        });
-
-
-        var loader = new THREE.FBXLoader(manager);
-        var scene = this.scene;
-
-        loader.load(fbxFile.name, function (object) {
-            console.log(object.animations.length);
-            object.traverse(function (child) {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
-            scene.add(object);
-        });
-        this.testarray.push(mixer);
-        this.loadingState = 'loaded';
-    }
+          });
+          this.scene.add(loadedFbxObject);
+          this.nbLoadedFiles += 1
+          resolve()
+        },
+        null,
+        error => reject(error))
+    })
+  }
 }
