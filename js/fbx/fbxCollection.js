@@ -78,9 +78,13 @@ class FBXAnimationElement {
   /**
    * @param {*} name_ le nom du FBX
    */
-  constructor(name_,fbxFile_){
+  constructor(name_,fbxFile_,animationMixer_){
     this.isPaused = false
     this.resumeAnimationValue = this.isPaused
+    this.name = name_
+    this.animationMixer = animationMixer_
+    this.fbxFile = fbxFile_
+
 
     // Pause/Play
     this.playPauseButton = $("#" + this.uuid + " .playPause")[0]
