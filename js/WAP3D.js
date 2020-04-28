@@ -74,7 +74,7 @@ class Player {
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
     this.scene.add(mainLight)
-      //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
 
     //Plan de présentation
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
@@ -154,7 +154,7 @@ class Player {
    * @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
@@ -279,10 +279,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -369,7 +369,7 @@ class Player {
       return result
     }
 
-    return '<div data-uuid="' + uuid + '"><p>' + skeleton_.bones[0].name + "</p></div><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+    return '<div data-uuid="' + uuid + '"><p>Hips</p></div><ul>' + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
   }
 
   /** Renvoie le graph des translations X Y Z de la node "Hips" du BVH correspondant au UUID donné, exploitable par plotly.js
@@ -398,6 +398,47 @@ class Player {
       y: graphData.map((val, index) => { if (index % 3 === 2) return val }),
       marker: { color: 'blue' },
       name: 'Z',
+      mode: 'markers',
+      simplify: true
+    }]
+  }
+
+  /** Renvoie le graph des rotations X Y Z de la node donnée du BVH correspondant au UUID donné, exploitable par plotly.js
+   * @param {UUID} targetUUID_ Le UUID du BVH cible
+   * @param {String} nodeName_ le nom du noeud à observer
+   */
+  _bvhRotationGraphData(nodeName_, targetUUID_) {
+
+    let nameInClip = ".bones[" + nodeName_ + "].quaternion"
+    let graphData = this.bvhAnimationsArray[0].clip._actions[0]._clip.tracks.filter((elem) => elem.name == nameInClip).flatMap((elem) => [...elem.values.values()])
+    let xAxis = Array(Math.floor(graphData.length / 3)).keys()
+
+    return [{
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 4 === 0) return val }),
+      marker: { color: 'red' },
+      name: 'X',
+      mode: 'markers',
+      simplify: true
+    }, {
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 4 === 1) return val }),
+      marker: { color: 'green' },
+      name: 'Y',
+      mode: 'markers',
+      simplify: true
+    }, {
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 4 === 2) return val }),
+      marker: { color: 'blue' },
+      name: 'Z',
+      mode: 'markers',
+      simplify: true
+    }, {
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 4 === 3) return val }),
+      marker: { color: 'grey' },
+      name: 'W',
       mode: 'markers',
       simplify: true
     }]
@@ -433,7 +474,7 @@ class Player {
 
         $("#advancedControlForBVH #graphs .BVHCtrlList div").on("dblclick", (event) => {
           let nodeName = event.target.textContent
-            //TODO Déplacer tout ça dans IEM
+          //TODO Déplacer tout ça dans IEM
           $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
           $("#nodeGraph").dialog({
             height: 640,
@@ -447,7 +488,7 @@ class Player {
           if (nodeName == "Hips") {
             Plotly.react($("#nodeGraph")[0], this._bvhTranslationGraphData(targetUUID));
           } else {
-            //TODO visualisation des rotations des articulations
+            Plotly.react($("#nodeGraph")[0], this._bvhRotationGraphData(nodeName, targetUUID));
           }
         })
 
