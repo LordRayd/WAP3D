@@ -120,18 +120,14 @@ class Player {
   _animate() {
     if (this.bvhLoader.loadingState !== "loading") {
       requestAnimationFrame(this._animate.bind(this))
-      this.bvhAnimationsArray.updateAllElementsProperties()
       this.cameraControls.update()
       this.animating = true
 
-      //BVH---
+      // BVH ---
       if (this.bvhLoader.loadingState === "loaded") {
         if (this.animationIsPaused == false) {
           if (this.bvhAnimationsArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
-            // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
-
-            this._updateFrameTime()
-
+            this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
           } else {
             this._pauseAnimation()
           }
@@ -143,7 +139,7 @@ class Player {
         }
       }
 
-      // FBX---
+      // FBX ---
       // TODO
 
       this.animating = false
@@ -164,7 +160,7 @@ class Player {
         if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
         } else if (objectType.toLowerCase() == "fbx") {
-          this.fbxLoader.loadFbxModel()
+          await this.fbxLoader.loadFBX(event);
         } else {
           throw new Error(objectType, " : Unknown file type.")
         }
@@ -225,6 +221,21 @@ class Player {
    */
   restartBVHAnimation(animationWasPLaying_) {
     this.bvhAnimationsArray.replayAllAnimations(animationWasPLaying_)
+  }
+
+  /** Modifie la visibilité de tout les bvh de la scène 
+   * @param {Boolean} newValue Tout les BVH sont visible si true, ils sont tous invisible sinon
+   */
+  toggleBVHVisibility(newValue) {
+    if (newValue === true) {
+      this.bvhAnimationsArray.forEach((bvh) => {
+        bvh.show()
+      })
+    } else {
+      this.bvhAnimationsArray.forEach((bvh) => {
+        bvh.hide()
+      })
+    }
   }
 
   /** Met l'animation en pause pour l'ensemble des element du player */
@@ -316,6 +327,19 @@ class Player {
     }
   }
 
+  /** Modifie la visibilité de l'élément du player donné
+   * @param {UUID} objectUuid_ Identifiant de l'object à modifier dans la scene
+   * @param {Boolean} newValue Object devient visible si true, sinon il devient invisible
+   */
+  toggleObjectInListVisibility(objectUuid_, newValue) {
+    if (this.bvhAnimationsArray.contains(objectUuid_)) {
+      if (newValue === true) this.bvhAnimationsArray.getByUUID(objectUuid_).show()
+      else this.bvhAnimationsArray.getByUUID(objectUuid_).hide()
+    } else {
+      //FBX
+    }
+  }
+
   /**
    * Supprime les éléments correspondants à leurs animationArray, du player et des listes graphique.
    * @param {UUID} objectUuids_ Set des UUID correspondant aux éléments à supprimer
@@ -330,6 +354,25 @@ class Player {
         //FBX if ...
       }
     })
+  }
+
+  /**Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
+   * @param {THREE.Skeleton}
+   * @returns {String} le squelette sous forme de liste de liste HTML
+   */
+  _browseThroughBVHSkeleton(skeleton_) {
+    let recursiveNavigation = (object) => {
+      let result = ""
+      object.children.forEach((obj) => {
+        if (!(obj.name === "ENDSITE")) {
+          if (obj.children[0] === "ENDSITE") result = result + "<li><p>" + obj.name + "</p></li>"
+          else result = result + "<li><p>" + obj.name + "</p><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
+        }
+      })
+      return result
+    }
+
+    return "<p>" + skeleton_.bones[0].name + "</p><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
   }
 
   /**
@@ -354,6 +397,13 @@ class Player {
           arrayClone.forEach((uuid) => {
             this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
           })
+        })
+
+        arrayClone.forEach((uuid) => {
+          let hierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
+          console.log(hierarchyString)
+          $("#advencedControlForBVH #graphs").append(hierarchyString)
+          $("#advencedControlForBVH #selection").append(hierarchyString)
         })
 
         $("#advancedControlsTabsForBVH").tabs()

@@ -56,6 +56,9 @@ img {
     width: 9%;
     height: 90%;
 }
+.objectList div.title div:active{
+    background-color: #003c79;
+}
 .objectList div.title input{
     float: left;
     width: 9%;

@@ -76,14 +76,6 @@ class BVHAnimationArray extends Array {
     return atLeastOneElementToAnimate
   }
 
-  /** Met à jour le mode de rendu de l'ensemble des éléments de la collections en fonctions de leurs propriétés */
-  updateAllElementsProperties() {
-    this.forEach(bvhElem => {
-      if (bvhElem.isVisible) bvhElem.show()
-      else bvhElem.hide()
-    })
-  }
-
   /** Retourne si l'object entré en paramaetre est présent o non dans la liste. 
    * 
    * @param {UUID} objectUuid_ le UUID à rechercher
@@ -158,8 +150,8 @@ class BVHAnimationArray extends Array {
     })
   }
 
-  /**
-   * Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+  /** Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+   *  
    * @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
    */
   highlightElements(Uuids_) {
@@ -223,21 +215,6 @@ class BVHAnimationElement {
 
     // Affichage a lecran
     this.isVisible = true
-  }
-
-  /** Renvoie si l'object est visible ou non.
-   * 
-   * @return True si la checkbox de visibilité pour cet élément est coché, false sinon.
-   */
-  get isVisible() {
-    return $('#' + this.uuid + " .display").is(":checked")
-  }
-
-  /** 
-   *  @param value_ : si true alors la checkbox sera coché, inverse sinon
-   */
-  set isVisible(value_) {
-    $('#' + this.uuid + " .display").prop('checked', value_)
   }
 
   /** L'opacité de l'élément, compris entre 0 et 1 */
