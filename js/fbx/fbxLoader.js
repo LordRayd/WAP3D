@@ -3,8 +3,10 @@ class FbxLoader {
   /**
    * @param scene La scene associer
    */
-  constructor(scene) {
+  constructor(scene, fbxAnimationsArray) {
     this.scene = scene;
+    this.loadingState = false;
+    this.fbxAnimationsArray = fbxAnimationsArray;
   }
 
   /** TODO */
