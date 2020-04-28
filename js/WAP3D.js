@@ -360,18 +360,50 @@ class Player {
    * @returns {String} le squelette sous forme de liste de liste HTML
    */
   _browseThroughBVHSkeleton(skeleton_) {
+    let uuid = skeleton_.uuid
     let recursiveNavigation = (object) => {
       let result = ""
       object.children.forEach((obj) => {
         if (!(obj.name === "ENDSITE")) {
-          if (obj.children[0] === "ENDSITE") result = result + "<li><div><p>" + obj.name + "</p></div></li>"
-          else result = result + "<li><div><p>" + obj.name + "</p></div><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
+          if (obj.children[0] === "ENDSITE") result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p></div></li>"
+          else result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p></div><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
         }
       })
       return result
     }
 
-    return "<div><p>" + skeleton_.bones[0].name + "</p></div><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+    return '<div data-uuid="' + uuid + '"><p>' + skeleton_.bones[0].name + "</p></div><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+  }
+
+  /** Renvoie le graph des translations X Y Z de la node "Hips" du BVH correspondant au UUID donné, exploitable par plotly.js
+   * @param {UUID} targetUUID_ Le UUID du BVH cible
+   */
+  _bvhTranslationGraphData(targetUUID_) {
+    let graphData = [...this.bvhAnimationsArray.getByUUID(targetUUID_).clip._actions[0]._clip.tracks[0].values.values()]
+    let xAxis = Array(Math.floor(graphData.length / 3)).keys()
+
+    return [{
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 3 === 0) return val }),
+      marker: { color: 'red' },
+      name: 'X',
+      mode: 'markers',
+      simplify: true
+    }, {
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 3 === 1) return val }),
+      marker: { color: 'green' },
+      name: 'Y',
+      mode: 'markers',
+      simplify: true
+    }, {
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 3 === 2) return val }),
+      marker: { color: 'blue' },
+      name: 'Z',
+      mode: 'markers',
+      simplify: true
+    }]
   }
 
   /**
@@ -382,12 +414,11 @@ class Player {
   launchAdvancedControls(objectUuids_) {
     if ($("#advancedControlForBVH").length == 0) {
       let arrayClone = [...objectUuids_] //cast de set en array ou simple clone d'array
-      console.log(arrayClone)
+      
       if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
         if (arrayClone.length == 1) $("body").append('<div id="advancedControlForBVH" title="Advanced Controls"></div>')
         else $("body").append('<div id="advancedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
 
-        //todo remettre éléments
         $("#advancedControlForBVH").append(this.bvhAdvancedCtrlContent)
 
         $("#speedRatioSelector").change((object) => {
@@ -400,13 +431,14 @@ class Player {
 
         arrayClone.forEach((uuid) => {
           let hierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
-          console.log(hierarchyString)
           $("#advancedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + hierarchyString + '</div>')
           $("#advancedControlForBVH #selection").append(hierarchyString)
         })
 
         $("#advancedControlForBVH #graphs .BVHCtrlList div").on("dblclick", (event) => {
-          $("body").append('<div id="nodeGraph" title="Observation Graph Window (' + event.target.textContent + ')"></div>')
+          let nodeName = event.target.textContent
+          //TODO Déplacer tout ça dans IEM
+          $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
           $("#nodeGraph").dialog({
             height: 640,
             width: 640,
@@ -415,37 +447,12 @@ class Player {
               $("#nodeGraph").remove()
             }
           })
-          //TODO  
-          //let targetUUID = $(event.target).attr("")
-          let graphData = [...player.bvhAnimationsArray[0].clip._actions[0]._clip.tracks[0].values.values()]
-          let xData = graphData.map((val, index) =>{if(index % 3 === 0) return val})
-          let yData = graphData.map((val, index) =>{if(index % 3 === 1) return val})
-          let zData = graphData.map((val, index) =>{if(index % 3 === 2) return val})
-          let xAxis = Array(Math.floor(graphData.length/3)).keys()
-          Plotly.react($("#nodeGraph")[0], [{
-            x: xAxis,
-            y: xData,
-            marker: { color: 'red' },
-            name: 'X',
-            mode: 'markers',
-            simplify: true
-          }, {
-            x: xAxis,
-            y: yData,
-            marker: { color: 'green' },
-            name: 'Y',
-            mode: 'markers',
-            simplify: true
-          }, {
-            x: xAxis,
-            y: zData,
-            marker: { color: 'blue' },
-            name: 'Z',
-            mode: 'markers',
-            simplify: true
-          }]);
-
-
+          let targetUUID = $(event.target.parentElement).attr("data-uuid")
+          if (nodeName == "Hips") {
+            Plotly.react($("#nodeGraph")[0], this._bvhTranslationGraphData(targetUUID));
+          }else{ 
+            //TODO visualisation des rotations des articulations
+          }
         })
 
         $("#advancedControlsTabsForBVH").tabs()
