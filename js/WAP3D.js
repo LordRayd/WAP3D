@@ -422,7 +422,6 @@ class Player {
 
         $("#speedRatioSelector").change((object) => {
           let newTimeScaleValue = object.target.valueAsNumber
-          console.log(newTimeScaleValue)
           arrayClone.forEach((uuid) => {
             this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
           })
