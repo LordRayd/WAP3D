@@ -144,6 +144,17 @@ class Player {
       }
 
       // FBX---
+      if (this.fbxLoader.loadingState === "loaded") {
+        if(this.fbxLoader.array){
+          var clock = new THREE.Clock();
+          var delta = clock.getDelta();
+          this.fbxLoader.testarray.forEach(element => {
+            console.log("ok");
+            element.update(delta);
+          });
+        }
+      }
+
       // TODO
 
       this.animating = false

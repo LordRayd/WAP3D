@@ -5,6 +5,8 @@ class FbxLoader {
     */
     constructor(scene) {
         this.scene = scene;
+        this.testarray = [];
+        this.loadingState = false
     }
 
     loadFBX(filesToLoadEvent) {
@@ -16,8 +18,10 @@ class FbxLoader {
             } catch (error) {
                 reject(error)
             }
-        })
+            this.loadingState = "loaded";
+        });
     }
+
     async _readFBXFiles(files) {
         return Promise.all([...files].map(async(file) => {
             return this.loadFbxModel(file)
@@ -49,5 +53,7 @@ class FbxLoader {
             });
             scene.add(object);
         });
+        this.testarray.push(mixer);
+        this.loadingState = 'loaded';
     }
 }
