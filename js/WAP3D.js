@@ -14,11 +14,9 @@ class Player {
 
     this._initialisePlayer()
 
-    /** TODO */
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
     this.fbxLoader = new FBXLoader(this.scene);
 
-    /** TODO */
     this.animating = true
     this.animationIsPaused = true
 

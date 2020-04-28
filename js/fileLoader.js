@@ -36,8 +36,8 @@ class FileLoader {
   }
 
 
-  /** Fonction Abstraite
-   *  Retourne une liste de promesses correspondant à l'ensemble des chargement de fichier BVH entré en paramètre
+  /** Fonction Abstraite (Promesse)
+   *  Retourne une liste de promesses correspondant à l'ensemble des chargements de fichiers entrés en paramètre
    * 
    *  @param files la liste des fichiers à charger
    * 
