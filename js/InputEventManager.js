@@ -63,6 +63,9 @@ class IEM {
       case "D":
         // Déjà utiliser par le déplacement de la caméra
         break
+      case 'R':
+        this.player.referenceAxis.visible = !this.player.referenceAxis.visible
+        break
       case " ":
         this.clickOnGlobalPlayPauseAction()
         break

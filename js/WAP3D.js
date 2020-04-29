@@ -6,6 +6,7 @@ class Player {
   constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray) {
     this.scene = scene
     this.renderer = renderer
+    this.referenceAxis = new THREE.AxesHelper(100);
     this.camera = camera
     this.cameraControls = cameraControls
     this.bvhAnimationsArray = bvhAnimationsArray
@@ -82,6 +83,12 @@ class Player {
     plane.receiveShadow = true
     plane.castShadow = true
     this.scene.add(plane)
+
+    //Affichage des Axes
+
+    this.referenceAxis.material.linewidth = 4
+    this.referenceAxis.visible = false
+    this.scene.add(this.referenceAxis);
 
     this.cameraControls.enableKeys = true
     this.cameraControls.rotateSpeed = 0.3
@@ -354,22 +361,23 @@ class Player {
 
   /**Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
    * @param {THREE.Skeleton}
+   * @param {String} additionalTag_ Balise supplémentaire optionnelle
    * @returns {String} le squelette sous forme de liste de liste HTML
    */
-  _browseThroughBVHSkeleton(skeleton_) {
+  _browseThroughBVHSkeleton(skeleton_, additionalTag_ = "") {
     let uuid = skeleton_.uuid
     let recursiveNavigation = (object) => {
       let result = ""
       object.children.forEach((obj) => {
         if (!(obj.name === "ENDSITE")) {
-          if (obj.children[0] === "ENDSITE") result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p></div></li>"
-          else result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p></div><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
+          if (obj.children[0] === "ENDSITE") result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div></li>"
+          else result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
         }
       })
       return result
     }
 
-    return '<div data-uuid="' + uuid + '"><p>Hips</p></div><ul>' + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+    return '<div data-uuid="' + uuid + '"><p>Hips</p>' + additionalTag_ + '</div><ul>' + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
   }
 
   /** Renvoie le graph des translations X Y Z de la node "Hips" du BVH correspondant au UUID donné, exploitable par plotly.js
@@ -410,7 +418,7 @@ class Player {
   _bvhRotationGraphData(nodeName_, targetUUID_) {
 
     let nameInClip = ".bones[" + nodeName_ + "].quaternion"
-    let graphData = this.bvhAnimationsArray[0].clip._actions[0]._clip.tracks.filter((elem) => elem.name == nameInClip).flatMap((elem) => [...elem.values.values()])
+    let graphData = this.bvhAnimationsArray.getByUUID(targetUUID_).clip._actions[0]._clip.tracks.filter((elem) => elem.name == nameInClip).flatMap((elem) => [...elem.values.values()])
     let xAxis = Array(Math.floor(graphData.length / 3)).keys()
 
     return [{
@@ -454,6 +462,12 @@ class Player {
       let arrayClone = [...objectUuids_] //cast de set en array ou simple clone d'array
 
       if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
+
+        arrayClone.forEach((uuid) => {
+          this.toggleObjectInListVisibility(uuid, true)
+          $("#" + uuid + " .display").prop("checked", true)
+        })
+
         if (arrayClone.length == 1) $("body").append('<div id="advancedControlForBVH" title="Advanced Controls"></div>')
         else $("body").append('<div id="advancedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
 
@@ -467,12 +481,26 @@ class Player {
         })
 
         arrayClone.forEach((uuid) => {
-          let hierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
-          $("#advancedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + hierarchyString + '</div>')
-          $("#advancedControlForBVH #selection").append(hierarchyString)
+          let graphsHierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
+          let displayHierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton, '<input type="checkbox" checked>')
+
+          $("#advancedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + graphsHierarchyString + '</div>')
+          $("#advancedControlForBVH #selection").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
         })
 
-        $("#advancedControlForBVH #graphs .BVHCtrlList div").on("dblclick", (event) => {
+        $("#advancedControlForBVH .BVHCtrlList input").on("click", (event) => {
+          //TODO à bouger dans IEM
+          //TODO trouver un moyen de le faire marcher
+        })
+
+        $("#advancedControlForBVH #orthoEnabled").on("click", (event) => {
+          let isEnabled = $(event.target).is(":checked")
+          arrayClone.forEach((uuid) => {
+            this.bvhAnimationsArray.getByUUID(uuid).skeleton.bones.forEach(elem => elem.axis.visible = isEnabled)
+          })
+        })
+
+        $("#advancedControlForBVH .BVHCtrlList div").on("dblclick", (event) => {
           let nodeName = event.target.textContent
           //TODO Déplacer tout ça dans IEM
           $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
