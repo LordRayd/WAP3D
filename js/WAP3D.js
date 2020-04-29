@@ -308,7 +308,7 @@ class Player {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.toggleOneBVHAnimation(objectUuid_)
     } else {
-      //FBX
+      this.fbxAnimationsArray.toggleOneFBXAnimation(objectUuid_)
     }
   }
 
