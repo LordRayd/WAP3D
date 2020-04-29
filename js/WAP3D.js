@@ -333,7 +333,7 @@ class Player {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.modifyOneBVHFTimeSlider(objectUuid_, newValue)
     } else {
-      //FBX
+      this.fbxAnimationsArray.modifyOneFBXFTimeSlider(objectUuid_, newValue);
     }
   }
 

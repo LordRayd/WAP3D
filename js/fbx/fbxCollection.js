@@ -76,6 +76,7 @@ class FBXAnimationArray extends Array {
       if (!fbxElem.isPaused) {
         atLeastOneElementToAnimate = true
         fbxElem._update();
+        fbxElem.modifyTimeSlider();
       }
     });
     return atLeastOneElementToAnimate;
@@ -89,6 +90,10 @@ class FBXAnimationArray extends Array {
   /** TODO   */
   replayOneFBXAnimation(objectUuid_) {
     this.getByUUID(objectUuid_).replayAnimation();
+  }
+
+  modifyOneFBXFTimeSlider(objectUuid_, newValue) {
+    this.getByUUID(objectUuid_).modifyTimeSlider(newValue)
   }
 }
 
@@ -105,7 +110,6 @@ class FBXAnimationElement {
     this.resumeAnimationValue = this.isPaused;
     this.clock = new THREE.Clock();
     this.clip = animationMixer_;
-    this.pauseElapseTime = false;
     this.nbSecondesOfAnimations = this.clip._root.animations[0].duration;
 
     // Pause/Play
@@ -165,9 +169,16 @@ class FBXAnimationElement {
     this._updatePlayPauseImg();
   }
 
-  //** TODO */
-  modifyTimeSlider(){
-
+  /** TODO */
+  modifyTimeSlider(target) {
+    if (target) {
+      this.timeSlider.valueAsNumber = target;
+      let val = target - this.clock.getElapsedTime();
+      this.clip.update(val);
+      this.isPaused = true;
+    } else {
+      this.timeSlider.valueAsNumber = (this.clock.getElapsedTime() % this.nbSecondesOfAnimations);
+    }
   }
   
   /** Met a jour l'image du bouton playPause

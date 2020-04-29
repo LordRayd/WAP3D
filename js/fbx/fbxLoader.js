@@ -60,7 +60,6 @@ class FBXLoader extends FileLoader {
         (loadedFbxObject) => {
           mixer = new THREE.AnimationMixer(loadedFbxObject);
           mixer.clipAction(loadedFbxObject.animations[0]).play();
-          console.log(loadedFbxObject.animations[0].duration)
           loadedFbxObject.traverse(function(child) {
             if (child.isMesh) {
               child.castShadow = true;
