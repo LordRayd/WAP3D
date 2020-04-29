@@ -69,6 +69,32 @@ class FBXAnimationArray extends Array {
 
   }
 
+  /** TODO */
+  updateAllElementsAnimation(frameTimeReference_) {
+    let atLeastOneElementToAnimate = false
+    this.forEach(fbxElem => {
+      if (!fbxElem.isPaused) {
+        atLeastOneElementToAnimate = true
+        fbxElem._update();
+        fbxElem.modifyTimeSlider();
+      }
+    });
+    return atLeastOneElementToAnimate;
+  }
+
+  /** TODO   */
+  toggleOneFBXAnimation(objectUuid_) {
+    this.getByUUID(objectUuid_).toggleAnimation();
+  }
+
+  /** TODO   */
+  replayOneFBXAnimation(objectUuid_) {
+    this.getByUUID(objectUuid_).replayAnimation();
+  }
+
+  modifyOneFBXFTimeSlider(objectUuid_, newValue) {
+    this.getByUUID(objectUuid_).modifyTimeSlider(newValue)
+  }
 }
 
 /** Objet contenant l'ensembles des données nécéssaires aux traitement d'un BVH.
@@ -78,22 +104,27 @@ class FBXAnimationElement {
   /**
    * @param {*} name_ le nom du FBX
    */
-  constructor(name_,fbxFile_,animationMixer_){
-    this.isPaused = false
-    this.resumeAnimationValue = this.isPaused
-    this.name = name_
-    this.animationMixer = animationMixer_
-    this.fbxFile = fbxFile_
-
-
+  constructor(name_, scene, animationMixer_){
+    this.name = name_;
+    this.scene = scene;
+    this.isPaused = false;
+    this.resumeAnimationValue = this.isPaused;
+    this.clock = new THREE.Clock();
+    this.clip = animationMixer_;
+    this.nbSecondesOfAnimations = this.clip._root.animations[0].duration;
+    this.diff = 0;
     // Pause/Play
-    this.playPauseButton = $("#" + this.uuid + " .playPause")[0]
+    this.playPauseButton = $("#" + this.uuid + " .playPause")[0];
 
-    //TODO Time Slider
+    //Time Slider
+    this.timeSlider = $("#" + this.uuid + " .timeSlider")[0];
+    this.timeSlider.max = this.nbSecondesOfAnimations;
+    this.timeSlider.min = 0;
+    this.timeSlider.valueAsNumber = this.timeSlider.min;
   }
 
 
-  /**  */
+  /** TODO */
   toggleAnimation() {
     if (this.isPaused) this.playAnimation()
     else this.pauseAnimation()
@@ -101,19 +132,21 @@ class FBXAnimationElement {
     this._updatePlayPauseImg()
   }
 
-  /**  */
+  /** TODO */
   playAnimation() {
-    this.isPaused = false
+    this.isPaused = false;
+    this.clock.start();
     this._updatePlayPauseImg()
   }
 
-  /**  */
+  /** TODO */
   pauseAnimation() {
-    this.isPaused = true
-    this._updatePlayPauseImg()
+    this.isPaused = true;
+    this.clock.stop();
+    this._updatePlayPauseImg();
   }
 
-  /**  */
+  /** TODO */
   resumeAnimation() {
     this.isPaused = this.resumeAnimationValue
     this._updatePlayPauseImg()
@@ -122,20 +155,34 @@ class FBXAnimationElement {
 
   /** TODO */
   hide() {
+    this.scene.getObjectByName(this.uuid).visible = false;
   }
 
   /** TODO */
   show() {
+    this.scene.getObjectByName(this.uuid).visible = true;
   }
 
   /** TODO */
-  replayAnimation(){
-
+  replayAnimation(resetResumeAnim){
+    if (resetResumeAnim == true) this.resumeAnimationValue = false;
+    this.clip.update(-(this.clock.getElapsedTime()+this.diff));
+    this.diff = 0;
+    this.clock = new THREE.Clock();
+    this.timeSlider.valueAsNumber = this.timeSlider.min
+    this._updatePlayPauseImg();
   }
 
-  //** TODO */
-  modifyTimeSlider(){
-
+  /** TODO */
+  modifyTimeSlider(target) {
+    if (target) {
+      this.timeSlider.valueAsNumber = target;
+      let val = target - ( (this.diff + this.clock.getElapsedTime() )% this.nbSecondesOfAnimations);
+      this.diff +=  val;
+      this.clip.update(val);
+    } else {
+      this.timeSlider.valueAsNumber = (this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations;
+    }
   }
   
   /** Met a jour l'image du bouton playPause
@@ -166,6 +213,12 @@ class FBXAnimationElement {
 
   /** Retourne l'uuid du FBX */
   get uuid() {
-    return this.skeleton.uuid
+    return this.clip._root.uuid;
+  }
+
+  _update(){
+    if(this.isPaused == false){
+      this.clip.update(this.clock.getDelta());
+    }
   }
 }
