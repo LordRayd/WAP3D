@@ -346,7 +346,8 @@ class Player {
       if (newValue === true) this.bvhAnimationsArray.getByUUID(objectUuid_).show()
       else this.bvhAnimationsArray.getByUUID(objectUuid_).hide()
     } else {
-      //FBX
+      if (newValue === true) this.fbxAnimationsArray.getByUUID(objectUuid_).show()
+      else this.fbxAnimationsArray.getByUUID(objectUuid_).hide()
     }
   }
 

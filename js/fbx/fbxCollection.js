@@ -104,8 +104,9 @@ class FBXAnimationElement {
   /**
    * @param {*} name_ le nom du FBX
    */
-  constructor(name_, fbxFile_, animationMixer_){
+  constructor(name_, scene, animationMixer_){
     this.name = name_;
+    this.scene = scene;
     this.isPaused = false;
     this.resumeAnimationValue = this.isPaused;
     this.clock = new THREE.Clock();
@@ -154,10 +155,12 @@ class FBXAnimationElement {
 
   /** TODO */
   hide() {
+    this.scene.getObjectByName(this.uuid).visible = false;
   }
 
   /** TODO */
   show() {
+    this.scene.getObjectByName(this.uuid).visible = true;
   }
 
   /** TODO */
