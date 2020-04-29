@@ -42,6 +42,12 @@ function _setAllEventListener() {
   $("#BVHListReplay").on("click", event => inputEventManager.clickOnBVHListReplayAction())
   $("#BVHListdisplay").on("click", event => inputEventManager.toggleBVHListVisibilityCheckboxAction(event))
 
+
+  $("#FBXListPlay").on("click", event => inputEventManager.clickOnFBXListPlayAction())
+  $("#FBXListPause").on("click", event => inputEventManager.clickOnFBXListPauseAction())
+  $("#FBXListReplay").on("click", event => inputEventManager.clickOnFBXListReplayAction())
+  $("#FBXListdisplay").on("click", event => inputEventManager.toggleFBXListVisibilityCheckboxAction(event))
+
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 

@@ -39,16 +39,12 @@ class FBXAnimationArray extends Array {
 
   /** Mets en pause tous les fbx  */
   pauseAllAnimations() {
-    this.forEach((fbx) => {
-      fbx.pauseAnimation()
-    })
+    this.forEach((fbx) => fbx.pauseAnimation());
   }
 
   /** Joue tous les fbx */
   playAllAnimations() {
-    this.forEach((bvh) => {
-      bvh.playAnimation()
-    })
+    this.forEach((fbx) => fbx.playAnimation());
   }
 
   /** 
@@ -65,8 +61,18 @@ class FBXAnimationArray extends Array {
   }
 
   /** TODO */
-  replayAllAnimations(){
+  replayAllAnimations(resetResumeAnim = false) {
+    this.forEach( (fbx) => fbx.replayAnimation(resetResumeAnim) );
+  }
 
+  /** TODO */
+  hideAll(){
+    this.forEach((fbx) => fbx.hide());
+  }
+
+  /** TODO */
+  showAll(){
+    this.forEach((fbx) => fbx.show());
   }
 
   /** TODO */
@@ -135,6 +141,7 @@ class FBXAnimationElement {
   /** TODO */
   playAnimation() {
     this.isPaused = false;
+    this.resumeAnimationValue = this.isPaused
     this.clock.start();
     this._updatePlayPauseImg()
   }
@@ -142,6 +149,7 @@ class FBXAnimationElement {
   /** TODO */
   pauseAnimation() {
     this.isPaused = true;
+    this.resumeAnimationValue = this.isPaused
     this.clock.stop();
     this._updatePlayPauseImg();
   }

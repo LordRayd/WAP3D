@@ -248,10 +248,35 @@ class Player {
     }
   }
 
+  /** TODO */
+   pauseFBXAnimation() {
+    this.fbxAnimationsArray.pauseAllAnimations();
+  }
+
+  /** TODO */
+  playFBXAnimation() {
+    return this.fbxAnimationsArray.playAllAnimations();
+  }
+
+  /** TODO */
+  restartFBXAnimation(animationWasPLaying_) {
+    this.fbxAnimationsArray.replayAllAnimations(animationWasPLaying_);
+  }
+
+  /** TODO */
+  toggleFBXVisibility(newValue) {
+    if (newValue === true) {
+      this.fbxAnimationsArray.showAll();
+    } else {
+      this.fbxAnimationsArray.hideAll();
+    }
+  }
+
   /** Met l'animation en pause pour l'ensemble des element du player */
   _pauseAnimation() {
     this.animationIsPaused = true
     this.pauseBVHAnimation()
+    this.pauseFBXAnimation();
     this._updateGeneralPlayPauseImg()
   }
 
