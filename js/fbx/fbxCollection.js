@@ -69,6 +69,17 @@ class FBXAnimationArray extends Array {
 
   }
 
+  /** TODO */
+  updateAllElementsAnimation(frameTimeReference_) {
+    let atLeastOneElementToAnimate = false
+    this.forEach(fbxElem => {
+      if (!fbxElem.isPaused) {
+        atLeastOneElementToAnimate = true
+        fbxElem._update();
+      }
+    });
+    return atLeastOneElementToAnimate;
+  }
 }
 
 /** Objet contenant l'ensembles des données nécéssaires aux traitement d'un BVH.
@@ -78,10 +89,12 @@ class FBXAnimationElement {
   /**
    * @param {*} name_ le nom du FBX
    */
-  constructor(name_,fbxFile_){
+  constructor(name_, fbxFile_, animationMixer_){
+    this.name = name_
     this.isPaused = false
     this.resumeAnimationValue = this.isPaused
-
+    this.clock = new THREE.Clock();
+    this.clip = animationMixer_;
     // Pause/Play
     this.playPauseButton = $("#" + this.uuid + " .playPause")[0]
 
@@ -162,6 +175,13 @@ class FBXAnimationElement {
 
   /** Retourne l'uuid du FBX */
   get uuid() {
-    return this.skeleton.uuid
+    return 0
+  }
+
+  _update(){
+    if(this.isPaused == false){
+      console.log("update");
+      this.clip.update(this.clock.getDelta());
+    }
   }
 }

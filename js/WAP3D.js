@@ -3,19 +3,20 @@ class Player {
   /** Joue les animations quand elles existent
    *  Initialise les interactions à la souris et au clavier
    */
-  constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray) {
+  constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray, fbxAnimationsArray) {
     this.scene = scene
     this.renderer = renderer
     this.camera = camera
     this.cameraControls = cameraControls
     this.bvhAnimationsArray = bvhAnimationsArray
+    this.fbxAnimationsArray = fbxAnimationsArray
     this.framerateTimeReference = -1
     this.currentScreenFrameTime = 0.01667
 
     this._initialisePlayer()
 
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
-    this.fbxLoader = new FBXLoader(this.scene);
+    this.fbxLoader = new FBXLoader(this.scene, this.fbxAnimationsArray);
 
     this.animating = true
     this.animationIsPaused = true
@@ -125,16 +126,15 @@ class Player {
     this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
 
       // FBX---
-      if (this.fbxLoader.loadingState === "loaded") {
+      /*if (this.fbxLoader.loadingState === "loaded") {
         if(this.fbxLoader.array){
-          var clock = new THREE.Clock();
           var delta = clock.getDelta();
           this.fbxLoader.testarray.forEach(element => {
             console.log("ok");
             element.update(delta);
           });
         }
-      }
+      }*/
 
       // TODO
 
@@ -143,7 +143,7 @@ class Player {
 
     // FBX ---
     // TODO Décommenter
-    // this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
+    this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
 
     this.animating = false
     this.renderer.render(this.scene, this.camera)
