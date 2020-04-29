@@ -21,9 +21,8 @@ img {
 #objectSelector{
     float: left;
     background-color: white;
-    margin-left: 5%;
     width: 30%;
-    height: 90%;
+    height: 100%;
     overflow: hidden;
     position: relative;
     z-index: 1;
@@ -149,9 +148,8 @@ img {
 #player {
     position: absolute;
     /*overflow: hidden;*/
-    width: 90%;
-    height: 90%;
-    margin-left: 5%;
+    width: 100%;
+    height: 100%;
     z-index: 0;
 }
 canvas {
@@ -173,7 +171,6 @@ canvas {
     position: absolute;
     bottom: 0;
     margin-left: 45%;
-    margin-bottom: 5.5%;
     height: 5%;
     width: 10%;
     text-align: center;
@@ -204,10 +201,8 @@ canvas {
     background-color: black;
     position: absolute;
     bottom: 0;
-    margin-left: 5%;
-    margin-bottom: 5.5%;
     height: 5%;
-    width: 90%;
+    width: 100%;
     z-index: 2;
 }
 

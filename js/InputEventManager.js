@@ -16,7 +16,7 @@ class IEM {
 
     $("#closeOpenButton img").attr("src", "./images/close_button.svg")
 
-    $("#objectSelector").animate({ width: '30%', height: '90%', top: '0' }, {
+    $("#objectSelector").animate({ width: '30%', height: '100%', top: '0' }, {
       duration: 100,
       complete: _ =>{
         $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
