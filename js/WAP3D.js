@@ -320,7 +320,7 @@ class Player {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.replayOneBVHAnimation(objectUuid_)
     } else {
-      //FBX
+      this.fbxAnimationsArray.replayOneFBXAnimation(objectUuid_);
     }
   }
 

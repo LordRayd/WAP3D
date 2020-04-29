@@ -83,7 +83,12 @@ class FBXAnimationArray extends Array {
 
   /** TODO   */
   toggleOneFBXAnimation(objectUuid_) {
-    this.getByUUID(objectUuid_).toggleAnimation()
+    this.getByUUID(objectUuid_).toggleAnimation();
+  }
+
+  /** TODO   */
+  replayOneFBXAnimation(objectUuid_) {
+    this.getByUUID(objectUuid_).replayAnimation();
   }
 }
 
@@ -152,8 +157,12 @@ class FBXAnimationElement {
   }
 
   /** TODO */
-  replayAnimation(){
-
+  replayAnimation(resetResumeAnim){
+    if (resetResumeAnim == true) this.resumeAnimationValue = false;
+    this.clip.update(-this.clock.getElapsedTime());
+    this.clock = new THREE.Clock();
+    this.timeSlider.valueAsNumber = this.timeSlider.min
+    this._updatePlayPauseImg();
   }
 
   //** TODO */
