@@ -163,7 +163,7 @@ class FBXAnimationElement {
   /** TODO */
   replayAnimation(resetResumeAnim){
     if (resetResumeAnim == true) this.resumeAnimationValue = false;
-    this.clip.update(-this.clock.getElapsedTime());
+    this.clip.update(-(this.clock.getElapsedTime()+this.diff));
     this.diff = 0;
     this.clock = new THREE.Clock();
     this.timeSlider.valueAsNumber = this.timeSlider.min
