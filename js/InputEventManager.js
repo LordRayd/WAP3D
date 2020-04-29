@@ -16,7 +16,7 @@ class IEM {
 
     $("#closeOpenButton img").attr("src", "./images/close_button.svg")
 
-    $("#objectSelector").animate({ width: '30%', height: '90%', top: '0' }, {
+    $("#objectSelector").animate({ width: '30%', height: '100%', top: '0' }, {
       duration: 100,
       complete: _ =>{
         $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
@@ -62,6 +62,9 @@ class IEM {
       case "S":
       case "D":
         // Déjà utiliser par le déplacement de la caméra
+        break
+      case 'R':
+        this.player.referenceAxis.visible = !this.player.referenceAxis.visible
         break
       case " ":
         this.clickOnGlobalPlayPauseAction()

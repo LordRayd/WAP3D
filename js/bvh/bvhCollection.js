@@ -217,6 +217,14 @@ class BVHAnimationElement {
 
     // Affichage a lecran
     this.isVisible = true
+
+    //prototype sur les bones du skeleton pour ajouter des repères sur chaque node
+    this.skeleton.bones.forEach(elem => {
+      elem.axis = new THREE.AxesHelper(1) //création et initialisation de l'attribut axis
+      elem.axis.material.linewidth = 2
+      elem.axis.visible = false
+      elem.add(elem.axis)
+    })
   }
 
   /** L'opacité de l'élément, compris entre 0 et 1 */

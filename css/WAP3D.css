@@ -21,9 +21,8 @@ img {
 #objectSelector{
     float: left;
     background-color: white;
-    margin-left: 5%;
     width: 30%;
-    height: 90%;
+    height: 100%;
     overflow: hidden;
     position: relative;
     z-index: 1;
@@ -119,13 +118,13 @@ img {
     height: 90%;
 }
 
-#advancedControlForBVH #graphs .BVHCtrlList{
+#advancedControlForBVH .BVHCtrlList{
     width: 100%;
     border-style: none solid solid solid;
     border-color: #8e8e8e;
     margin-bottom: 20px;
 }  
-#advancedControlForBVH #graphs .BVHCtrlList .title{
+#advancedControlForBVH .BVHCtrlList .title{
     text-align: center;
     border-style: solid;
     border-color: #8e8e8e;
@@ -133,9 +132,9 @@ img {
     color: #ffffff;
     margin-top: -10px;
 } 
-#advancedControlForBVH #graphs .BVHCtrlList div:hover{
-    background-color: #6e6e6e;
-} 
+#advancedControlForBVH .BVHCtrlList div:hover{
+    background-color: #7e7e7e;
+}
 
 #closeOpenButton{
     background-color: white;
@@ -149,9 +148,8 @@ img {
 #player {
     position: absolute;
     /*overflow: hidden;*/
-    width: 90%;
-    height: 90%;
-    margin-left: 5%;
+    width: 100%;
+    height: 100%;
     z-index: 0;
 }
 canvas {
@@ -172,22 +170,29 @@ canvas {
 #control {
     position: absolute;
     bottom: 0;
-    margin-left: 5%;
-    margin-bottom: 2.5%;
+    margin-left: 45%;
     height: 5%;
-    width: 90%;
+    width: 10%;
+    text-align: center;
+    background-color: white;
+    opacity: 0;
+    transition: 0.3s;
+    z-index: 1;
+}
+#control:hover{
+    opacity: 1;
 }
 
 #globalPlayPause {
     float: left;
     height: 100%;
-    width: 4%;
+    width: 33%;
 }
 
 #globalReplay {
     float: right;
     height: 100%;
-    width: 4%;
+    width: 33%;
 }
 
 
@@ -196,10 +201,9 @@ canvas {
     background-color: black;
     position: absolute;
     bottom: 0;
-    margin-left: 5%;
-    margin-bottom: 2.5%;
     height: 5%;
-    width: 90%;
+    width: 100%;
+    z-index: 2;
 }
 
 #currProgress {
