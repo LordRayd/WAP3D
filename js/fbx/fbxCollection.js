@@ -111,11 +111,11 @@ class FBXAnimationElement {
     this.clock = new THREE.Clock();
     this.clip = animationMixer_;
     this.nbSecondesOfAnimations = this.clip._root.animations[0].duration;
-
+    this.diff = 0;
     // Pause/Play
     this.playPauseButton = $("#" + this.uuid + " .playPause")[0];
 
-    //TODO Time Slider
+    //Time Slider
     this.timeSlider = $("#" + this.uuid + " .timeSlider")[0];
     this.timeSlider.max = this.nbSecondesOfAnimations;
     this.timeSlider.min = 0;
@@ -123,7 +123,7 @@ class FBXAnimationElement {
   }
 
 
-  /**  */
+  /** TODO */
   toggleAnimation() {
     if (this.isPaused) this.playAnimation()
     else this.pauseAnimation()
@@ -131,21 +131,21 @@ class FBXAnimationElement {
     this._updatePlayPauseImg()
   }
 
-  /**  */
+  /** TODO */
   playAnimation() {
     this.isPaused = false;
     this.clock.start();
     this._updatePlayPauseImg()
   }
 
-  /**  */
+  /** TODO */
   pauseAnimation() {
     this.isPaused = true;
     this.clock.stop();
     this._updatePlayPauseImg();
   }
 
-  /**  */
+  /** TODO */
   resumeAnimation() {
     this.isPaused = this.resumeAnimationValue
     this._updatePlayPauseImg()
@@ -164,6 +164,7 @@ class FBXAnimationElement {
   replayAnimation(resetResumeAnim){
     if (resetResumeAnim == true) this.resumeAnimationValue = false;
     this.clip.update(-this.clock.getElapsedTime());
+    this.diff = 0;
     this.clock = new THREE.Clock();
     this.timeSlider.valueAsNumber = this.timeSlider.min
     this._updatePlayPauseImg();
@@ -173,11 +174,11 @@ class FBXAnimationElement {
   modifyTimeSlider(target) {
     if (target) {
       this.timeSlider.valueAsNumber = target;
-      let val = target - this.clock.getElapsedTime();
+      let val = target - ( (this.diff + this.clock.getElapsedTime() )% this.nbSecondesOfAnimations);
+      this.diff +=  val;
       this.clip.update(val);
-      this.isPaused = true;
     } else {
-      this.timeSlider.valueAsNumber = (this.clock.getElapsedTime() % this.nbSecondesOfAnimations);
+      this.timeSlider.valueAsNumber = (this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations;
     }
   }
   
