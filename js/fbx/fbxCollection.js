@@ -68,7 +68,6 @@ class FBXAnimationArray extends Array {
   replayAllAnimations(){
 
   }
-
 }
 
 /** Objet contenant l'ensembles des données nécéssaires aux traitement d'un BVH.
