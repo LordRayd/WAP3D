@@ -1,21 +1,23 @@
+import { FileLoader } from "three";
+
 class Player {
 
   /** Joue les animations quand elles existent
    *  Initialise les interactions à la souris et au clavier
    */
-  constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray) {
+  constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray, fbxAnimationsArray) {
     this.scene = scene
     this.renderer = renderer
+    this.referenceAxis = new THREE.AxesHelper(100);
     this.camera = camera
     this.cameraControls = cameraControls
     this.bvhAnimationsArray = bvhAnimationsArray
-    this.framerateTimeReference = -1
-    this.currentScreenFrameTime = 0.01667
+    this.fbxAnimationsArray = fbxAnimationsArray
 
     this._initialisePlayer()
 
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
-    this.fbxLoader = new FBXLoader(this.scene);
+    this.fbxLoader = new FBXLoader(this.scene, this.fbxAnimationsArray);
 
     this.animating = true
     this.animationIsPaused = true
@@ -83,6 +85,12 @@ class Player {
     plane.castShadow = true
     this.scene.add(plane)
 
+    //Affichage des Axes
+
+    this.referenceAxis.material.linewidth = 4
+    this.referenceAxis.visible = false
+    this.scene.add(this.referenceAxis);
+
     this.cameraControls.enableKeys = true
     this.cameraControls.rotateSpeed = 0.3
     this.cameraControls.keyPanSpeed = 25
@@ -100,16 +108,6 @@ class Player {
     }
   }
 
-  /** Permet de récupérer le frame time du navigateur en secondes
-   *  Estimation approximative à l'instant T
-   */
-  _updateFrameTime() {
-    let currDateTime = Date.now()
-    let delta = (currDateTime - this.framerateTimeReference) / 1000;
-    this.framerateTimeReference = currDateTime
-    this.currentScreenFrameTime = delta;
-  }
-
   /** Animation des element dans le player */
   _animate() {
     if (this.bvhLoader.loadingState === "loading" || this.fbxLoader.loadingState === "loading") {
@@ -122,36 +120,38 @@ class Player {
     this.cameraControls.update()
     this.animating = true
 
-    this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
-
     // BVH ---
     this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray)
 
     // FBX ---
-    // TODO Décommenter
-    // this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
+    this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
 
     this.animating = false
     this.renderer.render(this.scene, this.camera)
   }
 
+  /** Demande la mise à jour des éléments contenu dans le tableau d'animation entré en paramètre
+   *  Si il y a des fichiers chargé, et qu'il y a au moins un élément à animer, l'animation continue ou se relance si elle était en pause.
+   * 
+   *  @param {FileLoader} loader
+   *  @param {AnimationArray} animationArray tableau d'animation
+   */
   _updateAnimation(loader, animationArray) {
-    if (loader.loadingState !== "loading") {
-      if (loader.loadingState === "loaded") {
-        if (this.animationIsPaused == false) {
-          if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == false) { this._pauseAnimation() } // toutes les animations ont fini de jouer
-        } else if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
-          // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
-          this.animationIsPaused = false
-          this._updateGeneralPlayPauseImg()
-        }
+    if (loader.loadingState === "loaded") {
+      let atLeastOneElementToAnimate = animationArray.updateAllElementsAnimation()
+      if (this.animationIsPaused == false && atLeastOneElementToAnimate == false) {
+        this._pauseAnimation() // toutes les animations ont fini de jouer
+      } else if (this.animationIsPaused && atLeastOneElementToAnimate) {
+        // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
+        this.animationIsPaused = false
+        this._updateGeneralPlayPauseImg()
       }
     }
   }
 
   /** Lance le chargement de fichier a partir d'un evenement de selectioner de fichier entre en parametre
    * 
-   * @param event evenement de selection de fichier
+   *  @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
     return new Promise(async(resolve, reject) => {
@@ -166,7 +166,6 @@ class Player {
       } catch (error) {
         alert(error)
       } finally {
-        console.log("finally CB")
         this._fileLoadedCallBack()
       }
       resolve()
@@ -220,7 +219,8 @@ class Player {
   }
 
   /** Modifie la visibilité de tout les bvh de la scène 
-   * @param {Boolean} newValue Tout les BVH sont visible si true, ils sont tous invisible sinon
+   * 
+   *  @param {Boolean} newValue Tout les BVH sont visible si true, ils sont tous invisible sinon
    */
   toggleBVHVisibility(newValue) {
     if (newValue === true) {
@@ -288,57 +288,59 @@ class Player {
 
   /** Lance l'animation si elle est nen pause. Met l'animation en pause sinon pour un element selectionner du player
    * 
-   * @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   *  @param objectUuid_ Identifiant de l'object selectionner dans la scene
    */
   toggleObjectInListAnimation(objectUuid_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
-      this.bvhAnimationsArray.toggleOneBVHAnimation(objectUuid_)
+      this.bvhAnimationsArray.toggleOneAnimation(objectUuid_)
     } else {
-      //FBX
+      this.fbxAnimationsArray.toggleOneAnimation(objectUuid_)
     }
   }
 
   /** Relance l'animation depuis le debut pour un element selectionner du player
    * 
-   * @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   *  @param objectUuid_ Identifiant de l'object selectionner dans la scene
    */
   replayObjectInListAnimation(objectUuid_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
-      this.bvhAnimationsArray.replayOneBVHAnimation(objectUuid_)
+      this.bvhAnimationsArray.replayOneAnimation(objectUuid_)
     } else {
-      //FBX
+      this.fbxAnimationsArray.replayOneAnimation(objectUuid_);
     }
   }
 
   /** Met a jour le time slider d'un element du player slectionner avec la nouvelle valeur entré en paramètre
    * 
-   * @param objectUuid_ Identifiant de l'object selectionner dans la scene
-   * @param newValue Nouvelle valeur du time slider
+   *  @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   *  @param newValue Nouvelle valeur du time slider
    */
-  modifyObjectInListTimeSlider(objectUuid_, newValue) {
+  updateObjectInListTimeSlider(objectUuid_, newValue_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
-      this.bvhAnimationsArray.modifyOneBVHFTimeSlider(objectUuid_, newValue)
+      this.bvhAnimationsArray.updateOneTimeSlider(objectUuid_, newValue_)
     } else {
-      //FBX
+      this.fbxAnimationsArray.updateOneTimeSlider(objectUuid_, newValue_);
     }
   }
 
   /** Modifie la visibilité de l'élément du player donné
-   * @param {UUID} objectUuid_ Identifiant de l'object à modifier dans la scene
-   * @param {Boolean} newValue Object devient visible si true, sinon il devient invisible
+   *
+   *  @param {UUID} objectUuid_ Identifiant de l'object à modifier dans la scene
+   *  @param {Boolean} newValue Object devient visible si true, sinon il devient invisible
    */
-  toggleObjectInListVisibility(objectUuid_, newValue) {
+  toggleObjectInListVisibility(objectUuid_, newValue_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
-      if (newValue === true) this.bvhAnimationsArray.getByUUID(objectUuid_).show()
+      if (newValue_ === true) this.bvhAnimationsArray.getByUUID(objectUuid_).show()
       else this.bvhAnimationsArray.getByUUID(objectUuid_).hide()
     } else {
-      //FBX
+      if (newValue_ === true) this.fbxAnimationsArray.getByUUID(objectUuid_).show()
+      else this.fbxAnimationsArray.getByUUID(objectUuid_).hide()
     }
   }
 
-  /**
-   * Supprime les éléments correspondants à leurs animationArray, du player et des listes graphique.
-   * @param {UUID} objectUuids_ Set des UUID correspondant aux éléments à supprimer
+  /** Supprime les éléments correspondants à leurs animationArray, du player et des listes graphique.
+   * 
+   *  @param {UUID} objectUuids_ Set des UUID correspondant aux éléments à supprimer
    */
   deleteObjectsFromPlayer(objectUuids_) {
     objectUuids_.forEach((uuid) => {
@@ -352,28 +354,32 @@ class Player {
     })
   }
 
-  /**Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
-   * @param {THREE.Skeleton}
-   * @returns {String} le squelette sous forme de liste de liste HTML
+  /** Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
+   * 
+   *  @param {THREE.Skeleton}
+   *  @param {String} additionalTag_ Balise supplémentaire optionnelle
+   * 
+   *  @returns {String} le squelette sous forme de liste de liste HTML
    */
-  _browseThroughBVHSkeleton(skeleton_) {
+  _browseThroughBVHSkeleton(skeleton_, additionalTag_ = "") {
     let uuid = skeleton_.uuid
     let recursiveNavigation = (object) => {
       let result = ""
       object.children.forEach((obj) => {
         if (!(obj.name === "ENDSITE")) {
-          if (obj.children[0] === "ENDSITE") result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p></div></li>"
-          else result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p></div><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
+          if (obj.children[0] === "ENDSITE") result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div></li>"
+          else result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
         }
       })
       return result
     }
 
-    return '<div data-uuid="' + uuid + '"><p>' + skeleton_.bones[0].name + "</p></div><ul>" + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+    return '<div data-uuid="' + uuid + '"><p>Hips</p>' + additionalTag_ + '</div><ul>' + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
   }
 
   /** Renvoie le graph des translations X Y Z de la node "Hips" du BVH correspondant au UUID donné, exploitable par plotly.js
-   * @param {UUID} targetUUID_ Le UUID du BVH cible
+   * 
+   *  @param {UUID} targetUUID_ Le UUID du BVH cible
    */
   _bvhTranslationGraphData(targetUUID_) {
     let graphData = [...this.bvhAnimationsArray.getByUUID(targetUUID_).clip._actions[0]._clip.tracks[0].values.values()]
@@ -403,16 +409,64 @@ class Player {
     }]
   }
 
+  /** Renvoie le graph des rotations X Y Z de la node donnée du BVH correspondant au UUID donné, exploitable par plotly.js
+   * 
+   *  @param {UUID} targetUUID_ Le UUID du BVH cible
+   *  @param {String} nodeName_ le nom du noeud à observer
+   */
+  _bvhRotationGraphData(nodeName_, targetUUID_) {
+
+    let nameInClip = ".bones[" + nodeName_ + "].quaternion"
+    let graphData = this.bvhAnimationsArray.getByUUID(targetUUID_).clip._actions[0]._clip.tracks.filter((elem) => elem.name == nameInClip).flatMap((elem) => [...elem.values.values()])
+    let xAxis = Array(Math.floor(graphData.length / 3)).keys()
+
+    return [{
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 4 === 0) return val }),
+      marker: { color: 'red' },
+      name: 'X',
+      mode: 'markers',
+      simplify: true
+    }, {
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 4 === 1) return val }),
+      marker: { color: 'green' },
+      name: 'Y',
+      mode: 'markers',
+      simplify: true
+    }, {
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 4 === 2) return val }),
+      marker: { color: 'blue' },
+      name: 'Z',
+      mode: 'markers',
+      simplify: true
+    }, {
+      x: xAxis,
+      y: graphData.map((val, index) => { if (index % 4 === 3) return val }),
+      marker: { color: 'grey' },
+      name: 'W',
+      mode: 'markers',
+      simplify: true
+    }]
+  }
+
   /** Lance la fenêtre de contrôle avancé qui agira sur l'ensemble des éléments correspondants aux UUIDs donnés
    *  Attention ne pas l'utiliser en hétérogène avec des BVH et des FBX
    * 
-   * @param {UUID} objectUuids_ 
+   *  @param {UUID} objectUuids_ 
    */
   launchAdvancedControls(objectUuids_) {
     if ($("#advancedControlForBVH").length == 0) {
-      let arrayClone = [...objectUuids_] //cast de set en array ou simple clone d'array
+      let arrayClone = [...objectUuids_]
 
       if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
+
+        arrayClone.forEach((uuid) => {
+          this.toggleObjectInListVisibility(uuid, true)
+          $("#" + uuid + " .display").prop("checked", true)
+        })
+
         if (arrayClone.length == 1) $("body").append('<div id="advancedControlForBVH" title="Advanced Controls"></div>')
         else $("body").append('<div id="advancedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
 
@@ -426,12 +480,26 @@ class Player {
         })
 
         arrayClone.forEach((uuid) => {
-          let hierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
-          $("#advancedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + hierarchyString + '</div>')
-          $("#advancedControlForBVH #selection").append(hierarchyString)
+          let graphsHierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
+          let displayHierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton, '<input type="checkbox" checked>')
+
+          $("#advancedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + graphsHierarchyString + '</div>')
+          $("#advancedControlForBVH #selection").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
         })
 
-        $("#advancedControlForBVH #graphs .BVHCtrlList div").on("dblclick", (event) => {
+        $("#advancedControlForBVH .BVHCtrlList input").on("click", (event) => {
+          //TODO à bouger dans IEM
+          //TODO trouver un moyen de le faire marcher
+        })
+
+        $("#advancedControlForBVH #orthoEnabled").on("click", (event) => {
+          let isEnabled = $(event.target).is(":checked")
+          arrayClone.forEach((uuid) => {
+            this.bvhAnimationsArray.getByUUID(uuid).skeleton.bones.forEach(elem => elem.axis.visible = isEnabled)
+          })
+        })
+
+        $("#advancedControlForBVH .BVHCtrlList div").on("dblclick", (event) => {
           let nodeName = event.target.textContent
             //TODO Déplacer tout ça dans IEM
           $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
@@ -447,7 +515,7 @@ class Player {
           if (nodeName == "Hips") {
             Plotly.react($("#nodeGraph")[0], this._bvhTranslationGraphData(targetUUID));
           } else {
-            //TODO visualisation des rotations des articulations
+            Plotly.react($("#nodeGraph")[0], this._bvhRotationGraphData(nodeName, targetUUID));
           }
         })
 
@@ -470,15 +538,5 @@ class Player {
     } else { //if arrayClone.every((value) => this.fbxAnimationsArray.contains(value)) ...
       //FBX ----
     }
-  }
-
-  /** Retourne le frame time de reference actuel s'il existe. Retourne la date courrante en miliseconde sinon. */
-  get framerateTimeReference() {
-    return this._framerateTimeReference == -1 ? Date.now() : this._framerateTimeReference
-  }
-
-  /**  */
-  set framerateTimeReference(newFrameTimeRef) {
-    this._framerateTimeReference = newFrameTimeRef
   }
 }
