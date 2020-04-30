@@ -95,7 +95,7 @@ class BVHLoader extends FileLoader {
 
         this._addBVHToObjectList(skeletonHelper.uuid, bvhFileName, bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
 
-        this.animations.push(new BVHAnimationElement(bvhFileName, skeletonHelper, mixer, bvhFile))
+        this.animations.push(new BVHAnimationElement(bvhFileName, skeletonHelper.uuid, skeletonHelper, mixer, bvhFile,))
 
         this.nbLoadedFiles += 1
         resolve()
