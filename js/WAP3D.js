@@ -3,20 +3,21 @@ class Player {
   /** Joue les animations quand elles existent
    *  Initialise les interactions à la souris et au clavier
    */
-  constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray) {
+  constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray, fbxAnimationsArray) {
     this.scene = scene
     this.renderer = renderer
     this.referenceAxis = new THREE.AxesHelper(100);
     this.camera = camera
     this.cameraControls = cameraControls
     this.bvhAnimationsArray = bvhAnimationsArray
+    this.fbxAnimationsArray = fbxAnimationsArray
     this.framerateTimeReference = -1
     this.currentScreenFrameTime = 0.01667
 
     this._initialisePlayer()
 
     this.bvhLoader = new BVHLoader(this.scene, this.bvhAnimationsArray)
-    this.fbxLoader = new FBXLoader(this.scene);
+    this.fbxLoader = new FBXLoader(this.scene, this.fbxAnimationsArray);
 
     this.animating = true
     this.animationIsPaused = true
@@ -131,12 +132,25 @@ class Player {
 
     this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
 
+      // FBX---
+      /*if (this.fbxLoader.loadingState === "loaded") {
+        if(this.fbxLoader.array){
+          var delta = clock.getDelta();
+          this.fbxLoader.testarray.forEach(element => {
+            console.log("ok");
+            element.update(delta);
+          });
+        }
+      }*/
+
+      // TODO
+
     // BVH ---
     this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray)
 
     // FBX ---
     // TODO Décommenter
-    // this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
+    this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
 
     this.animating = false
     this.renderer.render(this.scene, this.camera)
@@ -301,7 +315,7 @@ class Player {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.toggleOneBVHAnimation(objectUuid_)
     } else {
-      //FBX
+      this.fbxAnimationsArray.toggleOneFBXAnimation(objectUuid_)
     }
   }
 
@@ -313,7 +327,7 @@ class Player {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.replayOneBVHAnimation(objectUuid_)
     } else {
-      //FBX
+      this.fbxAnimationsArray.replayOneFBXAnimation(objectUuid_);
     }
   }
 
@@ -326,7 +340,7 @@ class Player {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
       this.bvhAnimationsArray.modifyOneBVHFTimeSlider(objectUuid_, newValue)
     } else {
-      //FBX
+      this.fbxAnimationsArray.modifyOneFBXFTimeSlider(objectUuid_, newValue);
     }
   }
 
@@ -339,7 +353,8 @@ class Player {
       if (newValue === true) this.bvhAnimationsArray.getByUUID(objectUuid_).show()
       else this.bvhAnimationsArray.getByUUID(objectUuid_).hide()
     } else {
-      //FBX
+      if (newValue === true) this.fbxAnimationsArray.getByUUID(objectUuid_).show()
+      else this.fbxAnimationsArray.getByUUID(objectUuid_).hide()
     }
   }
 

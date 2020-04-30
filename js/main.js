@@ -12,8 +12,9 @@ $(_ => {
   let camera = new THREE.PerspectiveCamera(90, $("#player")[0].offsetWidth / $("#player")[0].offsetHeight, 0.1, 2000)
   let cameraControls = new THREE.OrbitControls(camera, renderer.domElement)
   let bvhAnimationsArray = new BVHAnimationArray()
+  let fbxAnimationsArray = new FBXAnimationArray()
 
-  player = new Player(scene, renderer, camera, cameraControls, bvhAnimationsArray)
+  player = new Player(scene, renderer, camera, cameraControls, bvhAnimationsArray, fbxAnimationsArray)
   inputEventManager = new IEM(player, cameraControls)
 
   _setAllEventListener()
