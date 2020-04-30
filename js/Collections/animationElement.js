@@ -107,7 +107,7 @@ class AnimationElement {
 
   /** TODO */
   updateAnimation() {
-    this.clip.update(this.clock.getDelta());
+    this.clip.update(this.clock.getDelta() * this.speedRatio);
   }
 
   /** Methode abstraite */
