@@ -3,7 +3,8 @@
  */
 class FBXAnimationArray extends Array {
 
-    /** Retire l'élément de uuid correspondant de la collection
+  /** Retire l'élément de uuid correspondant de la collection
+   *  
    *  @param {*} uuid_ 
    */
   removeByUUID(uuid_) {
@@ -16,7 +17,9 @@ class FBXAnimationArray extends Array {
     })
   }
 
-  /** @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
+  /**
+   *  @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
+   *  
    *  @returns {FBXAnimationElement} l'élément correspondant au UUID donné si il existe
    */
   getByUUID(uuid_) {
@@ -28,8 +31,10 @@ class FBXAnimationArray extends Array {
   }
 
   /** Retourne si l'object entré en paramaetre est présent o non dans la liste. 
-   * @param {UUID} objectUuid_ le UUID à rechercher
-   * @returns {Boolean} True si la collection contient un élément correspondant au UUID donné
+   * 
+   *  @param {UUID} objectUuid_ le UUID à rechercher
+   * 
+   *  @returns {Boolean} True si la collection contient un élément correspondant au UUID donné
    */
   contains(objectUuid_) {
     return this.some((fbx_) => {
@@ -65,7 +70,7 @@ class FBXAnimationArray extends Array {
   }
 
   /** TODO */
-  replayAllAnimations(){
+  replayAllAnimations() {
 
   }
 
@@ -92,6 +97,7 @@ class FBXAnimationArray extends Array {
     this.getByUUID(objectUuid_).replayAnimation();
   }
 
+  /** TODO */
   modifyOneFBXFTimeSlider(objectUuid_, newValue) {
     this.getByUUID(objectUuid_).modifyTimeSlider(newValue)
   }
@@ -102,9 +108,9 @@ class FBXAnimationArray extends Array {
  */
 class FBXAnimationElement {
   /**
-   * @param {*} name_ le nom du FBX
+   *  @param {*} name_ le nom du FBX
    */
-  constructor(name_, scene, animationMixer_){
+  constructor(name_, scene, animationMixer_) {
     this.name = name_;
     this.scene = scene;
     this.isPaused = false;
@@ -122,7 +128,6 @@ class FBXAnimationElement {
     this.timeSlider.min = 0;
     this.timeSlider.valueAsNumber = this.timeSlider.min;
   }
-
 
   /** TODO */
   toggleAnimation() {
@@ -164,9 +169,9 @@ class FBXAnimationElement {
   }
 
   /** TODO */
-  replayAnimation(resetResumeAnim){
+  replayAnimation(resetResumeAnim) {
     if (resetResumeAnim == true) this.resumeAnimationValue = false;
-    this.clip.update(-(this.clock.getElapsedTime()+this.diff));
+    this.clip.update(-(this.clock.getElapsedTime() + this.diff));
     this.diff = 0;
     this.clock = new THREE.Clock();
     this.timeSlider.valueAsNumber = this.timeSlider.min
@@ -177,18 +182,17 @@ class FBXAnimationElement {
   modifyTimeSlider(target) {
     if (target) {
       this.timeSlider.valueAsNumber = target;
-      let val = target - ( (this.diff + this.clock.getElapsedTime() )% this.nbSecondesOfAnimations);
-      this.diff +=  val;
+      let val = target - ((this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations);
+      this.diff += val;
       this.clip.update(val);
     } else {
       this.timeSlider.valueAsNumber = (this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations;
     }
   }
-  
+
   /** Met a jour l'image du bouton playPause
-   *  
-   *  Met l'image de pause si l'object passe en lecture
-   *  Met l'image de lecture si l'object passe en pause
+   *    - Image de pause si l'object passe en lecture
+   *    - Image de lecture si l'object passe en pause
    */
   _updatePlayPauseImg() {
     let img = $('#' + this.uuid + " .playPause")[0].lastChild
@@ -206,9 +210,7 @@ class FBXAnimationElement {
 
   /**  */
   set isPaused(newValue) {
-    if (newValue == false || newValue == true) {
-      this._isPaused = newValue
-    }
+    if (typeof newValue === "boolean") { this._isPaused = newValue }
   }
 
   /** Retourne l'uuid du FBX */
@@ -216,8 +218,9 @@ class FBXAnimationElement {
     return this.clip._root.uuid;
   }
 
-  _update(){
-    if(this.isPaused == false){
+  /** TODO */
+  _update() {
+    if (this.isPaused == false) {
       this.clip.update(this.clock.getDelta());
     }
   }

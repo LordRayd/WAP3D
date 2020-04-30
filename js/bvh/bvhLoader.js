@@ -2,8 +2,8 @@ class BVHLoader extends FileLoader {
 
   /** Contructeur de BVHLoader prenant en parametre la scene du player ainsi que la liste des Animations des BVH
    * 
-   * @param scene scene ou seront joué les BVH
-   * @param bvhAnimationsArray liste des animations des BVH
+   *  @param scene scene ou seront joué les BVH
+   *  @param bvhAnimationsArray liste des animations des BVH
    */
   constructor(scene, bvhAnimationsArray) {
     super(scene, bvhAnimationsArray)
@@ -11,7 +11,7 @@ class BVHLoader extends FileLoader {
 
   /** Charge des fichier BVH et leur associe leur animation correspondante dans le lecteur
    * 
-   * @param filesToLoadEvent : evenement lié au clic sur un bouton de chargeement de fichier
+   *  @param filesToLoadEvent : evenement lié au clic sur un bouton de chargeement de fichier
    */
   loadBVH(filesToLoadEvent) {
     return new Promise(async(resolve, reject) => {
@@ -34,11 +34,11 @@ class BVHLoader extends FileLoader {
 
   /** Retourne une liste de promesses correspondant à l'ensemble des chargement de fichier BVH entré en paramètre
    * 
-   * @param files la liste des fichiers à charger
+   *  @param files la liste des fichiers à charger
    * 
-   * @returns une liste de promesse
-   *  - resolue lorsque l'ensemble des promesses de la liste sont resolues
-   *  - rejetée lorsqu'une des promesse de la liste est rejeté
+   *  @returns une liste de promesse
+   *    - resolue lorsque l'ensemble des promesses de la liste sont resolues
+   *    - rejetée lorsqu'une des promesse de la liste est rejeté
    */
   _load(files) {
     let currNbLoadedFile = this.currNbLoadedFile
@@ -49,13 +49,13 @@ class BVHLoader extends FileLoader {
 
   /** Retourne une promesse qui parse un fichier BVH et l'ajoute à la liste des BVH
    * 
-   * @param event evenement de la methofde onload du FileReader
-   * @param bvhAnimationsIndex index du bvh dans la liste de BVH (this.animations)
-   * @param bvhFileName nom du fichier BVH
+   *  @param event evenement de la methofde onload du FileReader
+   *  @param bvhAnimationsIndex index du bvh dans la liste de BVH (this.animations)
+   *  @param bvhFileName nom du fichier BVH
    * 
-   * @returns Une promesse :
-   *  - resolu lorsque le parsing du fichier et son ajout dans la liste sont fini.
-   *  - rejeté lorsque le parser renvoie une erreur
+   *  @returns Une promesse :
+   *    - resolu lorsque le parsing du fichier et son ajout dans la liste sont fini.
+   *    - rejeté lorsque le parser renvoie une erreur
    */
   async _parseBvhFileContent(event, bvhAnimationsIndex, bvhFileName) {
     return new Promise((resolve, reject) => {
@@ -106,12 +106,13 @@ class BVHLoader extends FileLoader {
   }
 
   /** Retourne un promesse chargeant un fichier bvh entré en parametre.
-   * @param file fichier bvh a chargé
-   * @param bvhAnimationsIndex index du bvh dans la liste de BVH (this.animations
    * 
-   * @returns Une promesse :
-   *  - résolu lorsque le fichier est chargé.
-   *  - rejeté si la lecture du fichier est interrompu ou échoue
+   *  @param file fichier bvh a chargé
+   *  @param bvhAnimationsIndex index du bvh dans la liste de BVH (this.animations
+   * 
+   *  @returns Une promesse :
+   *    - résolu lorsque le fichier est chargé.
+   *    - rejeté si la lecture du fichier est interrompu ou échoue
    */
   _loadBvhfile(file, bvhAnimationsIndex) {
     return new Promise((resolve, reject) => {
@@ -132,8 +133,8 @@ class BVHLoader extends FileLoader {
 
   /** Ajoute une element dans la liste des BVH contenant le nom et l'UUID du BVH a ajouter
    * 
-   * @param uuid_ identifiant du bvh a afficher
-   * @param name nom du bvh a afficher
+   *  @param uuid_ identifiant du bvh a afficher
+   *  @param name nom du bvh a afficher
    */
   _addBVHToObjectList(uuid_, name) {
     $("#bvhList .list").append('<div id="' + uuid_ + '" class="object"></div>')

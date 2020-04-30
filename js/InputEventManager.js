@@ -11,17 +11,17 @@ class IEM {
     this.isOnAppendSelectionMode = false
   }
 
-  /** Fonction appellée pour ouvrir la div de sélection d'élements */
+  /** Ouvre la div de sélection d'élements */
   _openObjectListAction() {
 
     $("#closeOpenButton img").attr("src", "./images/close_button.svg")
 
     $("#objectSelector").animate({ width: '30%', height: '100%', top: '0' }, {
       duration: 100,
-      complete: _ =>{
+      complete: _ => {
         $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
-        $("#closeOpenButton").css({"width": "1.5vw", "height": "3vh", "top": "50%"})
-      } 
+        $("#closeOpenButton").css({ "width": "1.5vw", "height": "3vh", "top": "50%" })
+      }
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeIn(100)
@@ -31,16 +31,16 @@ class IEM {
     })
   }
 
-  /** Fonction appellée pour minimiser la div de sélection d'élements */
+  /** Minimise la div de sélection d'élements */
   closeObjectListAction() {
 
     $("#closeOpenButton img").attr("src", "./images/open_button.svg")
 
-    $("#objectSelector").animate({ width: '1.5%', height: '5%', top: '47.5%'}, {
+    $("#objectSelector").animate({ width: '1.5%', height: '5%', top: '47.5%' }, {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this._openObjectListAction(event))
-        $("#closeOpenButton").css({"width": "100%", "height": "100%", "top": "0"})
+        $("#closeOpenButton").css({ "width": "100%", "height": "100%", "top": "0" })
       }
     })
 
@@ -52,7 +52,7 @@ class IEM {
   }
 
   /** 
-   * @param {*} keyEvent La touche pressée
+   *  @param {*} keyEvent La touche pressée
    */
   keydownAction(keyEvent) {
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
@@ -225,8 +225,8 @@ class IEM {
 
 
   /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick"
-   * 
-   * @param {event} event
+   *  
+   *  @param {event} event
    */
   openAdvancedControlsAction(event) {
     let target = event.target
@@ -239,9 +239,7 @@ class IEM {
     }
   }
 
-  /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick"
-   * 
-   */
+  /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick" */
   openAdvancedControls() {
     this.player.launchAdvancedControls(this.currentlySelectedElements)
   }

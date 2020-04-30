@@ -78,7 +78,7 @@ class FBXLoader extends FileLoader {
     });
   }
 
-  /** Ajoute une element dans la liste des BVH contenant le nom et l'UUID du BVH a ajouter
+  /** Ajoute un element dans la liste des BVH contenant le nom et l'UUID du BVH a ajouter
    * 
    * @param uuid_ identifiant du bvh a afficher
    * @param name nom du bvh a afficher

@@ -4,6 +4,7 @@
 class BVHAnimationArray extends Array {
 
   /** Retire l'élément de uuid correspondant de la collection
+   *  
    *  @param {*} uuid_ 
    */
   removeByUUID(uuid_) {
@@ -30,7 +31,9 @@ class BVHAnimationArray extends Array {
     })
   }
 
-  /** @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
+  /** 
+   *  @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
+   *  
    *  @returns {BVHAnimationElement} l'élément correspondant au UUID donné si il existe
    */
   getByUUID(uuid_) {
@@ -80,9 +83,9 @@ class BVHAnimationArray extends Array {
 
   /** Retourne si l'object entré en paramaetre est présent o non dans la liste. 
    * 
-   * @param {UUID} objectUuid_ le UUID à rechercher
+   *  @param {UUID} objectUuid_ le UUID à rechercher
    * 
-   * @returns {Boolean} True si la collection contient un élément correspondant au UUID donné
+   *  @returns {Boolean} True si la collection contient un élément correspondant au UUID donné
    */
   contains(objectUuid_) {
     return this.some((bvh_) => {
@@ -144,7 +147,7 @@ class BVHAnimationArray extends Array {
 
   /** Replace l'ensemble des éléments de la collection à leur première frame.
    * 
-   * @param {Boolean} resetResumeAnim si True alors les animations se rejouent, sinon ils restent à la frame 0 (False par défaut).
+   *  @param {Boolean} resetResumeAnim si True alors les animations se rejouent, sinon ils restent à la frame 0 (False par défaut).
    */
   replayAllAnimations(resetResumeAnim = false) {
     this.forEach((bvh) => {
@@ -154,7 +157,7 @@ class BVHAnimationArray extends Array {
 
   /** Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
    *  
-   * @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
+   *  @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
    */
   highlightElements(Uuids_) {
     let amount
@@ -185,7 +188,7 @@ class BVHAnimationArray extends Array {
 }
 
 /** Objet contenant l'ensembles des données nécéssaires aux traitement d'un BVH.
- *  Utilisé dans BVHAnimationArray
+ *  Utilisé par BVHAnimationArray
  */
 class BVHAnimationElement {
   /**
@@ -301,9 +304,8 @@ class BVHAnimationElement {
   }
 
   /** Met a jour l'image du bouton playPause
-   *  
-   *  Met l'image de pause si l'object passe en lecture
-   *  Met l'image de lecture si l'object passe en pause
+   *    - Image de pause si l'object passe en lecture
+   *    - Image de lecture si l'object passe en pause
    */
   _updatePlayPauseImg() {
     let img = $('#' + this.uuid + " .playPause")[0].lastChild
@@ -326,14 +328,12 @@ class BVHAnimationElement {
     }
   }
 
-  /** TODO : regler le bug du time slider lors d'un clique sur celui-ci
-   * 
-   *  Si target n'est pas spécifié, incrémente la position du time slider;
-   *  Sinon set la position du time slider à la valeur donnée par target
+  /** Incrémente la position du time slider si aucun parametre n'est renseigné.
+   *  Sinon la valeur du time slider prendre la valeur entrée en paramètre.
    *  
-   * @param {Number} target 
+   *  @param {Number} target : Option, noubelle valeur du time slider
    */
-  modifyTimeSlider(target) {
+  modifyTimeSlider(target = false) {
     if (target) {
       this.timeSlider.valueAsNumber = target
       this.clip.setTime(target)
