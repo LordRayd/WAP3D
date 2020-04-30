@@ -33,10 +33,10 @@ function _setAllEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
 
-  $("#BVHListPlay").on("click", event => inputEventManager.clickOnBVHListPlayAction())
-  $("#BVHListPause").on("click", event => inputEventManager.clickOnBVHListPauseAction())
-  $("#BVHListReplay").on("click", event => inputEventManager.clickOnBVHListReplayAction())
-  $("#BVHListdisplay").on("click", event => inputEventManager.toggleBVHListVisibilityCheckboxAction(event))
+  $("#BVHListPlay").on("click", event => inputEventManager.clickOnListPlayAction(event))
+  $("#BVHListPause").on("click", event => inputEventManager.clickOnListPauseAction(event))
+  $("#BVHListReplay").on("click", event => inputEventManager.clickOnListReplayAction(event))
+  $("#BVHListdisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event))
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
@@ -52,10 +52,10 @@ function updateEventListener() {
   $(".playPause").off("click")
   $(".replay").off("click")
   $(".timeSlider").off("input")
-  $(".playPause").on("click", event => inputEventManager.clickOnPlayPauseAction(event))
-  $(".replay").on("click", event => inputEventManager.clickOnReplayAction(event))
-  $(".timeSlider").on("input", event => inputEventManager.modifyTimeSliderAction(event))
-  $(".display").on("click", event => inputEventManager.toggleVisibilityCheckboxAction(event))
+  $(".playPause").on("click", event => inputEventManager.clickOnElementPlayPauseAction(event))
+  $(".replay").on("click", event => inputEventManager.clickOnElementReplayAction(event))
+  $(".timeSlider").on("input", event => inputEventManager.modifyElementTimeSliderAction(event))
+  $(".display").on("click", event => inputEventManager.toggleElementVisibilityCheckboxAction(event))
 
   // Sélection unique d'éléments de liste
   $(".objectList .list .object").off("dblclick")

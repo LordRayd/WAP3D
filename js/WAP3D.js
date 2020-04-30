@@ -9,8 +9,17 @@ class Player {
     this.referenceAxis = new THREE.AxesHelper(100);
     this.camera = camera
     this.cameraControls = cameraControls
+
+    /** liste des conteneurs */
+    this.animationsArrays = []
+
+    /** Ajout du conteneur de bvh */
     this.bvhAnimationsArray = bvhAnimationsArray
+    this.animationsArrays.push(bvhAnimationsArray)
+
+    /** Ajout du conteneur de fbx */
     this.fbxAnimationsArray = fbxAnimationsArray
+    this.animationsArrays.push(fbxAnimationsArray)
 
     this._initialisePlayer()
 
@@ -138,7 +147,7 @@ class Player {
     if (loader.loadingState === "loaded") {
       let atLeastOneElementToAnimate = animationArray.updateAllElementsAnimation()
       if (this.animationIsPaused == false && atLeastOneElementToAnimate == false) {
-        this._pauseAnimation() // toutes les animations ont fini de jouer
+        this.pauseAnimation() // toutes les animations ont fini de jouer
       } else if (this.animationIsPaused && atLeastOneElementToAnimate) {
         // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
         this.animationIsPaused = false
@@ -189,87 +198,102 @@ class Player {
     this.camera.aspect = player.offsetWidth / player.offsetHeight
   }
 
-  /** Lance l'animation si elle est en pause. Met l'animation en pause sinon pour l'ensemble des element du player */
-  toggleAnimation() {
-    if (this.animationIsPaused) this.resumeAnimation()
-    else this._pauseAnimation()
-  }
-
-  /** Met l'animation en pause pour l'ensemble des BVH du player */
-  pauseBVHAnimation() {
-    this.bvhAnimationsArray.pauseAllAnimations()
-  }
-
-  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des BVH du player 
-   *
-   *  @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
-   */
-  playBVHAnimation() {
-    return this.bvhAnimationsArray.playAllAnimations()
-  }
-
-  /** Relance l'animation depuis le debut pour l'ensemble des element du player
-   * 
-   *  @param {Boolean} animationWasPLaying_ si True l'animation continue de jouer.
-   */
-  restartBVHAnimation(animationWasPLaying_) {
-    this.bvhAnimationsArray.replayAllAnimations(animationWasPLaying_)
-  }
-
   /** Modifie la visibilité de tout les bvh de la scène 
    * 
    *  @param {Boolean} newValue Tout les BVH sont visible si true, ils sont tous invisible sinon
    */
-  toggleBVHVisibility(newValue) {
-    if (newValue === true) {
-      this.bvhAnimationsArray.forEach((bvh) => {
-        bvh.show()
-      })
-    } else {
-      this.bvhAnimationsArray.forEach((bvh) => {
-        bvh.hide()
-      })
+  toggleListVisibility(listName, newValue) {
+    switch (listName) {
+      case "bvh":
+        if (newValue === true) {
+          this.bvhAnimationsArray.showAllAnimations()
+        } else {
+          this.bvhAnimationsArray.hideAllAnimations()
+        }
+        break
+      case "fbx":
+        if (newValue === true) {
+          this.fbxAnimationsArray.showAllAnimations(show)
+        } else {
+          this.fbxAnimationsArray.hideAllAnimations(hide)
+        }
+        break
+      default:
+        throw new Error("Unknown type of list")
     }
   }
 
-  /** Met l'animation en pause pour l'ensemble des element du player */
-  _pauseAnimation() {
+  /** TODO */
+  toggleAnimation(listName) {
+    if (this.animationIsPaused) this.resumeAnimation(listName)
+    else this.pauseAnimation(listName)
+  }
+
+  /** TODO */
+  playAnimation(listName) {
+    this.animationIsPaused = false
+    switch (listName) {
+      case "bvh":
+        this.bvhAnimationsArray.playAllAnimations()
+        break
+      case "fbx":
+        this.fbxAnimationsArray.playAllAnimations()
+        break
+      default:
+        this.animationsArrays.forEach(playAllAnimations)
+        this._updateGeneralPlayPauseImg()
+    }
+  }
+
+  /** TODO */
+  pauseAnimation(listName) {
     this.animationIsPaused = true
-    this.pauseBVHAnimation()
-    this._updateGeneralPlayPauseImg()
+    switch (listName) {
+      case "bvh":
+        this.bvhAnimationsArray.pauseAllAnimations()
+        break
+      case "fbx":
+        this.fbxAnimationsArray.pauseAllAnimations()
+        break
+      default:
+        this.animationsArrays.forEach(list => list.pauseAllAnimations())
+        this._updateGeneralPlayPauseImg()
+    }
   }
 
-  /** Relance l'animation a l'endroit ou elle s'est arrêté pour l'ensemble des element du player */
-  resumeAnimation() {
-    //TODO gérer FBX
+  /** TODO */
+  resumeAnimation(listName) {
     this.animationIsPaused = false
-    if (this.bvhAnimationsArray.resumeAllAnimations() == false) {
-      this._playAnimation()
-    } else {
-      this._updateGeneralPlayPauseImg()
+    let allEltsPaused = true
+    switch (listName) {
+      case "bvh":
+        if (this.bvhAnimationsArray.resumeAllAnimations() == true) { allEltsPaused = false }
+        break
+      case "fbx":
+        if (this.fbxAnimationsArray.resumeAllAnimations() == true) { allEltsPaused = false }
+        break
+      default:
+        this.animationsArrays.forEach(elt => {
+          if (elt.resumeAnimation(animationWasPlaying) == true) { allEltsPaused = false }
+        })
+        this._updateGeneralPlayPauseImg()
     }
+    if (allEltsPaused) this.playAnimation(listName)
   }
 
-  /** Relance l'animation depuis le debut pour l'ensemble des element du player */
-  restartAnimation() {
-    let animationWasPlaying = false
-    if (this.animationIsPaused == false) {
-      animationWasPlaying = true
-      this._pauseAnimation()
+  /** TODO */
+  replayAnimation(listName) {
+    let animationWasPlaying = !this.animationIsPaused
+    switch (listName) {
+      case "bvh":
+        this.bvhAnimationsArray.replayAllAnimations(animationWasPlaying)
+        break
+      case "fbx":
+        this.fbxAnimationsArray.replayAllAnimations(animationWasPlaying)
+        break
+      default:
+        this.animationsArrays.forEach(elt => elt.replayAllAnimations(animationWasPlaying))
     }
-
-    this.restartBVHAnimation(!animationWasPlaying)
-
-    if (animationWasPlaying) {
-      this.resumeAnimation()
-    }
-  }
-
-  /** Lance l'animation pour l'ensemble des element du player */
-  _playAnimation() {
-    this.animationIsPaused = false
-    this.bvhAnimationsArray.playAllAnimations()
-    this._updateGeneralPlayPauseImg()
   }
 
   /** Passe de l'image de pause a celle de lecture si le player est en pause. Passe de lecture a pause si le player est en lecture */

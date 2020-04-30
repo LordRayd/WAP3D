@@ -127,4 +127,14 @@ class AnimationArray extends Array {
       elem.replayAnimation(resetResumeAnim)
     })
   }
+
+  /** TODO */
+  hideAllAnimations() {
+    this.forEach(elem => elem.hide())
+  }
+
+  /** TODO */
+  showAllAnimations() {
+    this.forEach(elem => elem.show())
+  }
 }
