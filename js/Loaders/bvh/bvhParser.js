@@ -14,16 +14,16 @@ class BVHParser {
   /** Permet la lecture d'un bvh ligne par ligne
    *  Chaque categorie fait appel a une fonction pour parser et recuperer les informations de cette categorie
    * 
-   * categorie : 
-   *  - HIERARCHY
-   *  - MOTION
-   *  - Frames
-   *  - Frame Time
-   *  - Reste du fichier ou apparaisse les angles de chaques partie du corp poru chaque frame
+   *  categorie : 
+   *    - HIERARCHY
+   *    - MOTION
+   *    - Frames
+   *    - Frame Time
+   *    - Reste du fichier ou apparaisse les angles de chaques partie du corp poru chaque frame
    * 
-   * @param bvhAsLinesArray : un fichier bvh sous forme de tableau de string
+   *  @param bvhAsLinesArray : un fichier bvh sous forme de tableau de string
    * 
-   * @return bonesHierarchy : hierarchy des os (sous la forme decrite dans la doc de la fonction _readHierarchySection)
+   *  @return bonesHierarchy : hierarchy des os (sous la forme decrite dans la doc de la fonction _readHierarchySection)
    */
   _readBvh(bvhAsLinesArray) {
     let lines = bvhAsLinesArray.map(_ => _.slice())
@@ -50,7 +50,7 @@ class BVHParser {
 
   /** Parse la section HIERARCHY du bvh
    *  
-   * @return { bonesHierarchy, lines}
+   *  @return { bonesHierarchy, lines}
    *  - bonesHierarchy : tableau contenant chaque node
    *      - un node contient 
    *          - son nom

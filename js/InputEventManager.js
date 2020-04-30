@@ -2,6 +2,7 @@
  * Objet responsable de gérer l'ensemble des interactions au clavier ou à la souris
  */
 class IEM {
+
   /**  */
   constructor(player, cameraControls) {
     this.player = player
@@ -11,17 +12,17 @@ class IEM {
     this.isOnAppendSelectionMode = false
   }
 
-  /** Fonction appellée pour ouvrir la div de sélection d'élements */
+  /** Ouvre la div de sélection d'élements */
   _openObjectListAction() {
 
     $("#closeOpenButton img").attr("src", "./images/close_button.svg")
 
     $("#objectSelector").animate({ width: '30%', height: '100%', top: '0' }, {
       duration: 100,
-      complete: _ =>{
+      complete: _ => {
         $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
-        $("#closeOpenButton").css({"width": "1.5vw", "height": "3vh", "top": "50%"})
-      } 
+        $("#closeOpenButton").css({ "width": "1.5vw", "height": "3vh", "top": "50%" })
+      }
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeIn(100)
@@ -31,16 +32,16 @@ class IEM {
     })
   }
 
-  /** Fonction appellée pour minimiser la div de sélection d'élements */
+  /** Minimise la div de sélection d'élements */
   closeObjectListAction() {
 
     $("#closeOpenButton img").attr("src", "./images/open_button.svg")
 
-    $("#objectSelector").animate({ width: '1.5%', height: '5%', top: '47.5%'}, {
+    $("#objectSelector").animate({ width: '1.5%', height: '5%', top: '47.5%' }, {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this._openObjectListAction(event))
-        $("#closeOpenButton").css({"width": "100%", "height": "100%", "top": "0"})
+        $("#closeOpenButton").css({ "width": "100%", "height": "100%", "top": "0" })
       }
     })
 
@@ -52,7 +53,7 @@ class IEM {
   }
 
   /** 
-   * @param {*} keyEvent La touche pressée
+   *  @param {*} keyEvent La touche pressée
    */
   keydownAction(keyEvent) {
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
@@ -113,80 +114,63 @@ class IEM {
     }
   }
 
-  /** Demande au Player de toggle entre pause et play */
-  //TODO à modifier pour être utilisé dans les listes
-  clickOnGlobalPlayPauseAction(event) {
-    if (this.iemIsBlocked) return
-    this.playerAnimating = this.player.toggleAnimation()
-  }
-
-  /** Demande au player de mettre toutes les animations à leur première frames */
-  //TODO à modifier pour être utilisé dans les listes
-  clickOnGlobalReplayAction(event) {
-    if (this.iemIsBlocked) return
-    this.player.bvhAnimationsArray.setAllBvhTime(0)
-    this.player.restartAnimation()
-  }
-
   /** Demande au player de mettre en route tout les BVH */
-  clickOnBVHListPlayAction(event) {
+  clickOnListPlayAction(event) {
     if (this.iemIsBlocked) return
-    this.player.playBVHAnimation()
+    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    this.player.playAnimation(listName)
   }
 
   /** Demande au player de mettre en pause tout les BVH */
-  clickOnBVHListPauseAction(event) {
+  clickOnListPauseAction(event) {
     if (this.iemIsBlocked) return
-    this.player.pauseBVHAnimation()
+    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    this.player.pauseAnimation(listName)
   }
 
   /** Demande au player de relancer tout les BVH */
-  clickOnBVHListReplayAction(event) {
+  clickOnListReplayAction(event) {
     if (this.iemIsBlocked) return
-    this.player.restartBVHAnimation(false)
+    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    this.player.replayAnimation(listName)
   }
 
   /** Demande au player de toggle la visibilité de tout les BVH */
-  toggleBVHListVisibilityCheckboxAction(event) {
+  toggleListVisibilityCheckboxAction(event) {
     if (this.iemIsBlocked) return
     let isChecked = $(event.target).is(":checked")
-    this.player.toggleBVHVisibility(isChecked)
-    $("#bvhList .list .object .controlFunctions .display").prop('checked', isChecked)
+    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    this.player.toggleListVisibility(listName, isChecked)
+    $("#" + listName + "List .list .object .controlFunctions .display").prop('checked', isChecked)
   }
 
   /** Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické */
-  clickOnPlayPauseAction(event) {
+  clickOnElementPlayPauseAction(event) {
     if (this.iemIsBlocked) return
     let objectId = event.target.parentNode.parentNode.parentNode.id
     this.player.toggleObjectInListAnimation(objectId)
   }
 
   /** Demande au player de mettre à la première frame l'animation correspondante à l'élément dans lequel le bouton replay à été clické */
-  clickOnReplayAction(event) {
+  clickOnElementReplayAction(event) {
     if (this.iemIsBlocked) return
     let objectId = event.target.parentNode.parentNode.parentNode.id
     this.player.replayObjectInListAnimation(objectId)
   }
 
   /** Demande au player de mettre à la frame correspondante l'animation correspondante à l'élément dans lequel le time slider à été clické */
-  modifyTimeSliderAction(event) {
+  modifyElementTimeSliderAction(event) {
     if (this.iemIsBlocked) return
-    let newValue = event.currentTarget.valueAsNumber
+    let newValue = event.target.valueAsNumber
     let objectId = event.target.parentNode.parentNode.id
-    this.player.modifyObjectInListTimeSlider(objectId, newValue)
+    this.player.updateObjectInListTimeSlider(objectId, newValue)
   }
 
   /** Demande au player de toggle la visibilité de l'élément correspondant */
-  toggleVisibilityCheckboxAction(event) {
+  toggleElementVisibilityCheckboxAction(event) {
     if (this.iemIsBlocked) return
     let objectId = event.target.parentNode.parentNode.id
     this.player.toggleObjectInListVisibility(objectId, $(event.target).is(":checked"))
-  }
-
-  /** TODO */
-  modifyWindowSizeAction() {
-    if (this.iemIsBlocked) return
-    this.player.updateRendererSize()
   }
 
   /** Demande au player de rajouter des éléments à la liste des éléments modifiable par la fenêtre de ctrl avancés
@@ -223,10 +207,15 @@ class IEM {
     this.player.bvhAnimationsArray.highlightElements(this.currentlySelectedElements)
   }
 
+  /** TODO */
+  modifyWindowSizeAction() {
+    if (this.iemIsBlocked) return
+    this.player.updateRendererSize()
+  }
 
   /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick"
-   * 
-   * @param {event} event
+   *  
+   *  @param {event} event
    */
   openAdvancedControlsAction(event) {
     let target = event.target
@@ -237,13 +226,6 @@ class IEM {
       $(target.parentNode).css("background-color", "darkgrey")
       this.player.launchAdvancedControls([target.parentNode.id])
     }
-  }
-
-  /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick"
-   * 
-   */
-  openAdvancedControls() {
-    this.player.launchAdvancedControls(this.currentlySelectedElements)
   }
 
   /** TODO */

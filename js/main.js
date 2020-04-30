@@ -1,9 +1,10 @@
 const pauseDiv = $('<div><img src="./images/pause_button.svg"></div>')
 const playDiv = $('<div><img src="./images/play_button.svg"></div>')
 
-/** 
- * Code exécuté après le chargement de WAP3D.html
- */
+let player
+let inputEventManager
+
+/** Code exécuté après le chargement complet de WAP3D.html */
 $(_ => {
   $("#listTabs").tabs()
 
@@ -20,12 +21,7 @@ $(_ => {
   _setAllEventListener()
 })
 
-let player
-let inputEventManager
-
-/** 
- * Associe toutes les méthodes liés aux modes d'interactions avec les objets de la page
- */
+/** Associe toutes les méthodes liés aux modes d'interactions avec les objets de la page */
 function _setAllEventListener() {
   $(document).on("keydown", event => inputEventManager.keydownAction(event))
   $(document).on("keyup", event => inputEventManager.keyupAction(event))
@@ -37,17 +33,15 @@ function _setAllEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
 
-  $("#BVHListPlay").on("click", event => inputEventManager.clickOnBVHListPlayAction())
-  $("#BVHListPause").on("click", event => inputEventManager.clickOnBVHListPauseAction())
-  $("#BVHListReplay").on("click", event => inputEventManager.clickOnBVHListReplayAction())
-  $("#BVHListdisplay").on("click", event => inputEventManager.toggleBVHListVisibilityCheckboxAction(event))
+  $("#BVHListPlay").on("click", event => inputEventManager.clickOnListPlayAction(event))
+  $("#BVHListPause").on("click", event => inputEventManager.clickOnListPauseAction(event))
+  $("#BVHListReplay").on("click", event => inputEventManager.clickOnListReplayAction(event))
+  $("#BVHListdisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event))
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 
-/** 
- * Associe ou réassocie les méthodes liés aux modes d'interactions avec les objets de la page
- */
+/** Associe ou réassocie les méthodes liés aux modes d'interactions avec les objets de la page */
 function updateEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
@@ -57,11 +51,11 @@ function updateEventListener() {
 
   $(".playPause").off("click")
   $(".replay").off("click")
-  $(".timeSlider").off("change")
-  $(".playPause").on("click", event => inputEventManager.clickOnPlayPauseAction(event))
-  $(".replay").on("click", event => inputEventManager.clickOnReplayAction(event))
-  $(".timeSlider").on("change", event => inputEventManager.modifyTimeSliderAction(event))
-  $(".display").on("click", event => inputEventManager.toggleVisibilityCheckboxAction(event))
+  $(".timeSlider").off("input")
+  $(".playPause").on("click", event => inputEventManager.clickOnElementPlayPauseAction(event))
+  $(".replay").on("click", event => inputEventManager.clickOnElementReplayAction(event))
+  $(".timeSlider").on("input", event => inputEventManager.modifyElementTimeSliderAction(event))
+  $(".display").on("click", event => inputEventManager.toggleElementVisibilityCheckboxAction(event))
 
   // Sélection unique d'éléments de liste
   $(".objectList .list .object").off("dblclick")
