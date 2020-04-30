@@ -299,9 +299,9 @@ class Player {
    */
   toggleObjectInListAnimation(objectUuid_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
-      this.bvhAnimationsArray.toggleOneBVHAnimation(objectUuid_)
+      this.bvhAnimationsArray.toggleOneAnimation(objectUuid_)
     } else {
-      this.fbxAnimationsArray.toggleOneFBXAnimation(objectUuid_)
+      this.fbxAnimationsArray.toggleOneAnimation(objectUuid_)
     }
   }
 
@@ -311,9 +311,9 @@ class Player {
    */
   replayObjectInListAnimation(objectUuid_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
-      this.bvhAnimationsArray.replayOneBVHAnimation(objectUuid_)
+      this.bvhAnimationsArray.replayOneAnimation(objectUuid_)
     } else {
-      this.fbxAnimationsArray.replayOneFBXAnimation(objectUuid_);
+      this.fbxAnimationsArray.replayOneAnimation(objectUuid_);
     }
   }
 

@@ -38,20 +38,17 @@ class AnimationArray extends Array {
 
   /** Avance l'animation de chacun des éléments de la collection dans le temps s'il ne sont pas en pause.
    * 
-   *  @param {Number} frameTimeReference_ Le frametime de observé du navigateur
-   * 
    *  @returns {Boolean} True si au moins un élément de la collection est toujours en lecture, False sinon
    */
-  updateAllElementsAnimation(frameTimeReference_) {
+  updateAllElementsAnimation() {
     let atLeastOneElementToAnimate = false
     this.forEach(elem => {
       if (elem.timeSlider.valueAsNumber >= elem.timeSlider.max) {
         elem.pauseAnimation()
       } else if (!elem.isPaused) {
         atLeastOneElementToAnimate = true
-        elem.clip.timeScale = (elem.speedRatio * frameTimeReference_) / elem.frameTime
-        elem.clip.update(elem.frameTime)
-        elem.updateTimeSlider() // TODO Régler le problème d'imprécision du slider
+        elem.updateAnimation()
+        elem.updateTimeSlider()
       }
     });
     return atLeastOneElementToAnimate
@@ -67,5 +64,67 @@ class AnimationArray extends Array {
       let newTime = elt.timeSlider.max > newTimeSliderValue ? elt.frameTime * newTimeSliderValue : elt.frameTime * elt.timeSlider.max
       elt.clip.setTime(newTime)
     });
+  }
+
+  /** Met en pause lelement entré en parametre s'il est en lecture, le met en lecture sinon.
+   * 
+   *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
+   */
+  toggleOneAnimation(objectUuid_) {
+    this.getByUUID(objectUuid_).toggleAnimation()
+  }
+
+  /** Replace un élément entré en paramètre à sa première frame.
+   * 
+   *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
+   */
+  replayOneAnimation(objectUuid_) {
+    this.getByUUID(objectUuid_).replayAnimation()
+  }
+
+  /** Modifie le time slider d'un object avec sa nouvelle valeur
+   *  
+   *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
+   *  @param {Number} newValue_ Nouvelle valeur du time slider
+   */
+  updateOneTimeSlider(objectUuid_, newValue_) {
+    this.getByUUID(objectUuid_).updateTimeSlider(newValue_)
+  }
+
+  /**  */
+  pauseAllAnimations() {
+    this.forEach((elem) => {
+      elem.pauseAnimation()
+    })
+  }
+
+  /**  */
+  playAllAnimations() {
+    this.forEach((elem) => {
+      elem.playAnimation()
+    })
+  }
+
+  /** 
+   *  @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
+   */
+  resumeAllAnimations() {
+    let atLeastOneAnimationToPlay = false
+    this.forEach((elem) => {
+      if (elem.resumeAnimation() == true) {
+        atLeastOneAnimationToPlay = true
+      }
+    })
+    return atLeastOneAnimationToPlay
+  }
+
+  /** Replace l'ensemble des éléments de la collection à leur première frame.
+   * 
+   *  @param {Boolean} resetResumeAnim si True alors les animations se rejouent, sinon ils restent à la frame 0 (False par défaut).
+   */
+  replayAllAnimations(resetResumeAnim = false) {
+    this.forEach((elem) => {
+      elem.replayAnimation(resetResumeAnim)
+    })
   }
 }

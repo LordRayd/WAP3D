@@ -15,82 +15,18 @@ class BVHAnimationArray extends AnimationArray {
     })
   }
 
-  /** Met en pause lelement entré en parametre s'il est en lecture, le met en lecture sinon.
-   * 
-   *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
-   */
-  toggleOneBVHAnimation(objectUuid_) {
-    this.getByUUID(objectUuid_).toggleAnimation()
-  }
-
-  /** Replace un élément entré en paramètre à sa première frame.
-   * 
-   *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
-   */
-  replayOneBVHAnimation(objectUuid_) {
-    this.getByUUID(objectUuid_).replayAnimation()
-  }
-
-  /** Modifie le time slider d'un object avec sa nouvelle valeur
-   *  
-   *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
-   *  @param {Number} newValue_ Nouvelle valeur du time slider
-   */
-  updateOneTimeSlider(objectUuid_, newValue_) {
-    this.getByUUID(objectUuid_).updateTimeSlider(newValue_)
-  }
-
-  /**  */
-  pauseAllAnimations() {
-    this.forEach((bvh) => {
-      bvh.pauseAnimation()
-    })
-  }
-
-  /**  */
-  playAllAnimations() {
-    this.forEach((bvh) => {
-      bvh.playAnimation()
-    })
-  }
-
-  /** 
-   *  @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
-   */
-  resumeAllAnimations() {
-    let atLeastOneAnimationToPlay = false
-    this.forEach((bvh) => {
-      if (bvh.resumeAnimation() == true) {
-        atLeastOneAnimationToPlay = true
-      }
-    })
-    return atLeastOneAnimationToPlay
-  }
-
-  /** Replace l'ensemble des éléments de la collection à leur première frame.
-   * 
-   *  @param {Boolean} resetResumeAnim si True alors les animations se rejouent, sinon ils restent à la frame 0 (False par défaut).
-   */
-  replayAllAnimations(resetResumeAnim = false) {
-    this.forEach((bvh) => {
-      bvh.replayAnimation(resetResumeAnim)
-    })
-  }
-
   /** Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
    *  
    *  @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
    */
   highlightElements(Uuids_) {
-    let amount
+    let amount = 0
     if (Uuids_) {
       if (Uuids_.constructor.name === "Set") {
         amount = Uuids_.size
       } else {
         amount = Uuids_.length
       }
-    } else {
-      amount = 0
     }
 
     if (amount > 0) {
@@ -130,6 +66,8 @@ class BVHAnimationElement {
     this.isPaused = false
     this.resumeAnimationValue = this.isPaused
     this.speedRatio = 1
+
+    this.clock = new THREE.Clock();
 
     // Pause/Play
     this.playPauseButton = $("#" + this.uuid + " .playPause")[0]
@@ -198,6 +136,7 @@ class BVHAnimationElement {
   /**  */
   playAnimation() {
     this.isPaused = false
+    this.clock.getDelta()
     this._updatePlayPauseImg()
   }
 
@@ -268,5 +207,11 @@ class BVHAnimationElement {
   /** Retourne l'uuid du BVH */
   get uuid() {
     return this.skeleton.uuid
+  }
+
+  /** TODO */
+  updateAnimation(){
+    if(this.resumeAnimationValue == true) this.clock.getDelta()
+    this.clip.update(this.clock.getDelta());
   }
 }

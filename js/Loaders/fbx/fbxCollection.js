@@ -2,65 +2,6 @@
  * Array avec des méthodes et attributs en plus dans le but de stocker et d'interagir avec une collection de FBX.
  */
 class FBXAnimationArray extends AnimationArray {
-  /** Mets en pause tous les fbx  */
-  pauseAllAnimations() {
-    this.forEach((fbx) => {
-      fbx.pauseAnimation()
-    })
-  }
-
-  /** Joue tous les fbx */
-  playAllAnimations() {
-    this.forEach((bvh) => {
-      bvh.playAnimation()
-    })
-  }
-
-  /** 
-   *  @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
-   */
-  resumeAllAnimations() {
-    let atLeastOneAnimationToPlay = false
-    this.forEach((fbx) => {
-      if (fbx.resumeAnimation() == true) {
-        atLeastOneAnimationToPlay = true
-      }
-    })
-    return atLeastOneAnimationToPlay
-  }
-
-  /** TODO */
-  replayAllAnimations() {
-
-  }
-
-  /** TODO */
-  updateAllElementsAnimation(frameTimeReference_) {
-    let atLeastOneElementToAnimate = false
-    this.forEach(fbxElem => {
-      if (!fbxElem.isPaused) {
-        atLeastOneElementToAnimate = true
-        fbxElem._update();
-        fbxElem.updateTimeSlider();
-      }
-    });
-    return atLeastOneElementToAnimate;
-  }
-
-  /** TODO   */
-  toggleOneFBXAnimation(objectUuid_) {
-    this.getByUUID(objectUuid_).toggleAnimation();
-  }
-
-  /** TODO   */
-  replayOneFBXAnimation(objectUuid_) {
-    this.getByUUID(objectUuid_).replayAnimation();
-  }
-
-  /** TODO */
-  updateOneTimeSlider(objectUuid_, newValue) {
-    this.getByUUID(objectUuid_).updateTimeSlider(newValue)
-  }
 }
 
 /** Objet contenant l'ensembles des données nécéssaires aux traitement d'un BVH.
@@ -145,7 +86,6 @@ class FBXAnimationElement {
       let val = target - ((this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations);
       this.diff += val;
       this.clip.update(val);
-      console.log(this.timeSlider.valueAsNumber)
     } else {
       this.timeSlider.valueAsNumber = (this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations;
     }
@@ -179,10 +119,8 @@ class FBXAnimationElement {
     return this.clip._root.uuid;
   }
 
-  /** TODO */
-  _update() {
-    if (this.isPaused == false) {
+    /** TODO */
+    updateAnimation(){
       this.clip.update(this.clock.getDelta());
     }
-  }
 }
