@@ -132,24 +132,10 @@ class Player {
 
     this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
 
-    // FBX---
-    /*if (this.fbxLoader.loadingState === "loaded") {
-      if(this.fbxLoader.array){
-        var delta = clock.getDelta();
-        this.fbxLoader.testarray.forEach(element => {
-          console.log("ok");
-          element.update(delta);
-        });
-      }
-    }*/
-
-    // TODO
-
     // BVH ---
     this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray)
 
     // FBX ---
-    // TODO Décommenter
     this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
 
     this.animating = false
@@ -158,15 +144,13 @@ class Player {
 
   /** TODO */
   _updateAnimation(loader, animationArray) {
-    if (loader.loadingState !== "loading") {
-      if (loader.loadingState === "loaded") {
-        if (this.animationIsPaused == false) {
-          if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == false) { this._pauseAnimation() } // toutes les animations ont fini de jouer
-        } else if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
-          // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
-          this.animationIsPaused = false
-          this._updateGeneralPlayPauseImg()
-        }
+    if (loader.loadingState === "loaded") {
+      if (this.animationIsPaused == false) {
+        if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == false) { this._pauseAnimation() } // toutes les animations ont fini de jouer
+      } else if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
+        // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
+        this.animationIsPaused = false
+        this._updateGeneralPlayPauseImg()
       }
     }
   }
@@ -338,11 +322,11 @@ class Player {
    *  @param objectUuid_ Identifiant de l'object selectionner dans la scene
    *  @param newValue Nouvelle valeur du time slider
    */
-  modifyObjectInListTimeSlider(objectUuid_, newValue) {
+  updateObjectInListTimeSlider(objectUuid_, newValue_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
-      this.bvhAnimationsArray.modifyOneBVHFTimeSlider(objectUuid_, newValue)
+      this.bvhAnimationsArray.updateOneTimeSlider(objectUuid_, newValue_)
     } else {
-      this.fbxAnimationsArray.modifyOneFBXFTimeSlider(objectUuid_, newValue);
+      this.fbxAnimationsArray.updateOneTimeSlider(objectUuid_, newValue_);
     }
   }
 
@@ -351,12 +335,12 @@ class Player {
    *  @param {UUID} objectUuid_ Identifiant de l'object à modifier dans la scene
    *  @param {Boolean} newValue Object devient visible si true, sinon il devient invisible
    */
-  toggleObjectInListVisibility(objectUuid_, newValue) {
+  toggleObjectInListVisibility(objectUuid_, newValue_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
-      if (newValue === true) this.bvhAnimationsArray.getByUUID(objectUuid_).show()
+      if (newValue_ === true) this.bvhAnimationsArray.getByUUID(objectUuid_).show()
       else this.bvhAnimationsArray.getByUUID(objectUuid_).hide()
     } else {
-      if (newValue === true) this.fbxAnimationsArray.getByUUID(objectUuid_).show()
+      if (newValue_ === true) this.fbxAnimationsArray.getByUUID(objectUuid_).show()
       else this.fbxAnimationsArray.getByUUID(objectUuid_).hide()
     }
   }

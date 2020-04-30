@@ -113,21 +113,6 @@ class IEM {
     }
   }
 
-  /** Demande au Player de toggle entre pause et play */
-  //TODO à modifier pour être utilisé dans les listes
-  clickOnGlobalPlayPauseAction(event) {
-    if (this.iemIsBlocked) return
-    this.playerAnimating = this.player.toggleAnimation()
-  }
-
-  /** Demande au player de mettre toutes les animations à leur première frames */
-  //TODO à modifier pour être utilisé dans les listes
-  clickOnGlobalReplayAction(event) {
-    if (this.iemIsBlocked) return
-    this.player.bvhAnimationsArray.setAllBvhTime(0)
-    this.player.restartAnimation()
-  }
-
   /** Demande au player de mettre en route tout les BVH */
   clickOnBVHListPlayAction(event) {
     if (this.iemIsBlocked) return
@@ -171,9 +156,9 @@ class IEM {
   /** Demande au player de mettre à la frame correspondante l'animation correspondante à l'élément dans lequel le time slider à été clické */
   modifyTimeSliderAction(event) {
     if (this.iemIsBlocked) return
-    let newValue = event.currentTarget.valueAsNumber
+    let newValue = event.target.valueAsNumber
     let objectId = event.target.parentNode.parentNode.id
-    this.player.modifyObjectInListTimeSlider(objectId, newValue)
+    this.player.updateObjectInListTimeSlider(objectId, newValue)
   }
 
   /** Demande au player de toggle la visibilité de l'élément correspondant */

@@ -1,47 +1,7 @@
 /**
  * Array avec des méthodes et attributs en plus dans le but de stocker et d'interagir avec une collection de FBX.
  */
-class FBXAnimationArray extends Array {
-
-  /** Retire l'élément de uuid correspondant de la collection
-   *  
-   *  @param {*} uuid_ 
-   */
-  removeByUUID(uuid_) {
-    this.some((fbxAnimationElem, index) => {
-      if (fbxAnimationElem.uuid === uuid_) {
-        //TODO supprimer l'élément dans la scène
-        this.splice(index, 1)
-        return true
-      }
-    })
-  }
-
-  /**
-   *  @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
-   *  
-   *  @returns {FBXAnimationElement} l'élément correspondant au UUID donné si il existe
-   */
-  getByUUID(uuid_) {
-    for (let elem of this) {
-      if (elem.uuid === uuid_) {
-        return elem
-      }
-    }
-  }
-
-  /** Retourne si l'object entré en paramaetre est présent o non dans la liste. 
-   * 
-   *  @param {UUID} objectUuid_ le UUID à rechercher
-   * 
-   *  @returns {Boolean} True si la collection contient un élément correspondant au UUID donné
-   */
-  contains(objectUuid_) {
-    return this.some((fbx_) => {
-      return fbx_.uuid == objectUuid_
-    })
-  }
-
+class FBXAnimationArray extends AnimationArray {
   /** Mets en pause tous les fbx  */
   pauseAllAnimations() {
     this.forEach((fbx) => {
@@ -81,7 +41,7 @@ class FBXAnimationArray extends Array {
       if (!fbxElem.isPaused) {
         atLeastOneElementToAnimate = true
         fbxElem._update();
-        fbxElem.modifyTimeSlider();
+        fbxElem.updateTimeSlider();
       }
     });
     return atLeastOneElementToAnimate;
@@ -98,8 +58,8 @@ class FBXAnimationArray extends Array {
   }
 
   /** TODO */
-  modifyOneFBXFTimeSlider(objectUuid_, newValue) {
-    this.getByUUID(objectUuid_).modifyTimeSlider(newValue)
+  updateOneTimeSlider(objectUuid_, newValue) {
+    this.getByUUID(objectUuid_).updateTimeSlider(newValue)
   }
 }
 
@@ -179,12 +139,13 @@ class FBXAnimationElement {
   }
 
   /** TODO */
-  modifyTimeSlider(target) {
+  updateTimeSlider(target) {
     if (target) {
       this.timeSlider.valueAsNumber = target;
       let val = target - ((this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations);
       this.diff += val;
       this.clip.update(val);
+      console.log(this.timeSlider.valueAsNumber)
     } else {
       this.timeSlider.valueAsNumber = (this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations;
     }

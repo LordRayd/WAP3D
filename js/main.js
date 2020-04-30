@@ -51,10 +51,10 @@ function updateEventListener() {
 
   $(".playPause").off("click")
   $(".replay").off("click")
-  $(".timeSlider").off("change")
+  $(".timeSlider").off("input")
   $(".playPause").on("click", event => inputEventManager.clickOnPlayPauseAction(event))
   $(".replay").on("click", event => inputEventManager.clickOnReplayAction(event))
-  $(".timeSlider").on("change", event => inputEventManager.modifyTimeSliderAction(event))
+  $(".timeSlider").on("input", event => inputEventManager.modifyTimeSliderAction(event))
   $(".display").on("click", event => inputEventManager.toggleVisibilityCheckboxAction(event))
 
   // Sélection unique d'éléments de liste

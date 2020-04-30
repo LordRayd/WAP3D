@@ -1,21 +1,5 @@
-/**
- * Array avec des méthodes et attributs en plus dans le but de stocker et d'interagir avec une collection de BVH.
- */
-class BVHAnimationArray extends Array {
-
-  /** Retire l'élément de uuid correspondant de la collection
-   *  
-   *  @param {*} uuid_ 
-   */
-  removeByUUID(uuid_) {
-    this.some((bvhAnimationElem, index) => {
-      if (bvhAnimationElem.uuid === uuid_) {
-        //TODO supprimer l'élément dans la scène
-        this.splice(index, 1)
-        return true
-      }
-    })
-  }
+/** Array avec des méthodes et attributs en plus dans le but de stocker et d'interagir avec une collection de BVH. */
+class BVHAnimationArray extends AnimationArray {
 
   /** @returns {BVHAnimationElement} l'OBJET ayant le plus grand nombre de frames dans la collection */
   getByMaxNbOfFrames() {
@@ -28,68 +12,6 @@ class BVHAnimationArray extends Array {
   getByMaxOverallTime() {
     return this.reduce((bvh0, bvh1) => {
       return (bvh0.nbFrames * bvh0.frameTime) < (bvh1.nbFrames * bvh1.frameTime) ? bvh1 : bvh0
-    })
-  }
-
-  /** 
-   *  @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
-   *  
-   *  @returns {BVHAnimationElement} l'élément correspondant au UUID donné si il existe
-   */
-  getByUUID(uuid_) {
-    for (let elem of this) {
-      if (elem.uuid === uuid_) {
-        return elem
-      }
-    }
-  }
-
-  /** Set la frame entree en parametre comme frame courante pour tous les éléments de la collection.
-   *  Si la frame est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
-   *  
-   *  @param {Number} frame L'index de frame souhaité
-   */
-  setAllBvhTime(frame) {
-    console.log(frame)
-    this.forEach(bvh => {
-      let newTime = bvh.nbFrames > frame ? bvh.frameTime * frame : bvh.frameTime * bvh.nbFrames
-      bvh.clip.setTime(newTime)
-    });
-  }
-
-  /** Avance l'animation de chacun des éléments de la collection dans le temps s'il ne sont pas en pause.
-   * 
-   *  @param {Number} frameTimeReference_ Le frametime de observé du navigateur
-   * 
-   *  @returns {Boolean} True si au moins un élément de la collection est toujours en lecture, False sinon
-   */
-  updateAllElementsAnimation(frameTimeReference_) {
-    let atLeastOneElementToAnimate = false
-    this.forEach(bvhElem => {
-      if (bvhElem.timeSlider.valueAsNumber >= bvhElem.nbFrames) {
-        bvhElem.isPaused = true
-        bvhElem._updatePlayPauseImg()
-      }
-
-      if (!bvhElem.isPaused) {
-        atLeastOneElementToAnimate = true
-        bvhElem.clip.timeScale = (bvhElem.speedRatio * frameTimeReference_) / bvhElem.frameTime
-        bvhElem.clip.update(bvhElem.frameTime)
-        bvhElem.modifyTimeSlider() // TODO Régler le problème d'imprécision du slider
-      }
-    });
-    return atLeastOneElementToAnimate
-  }
-
-  /** Retourne si l'object entré en paramaetre est présent o non dans la liste. 
-   * 
-   *  @param {UUID} objectUuid_ le UUID à rechercher
-   * 
-   *  @returns {Boolean} True si la collection contient un élément correspondant au UUID donné
-   */
-  contains(objectUuid_) {
-    return this.some((bvh_) => {
-      return bvh_.uuid == objectUuid_
     })
   }
 
@@ -112,10 +34,10 @@ class BVHAnimationArray extends Array {
   /** Modifie le time slider d'un object avec sa nouvelle valeur
    *  
    *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
-   *  @param {Number} newValue L'index de frame souhaité
+   *  @param {Number} newValue_ Nouvelle valeur du time slider
    */
-  modifyOneBVHFTimeSlider(objectUuid_, newValue) {
-    this.getByUUID(objectUuid_).modifyTimeSlider(newValue)
+  updateOneTimeSlider(objectUuid_, newValue_) {
+    this.getByUUID(objectUuid_).updateTimeSlider(newValue_)
   }
 
   /**  */
@@ -215,7 +137,7 @@ class BVHAnimationElement {
     // Time Slider
     this.timeSlider = $("#" + this.uuid + " .timeSlider")[0]
     this.timeSlider.max = this.nbFrames
-    this.timeSlider.min = 1
+    this.timeSlider.min = 0
     this.timeSlider.valueAsNumber = this.timeSlider.min
 
     // Affichage a lecran
@@ -299,7 +221,7 @@ class BVHAnimationElement {
   replayAnimation(resetResumeAnim) {
     if (resetResumeAnim == true) this.resumeAnimationValue = false
     this.timeSlider.valueAsNumber = this.timeSlider.min
-    this.clip.setTime(this.timeSlider.valueAsNumber)
+    this.clip.setTime(this.timeSlider.min)
     this._updatePlayPauseImg()
   }
 
@@ -333,10 +255,11 @@ class BVHAnimationElement {
    *  
    *  @param {Number} target : Option, noubelle valeur du time slider
    */
-  modifyTimeSlider(target = false) {
-    if (target) {
-      this.timeSlider.valueAsNumber = target
-      this.clip.setTime(target)
+  updateTimeSlider(newTime = null) {
+    if (newTime) {
+      this.timeSlider.valueAsNumber = newTime
+      this.clip.timeScale = 1
+      this.clip.setTime(this.timeSlider.valueAsNumber * this.frameTime)
     } else {
       this.timeSlider.valueAsNumber += this.clip.timeScale
     }
