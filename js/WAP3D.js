@@ -1,5 +1,3 @@
-import { FileLoader } from "three";
-
 class Player {
 
   /** Joue les animations quand elles existent
