@@ -11,8 +11,6 @@ class Player {
     this.cameraControls = cameraControls
     this.bvhAnimationsArray = bvhAnimationsArray
     this.fbxAnimationsArray = fbxAnimationsArray
-    this.framerateTimeReference = -1
-    this.currentScreenFrameTime = 0.01667
 
     this._initialisePlayer()
 
@@ -108,16 +106,6 @@ class Player {
     }
   }
 
-  /** Permet de récupérer le frame time du navigateur en secondes
-   *  Estimation approximative à l'instant T
-   */
-  _updateFrameTime() {
-    let currDateTime = Date.now()
-    let delta = (currDateTime - this.framerateTimeReference) / 1000;
-    this.framerateTimeReference = currDateTime
-    this.currentScreenFrameTime = delta;
-  }
-
   /** Animation des element dans le player */
   _animate() {
     if (this.bvhLoader.loadingState === "loading" || this.fbxLoader.loadingState === "loading") {
@@ -129,8 +117,6 @@ class Player {
     requestAnimationFrame(this._animate.bind(this))
     this.cameraControls.update()
     this.animating = true
-
-    this._updateFrameTime() // Regle le probleme de clic sur le slider (cependant si frameTime misAjour, saut dans le temps Etrange)
 
     // BVH ---
     this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray)
@@ -145,9 +131,10 @@ class Player {
   /** TODO */
   _updateAnimation(loader, animationArray) {
     if (loader.loadingState === "loaded") {
-      if (this.animationIsPaused == false) {
-        if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == false) { this._pauseAnimation() } // toutes les animations ont fini de jouer
-      } else if (animationArray.updateAllElementsAnimation(this.currentScreenFrameTime) == true) {
+      let atLeastOneElementToAnimate = animationArray.updateAllElementsAnimation()
+      if (this.animationIsPaused == false && atLeastOneElementToAnimate == false) {
+        this._pauseAnimation() // toutes les animations ont fini de jouer
+      } else if (this.animationIsPaused && atLeastOneElementToAnimate) {
         // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
         this.animationIsPaused = false
         this._updateGeneralPlayPauseImg()
@@ -172,7 +159,6 @@ class Player {
       } catch (error) {
         alert(error)
       } finally {
-        console.log("finally CB")
         this._fileLoadedCallBack()
       }
       resolve()
@@ -545,15 +531,5 @@ class Player {
     } else { //if arrayClone.every((value) => this.fbxAnimationsArray.contains(value)) ...
       //FBX ----
     }
-  }
-
-  /** Retourne le frame time de reference actuel s'il existe. Retourne la date courrante en miliseconde sinon. */
-  get framerateTimeReference() {
-    return this._framerateTimeReference == -1 ? Date.now() : this._framerateTimeReference
-  }
-
-  /**  */
-  set framerateTimeReference(newFrameTimeRef) {
-    this._framerateTimeReference = newFrameTimeRef
   }
 }

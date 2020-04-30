@@ -47,7 +47,7 @@ class AnimationArray extends Array {
         elem.pauseAnimation()
       } else if (!elem.isPaused) {
         atLeastOneElementToAnimate = true
-        elem.updateAnimation(elem.clock.getDelta())
+        elem.updateAnimation()
         elem.updateTimeSlider()
       }
     });

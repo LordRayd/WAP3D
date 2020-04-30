@@ -37,7 +37,6 @@ class AnimationElement {
       this.timeSlider.valueAsNumber = newTime
       this.clip.setTime(this.timeSlider.valueAsNumber * this.frameTime)
     } else {
-      console.log(this.clip.time)
       this.timeSlider.valueAsNumber = this.clip.time / this.frameTime
     }
   }
