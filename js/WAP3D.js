@@ -1,3 +1,5 @@
+import { FileLoader } from "three";
+
 class Player {
 
   /** Joue les animations quand elles existent
@@ -128,7 +130,12 @@ class Player {
     this.renderer.render(this.scene, this.camera)
   }
 
-  /** TODO */
+  /** Demande la mise à jour des éléments contenu dans le tableau d'animation entré en paramètre
+   *  Si il y a des fichiers chargé, et qu'il y a au moins un élément à animer, l'animation continue ou se relance si elle était en pause.
+   * 
+   *  @param {FileLoader} loader
+   *  @param {AnimationArray} animationArray tableau d'animation
+   */
   _updateAnimation(loader, animationArray) {
     if (loader.loadingState === "loaded") {
       let atLeastOneElementToAnimate = animationArray.updateAllElementsAnimation()

@@ -1,4 +1,4 @@
-class animationArray extends Array {
+class AnimationArray extends Array {
   /** Retire l'élément de uuid correspondant de la collection
    *  
    *  @param {*} uuid_ 
