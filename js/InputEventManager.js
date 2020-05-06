@@ -81,7 +81,7 @@ class IEM {
         this.isOnAppendSelectionMode = true
         break
       case 'ENTER':
-        if (this.currentlySelectedElements.size > 0) this.openAdvancedControls(this.currentlySelectedElements)
+        if (this.currentlySelectedElements.size > 0) this.player.launchAdvancedControls(this.currentlySelectedElements)
         break
       case 'DELETE':
         this.player.deleteObjectsFromPlayer(this.currentlySelectedElements)
@@ -216,7 +216,14 @@ class IEM {
         this.currentlySelectedElements.clear()
       }
     }
-    this.player.bvhAnimationsArray.highlightElements(this.currentlySelectedElements)
+    let selectElementsArray = [...this.currentlySelectedElements]
+    if (selectElementsArray.every((uuid) => this.player.bvhAnimationsArray.contains(uuid))){
+      this.player.bvhAnimationsArray.highlightElements(selectElementsArray)
+    }else if(selectElementsArray.every((uuid) => this.player.fbxAnimationsArray.contains(uuid))){
+      this.player.fbxAnimationsArray.highlightElements(selectElementsArray)
+    }else{
+      throw new Error("invalid selection, rappel: les sélections hétérogène ne sont pas autorisées") 
+    }
   }
 
   /** TODO */
