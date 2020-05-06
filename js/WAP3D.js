@@ -32,7 +32,7 @@ class Player {
     this._animate()
 
     //contenu de la fenêtre de contrôles avancés
-    this.bvhAdvancedCtrlContent = '\
+    this.bvhAdvancedCtrlContent = $('\
       <div id="advancedControlsTabsForBVH">\
         <ul> \
           <li><a href="#graphs">Graphs</a></li>\
@@ -59,7 +59,7 @@ class Player {
         </div>\
         <div id="selection">\
         </div>\
-      </div>'
+      </div>')
   }
 
   /** Initialise le lecteur avec une grille de référence */
