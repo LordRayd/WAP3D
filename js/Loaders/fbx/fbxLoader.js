@@ -69,32 +69,12 @@ class FBXLoader extends FileLoader {
           let fbxUuid = loadedFbxObject.uuid
           this.scene.add(loadedFbxObject);
           this.nbLoadedFiles += 1;
-          this._addFBXToObjectList(fbxUuid, fbxFile.name);
+          this._addElementToObjectList(fbxUuid, fbxFile.name, "fbx");
           this.animations.push(new FBXAnimationElement(fbxFile.name, fbxUuid, mixer))
           resolve();
         },
         null,
         error => reject(error));
     });
-  }
-
-  /** Ajoute un element dans la liste des BVH contenant le nom et l'UUID du BVH a ajouter
-   * 
-   * @param uuid_ identifiant du bvh a afficher
-   * @param name nom du bvh a afficher
-   */
-  _addFBXToObjectList(uuid_, name) {
-    $("#fbxList .list").append('<div id="' + uuid_ + '" class="object"></div>')
-    let divToAppendTo = "#fbxList .list #" + uuid_
-
-    $(divToAppendTo).append('<div class="titleArea"><p>' + name + '</p></div>')
-    $(divToAppendTo).append('<div class="controlFunctions"></div>')
-
-    let controlDivToAppendTo = "#fbxList .list #" + uuid_ + " .controlFunctions"
-
-    $(controlDivToAppendTo).append('<div   class="playPause"><img src="./images/pause_button.svg"></div>')
-    $(controlDivToAppendTo).append('<input class="timeSlider" step="any" type="range">')
-    $(controlDivToAppendTo).append('<div   class="replay"> <img src="./images/replay_button.svg"></div>')
-    $(controlDivToAppendTo).append('<input class="display" type="checkbox" checked>')
   }
 }
