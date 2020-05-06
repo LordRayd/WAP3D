@@ -114,6 +114,18 @@ class IEM {
     }
   }
 
+  /**Demande au player de toggle la mise en pose de la scène */
+  clickOnGlobalPlayPauseAction(){
+    if (this.iemIsBlocked) return
+    this.player.toggleAnimation("all")
+  }
+
+  /**Demande au player de reset les animations de la scène */
+  clickOnGlobalReplayAction(){
+    if (this.iemIsBlocked) return
+    this.player.replayAnimation("all")
+  }
+
   /** Demande au player de mettre en route tout les BVH */
   clickOnListPlayAction(event) {
     if (this.iemIsBlocked) return

@@ -274,7 +274,7 @@ class Player {
         break
       default:
         this.animationsArrays.forEach(elt => {
-          if (elt.resumeAnimation(animationWasPlaying) == true) { allEltsPaused = false }
+          if (elt.resumeAllAnimations() == true) { allEltsPaused = false }
         })
         this._updateGeneralPlayPauseImg()
     }
