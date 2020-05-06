@@ -43,4 +43,14 @@ class BVHAnimationArray extends AnimationArray {
       })
     }
   }
+
+  /** met à jour l'image du bouton de visibilité de la liste BVH */
+  _updateListVisibilityImg(value){
+    let img = $("#bvhList .listDisplay")[0].children[0]
+    if(value){
+      img.src = "./images/eye_button.svg"
+    }else{
+      img.src = "./images/closed_eye_button.svg"
+    }
+  }
 }

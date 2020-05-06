@@ -33,10 +33,10 @@ function _setAllEventListener() {
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction())
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction())
 
-  $("#BVHListPlay").on("click", event => inputEventManager.clickOnListPlayAction(event))
-  $("#BVHListPause").on("click", event => inputEventManager.clickOnListPauseAction(event))
-  $("#BVHListReplay").on("click", event => inputEventManager.clickOnListReplayAction(event))
-  $("#BVHListdisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event))
+  $(".listPlay").on("click", event => inputEventManager.clickOnListPlayAction(event))
+  $(".listPause").on("click", event => inputEventManager.clickOnListPauseAction(event))
+  $(".listReplay").on("click", event => inputEventManager.clickOnListReplayAction(event))
+  $(".listDisplay").on("click", event => inputEventManager.clickOnListVisibilityAction(event))
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
@@ -55,10 +55,11 @@ function updateEventListener() {
   $(".playPause").off("click")
   $(".replay").off("click")
   $(".timeSlider").off("input")
+  $(".display").off("click")
   $(".playPause").on("click", event => inputEventManager.clickOnElementPlayPauseAction(event))
   $(".replay").on("click", event => inputEventManager.clickOnElementReplayAction(event))
   $(".timeSlider").on("input", event => inputEventManager.modifyElementTimeSliderAction(event))
-  $(".display").on("click", event => inputEventManager.toggleElementVisibilityCheckboxAction(event))
+  $(".display").on("click", event => inputEventManager.clickOnElementVisibilityAction(event))
 
   // Sélection unique d'éléments de liste
   $(".objectList .list .object").off("dblclick")

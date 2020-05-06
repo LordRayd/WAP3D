@@ -240,7 +240,7 @@ class Player {
         this.fbxAnimationsArray.playAllAnimations()
         break
       default:
-        this.animationsArrays.forEach(playAllAnimations)
+        this.animationsArrays.forEach(list => list.playAllAnimations())
         this._updateGeneralPlayPauseImg()
     }
   }

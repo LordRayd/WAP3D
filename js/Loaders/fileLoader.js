@@ -86,7 +86,7 @@ class FileLoader {
           <div class="playPause"> <img src="./images/pause_button.svg"></img> </div>\
           <input class="timeSlider" step="any" type="range"></input>\
           <div class="replay"> <img src="./images/replay_button.svg"></img> </div>\
-          <input class="display" type="checkbox" checked></input>\
+          <div class="display"> <img src="./images/eye_button.svg"></img> </div>\
         </div>\
       </div>\
     ')

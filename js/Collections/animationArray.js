@@ -128,13 +128,18 @@ class AnimationArray extends Array {
     })
   }
 
+  /** Méthode abstraite */
+  _updateListVisibilityImg(value) { throw new Error("_updateListVisibilityImg Abstract : not Implemented") }
+
   /** TODO */
   hideAllAnimations() {
     this.forEach(elem => elem.hide())
+    this._updateListVisibilityImg(false)
   }
 
   /** TODO */
   showAllAnimations() {
     this.forEach(elem => elem.show())
+    this._updateListVisibilityImg(true)
   }
 }
