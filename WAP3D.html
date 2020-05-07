@@ -16,24 +16,28 @@
     <!-- Three JS -->
     <script src="./node_modules/three/build/three.js"></script>
     <script src="./node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="./node_modules/three/examples/js/libs/inflate.min.js"></script>
+    <script src="./node_modules/three/examples/js/loaders/FBXLoader.js"></script>
 
     <!-- Plotly -->
     <script src="./node_modules/plotly.js-basic-dist-min/plotly-basic.min.js"></script>
 
     <!-- WAP3D -->
       <!-- Module -->
-      <script src="./js/fileLoader.js"></script>
+      <script src="./js/Loaders/fileLoader.js"></script>
+      <script src="./js/Collections/animationArray.js"></script>
+      <script src="./js/Collections/animationElement.js"></script>
 
       <!-- BVH -->
-      <script src="./js/bvh/bvhParser.js"></script>
-      <script src="./js/bvh/bvhLoader.js"></script>
-      <script src="./js/bvh/bvhCollection.js"></script>
+      <script src="./js/Loaders/bvh/bvhParser.js"></script>
+      <script src="./js/Loaders/bvh/bvhLoader.js"></script>
+      <script src="./js/Collections/bvh/bvhCollection.js"></script>
+      <script src="./js/Collections/bvh/bvhElement.js"></script>
 
       <!-- FBX -->
-      <script src="./js/fbx/fbxCollection.js"></script>
-      <script src="./node_modules/three/examples/js/libs/inflate.min.js"></script>
-      <script src="./node_modules/three/examples/js/loaders/FBXLoader.js"></script>
-      <script src="./js/fbx/fbxLoader.js"></script>
+      <script src="./js/Loaders/fbx/fbxLoader.js"></script>
+      <script src="./js/Collections/fbx/fbxCollection.js"></script>
+      <script src="./js/Collections/fbx/fbxElement.js"></script>
 
       <!-- WAP3D -->
       <script src="./js/wap3DUtil.js"></script>
@@ -48,7 +52,7 @@
     <div id="container">
       <div id="objectSelector">
         <div id="closeOpenButton">
-            <img src="./images/close_button.svg">
+          <img src="./images/close_button.svg">
         </div>
 
         <div id="listTabs" class="jqueryUIOverride">
@@ -86,9 +90,7 @@
         <!-- le canvas est créé par la classe Player définie dans WAP3D.js -->
       </div>
       <div id="control">
-        <div id="globalPlayPause">
-          <div><img src="./images/pause_button.svg"></div>
-        </div>
+        <div id="globalPlayPause"><img src="./images/pause_button.svg"></div>
         <div id="globalReplay"><img src="./images/replay_button.svg"></div>
       </div>
     </div>

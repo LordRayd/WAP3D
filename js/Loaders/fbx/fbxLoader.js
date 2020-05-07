@@ -66,11 +66,11 @@ class FBXLoader extends FileLoader {
               child.receiveShadow = true;
             }
           });
-          loadedFbxObject.name = loadedFbxObject.uuid;
+          let fbxUuid = loadedFbxObject.uuid
           this.scene.add(loadedFbxObject);
           this.nbLoadedFiles += 1;
-          this._addFBXToObjectList(loadedFbxObject.uuid, fbxFile.name);
-          this.animations.push(new FBXAnimationElement(fbxFile.name, this.scene, mixer))
+          this._addFBXToObjectList(fbxUuid, fbxFile.name);
+          this.animations.push(new FBXAnimationElement(fbxFile.name, fbxUuid, mixer))
           resolve();
         },
         null,
@@ -78,7 +78,7 @@ class FBXLoader extends FileLoader {
     });
   }
 
-  /** Ajoute une element dans la liste des BVH contenant le nom et l'UUID du BVH a ajouter
+  /** Ajoute un element dans la liste des BVH contenant le nom et l'UUID du BVH a ajouter
    * 
    * @param uuid_ identifiant du bvh a afficher
    * @param name nom du bvh a afficher
