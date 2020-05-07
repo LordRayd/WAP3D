@@ -81,7 +81,7 @@ class IEM {
         this.isOnAppendSelectionMode = true
         break
       case 'ENTER':
-        if (this.currentlySelectedElements.size > 0) this.openAdvancedControls(this.currentlySelectedElements)
+        if (this.currentlySelectedElements.size > 0) this.player.launchAdvancedControls(this.currentlySelectedElements)
         break
       case 'DELETE':
         this.player.deleteObjectsFromPlayer(this.currentlySelectedElements)
@@ -114,34 +114,45 @@ class IEM {
     }
   }
 
+  /**Demande au player de toggle la mise en pose de la scène */
+  clickOnGlobalPlayPauseAction(){
+    if (this.iemIsBlocked) return
+    this.player.toggleAnimation("all")
+  }
+
+  /**Demande au player de reset les animations de la scène */
+  clickOnGlobalReplayAction(){
+    if (this.iemIsBlocked) return
+    this.player.replayAnimation("all")
+  }
+
   /** Demande au player de mettre en route tout les BVH */
   clickOnListPlayAction(event) {
     if (this.iemIsBlocked) return
-    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.playAnimation(listName)
   }
 
   /** Demande au player de mettre en pause tout les BVH */
   clickOnListPauseAction(event) {
     if (this.iemIsBlocked) return
-    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.pauseAnimation(listName)
   }
 
   /** Demande au player de relancer tout les BVH */
   clickOnListReplayAction(event) {
     if (this.iemIsBlocked) return
-    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.replayAnimation(listName)
   }
 
   /** Demande au player de toggle la visibilité de tout les BVH */
-  toggleListVisibilityCheckboxAction(event) {
+  clickOnListVisibilityAction(event) {
     if (this.iemIsBlocked) return
-    let isChecked = $(event.target).is(":checked")
-    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
-    this.player.toggleListVisibility(listName, isChecked)
-    $("#" + listName + "List .list .object .controlFunctions .display").prop('checked', isChecked)
+    let isVisible = $(event.target).attr("src") != "./images/eye_button.svg"
+    let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
+    this.player.toggleListVisibility(listName, isVisible)
   }
 
   /** Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické */
@@ -167,10 +178,10 @@ class IEM {
   }
 
   /** Demande au player de toggle la visibilité de l'élément correspondant */
-  toggleElementVisibilityCheckboxAction(event) {
+  clickOnElementVisibilityAction(event) {
     if (this.iemIsBlocked) return
-    let objectId = event.target.parentNode.parentNode.id
-    this.player.toggleObjectInListVisibility(objectId, $(event.target).is(":checked"))
+    let objectId = event.target.parentNode.parentNode.parentNode.id
+    this.player.toggleObjectInListVisibility(objectId, $(event.target).attr("src") != "./images/eye_button.svg")
   }
 
   /** Demande au player de rajouter des éléments à la liste des éléments modifiable par la fenêtre de ctrl avancés
@@ -204,7 +215,14 @@ class IEM {
         this.currentlySelectedElements.clear()
       }
     }
-    this.player.bvhAnimationsArray.highlightElements(this.currentlySelectedElements)
+    let selectElementsArray = [...this.currentlySelectedElements]
+    if (selectElementsArray.every((uuid) => this.player.bvhAnimationsArray.contains(uuid))){
+      this.player.bvhAnimationsArray.highlightElements(selectElementsArray)
+    }else if(selectElementsArray.every((uuid) => this.player.fbxAnimationsArray.contains(uuid))){
+      this.player.fbxAnimationsArray.highlightElements(selectElementsArray)
+    }else{
+      throw new Error("invalid selection, rappel: les sélections hétérogène ne sont pas autorisées") 
+    }
   }
 
   /** TODO */

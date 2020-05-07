@@ -93,7 +93,7 @@ class BVHLoader extends FileLoader {
         let bvhFrameTime = bvhFile.getFrameTime()
         let bvhNbFrame = bvhFile.getNbFrames()
 
-        this._addBVHToObjectList(skeletonHelper.uuid, bvhFileName, bvhFrameTime, bvhNbFrame, bvhAnimationsIndex)
+        this._addElementToObjectList(skeletonHelper.uuid, bvhFileName, "bvh")
 
         this.animations.push(new BVHAnimationElement(bvhFileName, skeletonHelper.uuid, skeletonHelper, mixer, bvhFile,))
 
@@ -129,25 +129,5 @@ class BVHLoader extends FileLoader {
       reader.onerror = (error) => { reject(new Error("FileReader abort : ", error)) }
       reader.readAsText(file); // Async
     })
-  }
-
-  /** Ajoute une element dans la liste des BVH contenant le nom et l'UUID du BVH a ajouter
-   * 
-   *  @param uuid_ identifiant du bvh a afficher
-   *  @param name nom du bvh a afficher
-   */
-  _addBVHToObjectList(uuid_, name) {
-    $("#bvhList .list").append('<div id="' + uuid_ + '" class="object"></div>')
-    let divToAppendTo = "#bvhList .list #" + uuid_
-
-    $(divToAppendTo).append('<div class="titleArea"><p>' + name + '</p></div>')
-    $(divToAppendTo).append('<div class="controlFunctions"></div>')
-
-    let controlDivToAppendTo = "#bvhList .list #" + uuid_ + " .controlFunctions"
-
-    $(controlDivToAppendTo).append('<div   class="playPause"><img src="./images/pause_button.svg"></div>')
-    $(controlDivToAppendTo).append('<input class="timeSlider" step="any" type="range">')
-    $(controlDivToAppendTo).append('<div   class="replay"> <img src="./images/replay_button.svg"></div>')
-    $(controlDivToAppendTo).append('<input class="display" type="checkbox" checked>')
   }
 }

@@ -13,7 +13,7 @@ class FileLoader {
 
   /**  */
   loadNewFiles(files) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         this.loadingState = "loading"
         $("#messagePlayer").text("Chargement en cours : " + this.nbFileToLoad + " fichiers.")
@@ -34,7 +34,6 @@ class FileLoader {
       }
     })
   }
-
 
   /** Fonction Abstraite (Promesse)
    *  Retourne une liste de promesses correspondant à l'ensemble des chargements de fichiers entrés en paramètre
@@ -68,6 +67,29 @@ class FileLoader {
     loadingPercentage = parseInt(((this.nbLoadedFiles - this.oldNbLoadedFiles) * 100) / this.nbFileToLoad, 10) + "%"
     $("#currProgress")[0].style.width = loadingPercentage
     $("#progressValue").text(loadingPercentage)
+  }
+
+  /** Ajoute un element dans la liste des "fbx" ou "bvh" contenant le nom et l'UUID de l'élément a ajouter
+   * 
+   * @param uuid_ identifiant de l'élément a afficher
+   * @param name nom de l'élément a afficher
+   * @param {String} type Type de l'élément et par concéquent liste cible où il doit être ajouté; Donc "fbx" ou "bvh"
+   */
+  _addElementToObjectList(uuid_, name, type) {
+    let listElement = $('\
+      <div id="'+uuid_+'" class="object">\
+        <div class="titleArea">\
+          <p>'+name+'</p>\
+        </div>\
+        <div class="controlFunctions">\
+          <div class="playPause"> <img src="./images/pause_button.svg"></img> </div>\
+          <input class="timeSlider" step="any" type="range"></input>\
+          <div class="replay"> <img src="./images/replay_button.svg"></img> </div>\
+          <div class="display"> <img src="./images/eye_button.svg"></img> </div>\
+        </div>\
+      </div>\
+    ')
+    $("#"+type+"List .list").append(listElement)
   }
 
   /** Retourne le nombre total dede fichier (bvh) chargé depuis le debut */

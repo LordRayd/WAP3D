@@ -32,7 +32,7 @@ class Player {
     this._animate()
 
     //contenu de la fenêtre de contrôles avancés
-    this.bvhAdvancedCtrlContent = '\
+    this.bvhAdvancedCtrlContent = $('\
       <div id="advancedControlsTabsForBVH">\
         <ul> \
           <li><a href="#graphs">Graphs</a></li>\
@@ -59,7 +59,7 @@ class Player {
         </div>\
         <div id="selection">\
         </div>\
-      </div>'
+      </div>')
   }
 
   /** Initialise le lecteur avec une grille de référence */
@@ -83,7 +83,7 @@ class Player {
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
     this.scene.add(mainLight)
-      //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
 
     //Plan de présentation
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
@@ -128,10 +128,10 @@ class Player {
     this.animating = true
 
     // BVH ---
-    this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray)
+    this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray, "bvh")
 
     // FBX ---
-    this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
+    this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray, "fbx")
 
     this.animating = false
     this.renderer.render(this.scene, this.camera)
@@ -143,11 +143,11 @@ class Player {
    *  @param {FileLoader} loader
    *  @param {AnimationArray} animationArray tableau d'animation
    */
-  _updateAnimation(loader, animationArray) {
+  _updateAnimation(loader, animationArray, listName) {
     if (loader.loadingState === "loaded") {
       let atLeastOneElementToAnimate = animationArray.updateAllElementsAnimation()
       if (this.animationIsPaused == false && atLeastOneElementToAnimate == false) {
-        this.pauseAnimation() // toutes les animations ont fini de jouer
+        this.pauseAnimation(listName) // toutes les animations ont fini de jouer
       } else if (this.animationIsPaused && atLeastOneElementToAnimate) {
         // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
         this.animationIsPaused = false
@@ -161,7 +161,7 @@ class Player {
    *  @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
@@ -231,23 +231,24 @@ class Player {
 
   /** TODO */
   playAnimation(listName) {
-    this.animationIsPaused = false
     switch (listName) {
       case "bvh":
         this.bvhAnimationsArray.playAllAnimations()
+        if (this.fbxAnimationsArray.atLeastOneAnimationToPlay() == false) { this.animationIsPaused = false }
         break
       case "fbx":
         this.fbxAnimationsArray.playAllAnimations()
+        if (this.bvhAnimationsArray.atLeastOneAnimationToPlay() == false) { this.animationIsPaused = false }
         break
       default:
-        this.animationsArrays.forEach(playAllAnimations)
+        this.animationsArrays.forEach(list => list.playAllAnimations())
         this._updateGeneralPlayPauseImg()
     }
+    this.animationIsPaused = false
   }
 
   /** TODO */
   pauseAnimation(listName) {
-    this.animationIsPaused = true
     switch (listName) {
       case "bvh":
         this.bvhAnimationsArray.pauseAllAnimations()
@@ -259,11 +260,21 @@ class Player {
         this.animationsArrays.forEach(list => list.pauseAllAnimations())
         this._updateGeneralPlayPauseImg()
     }
+    let allEltsPaused = false
+    this.animationsArrays.some(list => {
+      if (list.atLeastOneAnimationToPlay() == true) {
+        this.animationIsPaused = false
+        allEltsPaused = false
+      } else {
+        allEltsPaused = true
+      }
+      return !allEltsPaused
+    })
+    if (allEltsPaused) { this.animationIsPaused = true }
   }
 
   /** TODO */
   resumeAnimation(listName) {
-    this.animationIsPaused = false
     let allEltsPaused = true
     switch (listName) {
       case "bvh":
@@ -274,10 +285,11 @@ class Player {
         break
       default:
         this.animationsArrays.forEach(elt => {
-          if (elt.resumeAnimation(animationWasPlaying) == true) { allEltsPaused = false }
+          if (elt.resumeAllAnimations() == true) { allEltsPaused = false }
         })
         this._updateGeneralPlayPauseImg()
     }
+    this.animationIsPaused = false
     if (allEltsPaused) this.playAnimation(listName)
   }
 
@@ -301,10 +313,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -479,10 +491,11 @@ class Player {
    *  @param {UUID} objectUuids_ 
    */
   launchAdvancedControls(objectUuids_) {
-    if ($("#advancedControlForBVH").length == 0) {
-      let arrayClone = [...objectUuids_]
 
-      if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
+    let arrayClone = [...objectUuids_]
+
+    if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
+      if ($("#advancedControlForBVH").length == 0) {
 
         arrayClone.forEach((uuid) => {
           this.toggleObjectInListVisibility(uuid, true)
@@ -523,7 +536,7 @@ class Player {
 
         $("#advancedControlForBVH .BVHCtrlList div").on("dblclick", (event) => {
           let nodeName = event.target.textContent
-            //TODO Déplacer tout ça dans IEM
+          //TODO Déplacer tout ça dans IEM
           $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
           $("#nodeGraph").dialog({
             height: 640,
@@ -559,6 +572,7 @@ class Player {
       }
     } else { //if arrayClone.every((value) => this.fbxAnimationsArray.contains(value)) ...
       //FBX ----
+      console.log("FBX !")
     }
   }
 }
