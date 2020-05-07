@@ -130,7 +130,6 @@ class IEM {
   clickOnListPlayAction(event) {
     if (this.iemIsBlocked) return
     let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
-    console.log("list name: "+listName)
     this.player.playAnimation(listName)
   }
 
@@ -138,7 +137,6 @@ class IEM {
   clickOnListPauseAction(event) {
     if (this.iemIsBlocked) return
     let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
-    console.log("list name: "+listName)
     this.player.pauseAnimation(listName)
   }
 
@@ -146,7 +144,6 @@ class IEM {
   clickOnListReplayAction(event) {
     if (this.iemIsBlocked) return
     let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
-    console.log("list name: "+listName)
     this.player.replayAnimation(listName)
   }
 
@@ -155,7 +152,6 @@ class IEM {
     if (this.iemIsBlocked) return
     let isVisible = $(event.target).attr("src") != "./images/eye_button.svg"
     let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
-    console.log("list name: "+listName)
     this.player.toggleListVisibility(listName, isVisible)
   }
 
