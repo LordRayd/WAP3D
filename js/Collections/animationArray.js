@@ -31,8 +31,8 @@ class AnimationArray extends Array {
    *  @returns {Boolean} True si la collection contient un élément correspondant au UUID donné
    */
   contains(objectUuid_) {
-    return this.some((bvh_) => {
-      return bvh_.uuid == objectUuid_
+    return this.some((elem) => {
+      return elem.uuid == objectUuid_
     })
   }
 

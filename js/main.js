@@ -39,10 +39,10 @@ function _setAllEventListener() {
   $("#BVHListdisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event))
 
 
-  $("#FBXListPlay").on("click", event => inputEventManager.clickOnFBXListPlayAction())
-  $("#FBXListPause").on("click", event => inputEventManager.clickOnFBXListPauseAction())
-  $("#FBXListReplay").on("click", event => inputEventManager.clickOnFBXListReplayAction())
-  $("#FBXListdisplay").on("click", event => inputEventManager.toggleFBXListVisibilityCheckboxAction(event))
+  $("#FBXListPlay").on("click", event => inputEventManager.clickOnListPlayAction(event));
+  $("#FBXListPause").on("click", event => inputEventManager.clickOnListPauseAction(event));
+  $("#FBXListReplay").on("click", event => inputEventManager.clickOnListReplayAction(event));
+  $("#FBXListdisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event));
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }

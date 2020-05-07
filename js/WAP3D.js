@@ -213,9 +213,9 @@ class Player {
         break
       case "fbx":
         if (newValue === true) {
-          this.fbxAnimationsArray.showAllAnimations(show)
+          this.fbxAnimationsArray.showAllAnimations()
         } else {
-          this.fbxAnimationsArray.hideAllAnimations(hide)
+          this.fbxAnimationsArray.hideAllAnimations()
         }
         break
       default:

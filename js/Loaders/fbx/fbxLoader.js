@@ -66,11 +66,12 @@ class FBXLoader extends FileLoader {
               child.receiveShadow = true;
             }
           });
+          loadedFbxObject.name = loadedFbxObject.uuid;
           let fbxUuid = loadedFbxObject.uuid
           this.scene.add(loadedFbxObject);
           this.nbLoadedFiles += 1;
           this._addFBXToObjectList(fbxUuid, fbxFile.name);
-          this.animations.push(new FBXAnimationElement(fbxFile.name, fbxUuid, mixer))
+          this.animations.push(new FBXAnimationElement(fbxFile.name, fbxUuid, mixer, this.scene))
           resolve();
         },
         null,
