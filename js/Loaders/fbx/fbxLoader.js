@@ -66,6 +66,7 @@ class FBXLoader extends FileLoader {
               child.receiveShadow = true;
             }
           });
+          loadedFbxObject.name = loadedFbxObject.uuid;
           let fbxUuid = loadedFbxObject.uuid
           this.scene.add(loadedFbxObject);
           this.nbLoadedFiles += 1;

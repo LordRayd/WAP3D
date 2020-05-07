@@ -155,6 +155,32 @@ class IEM {
     this.player.toggleListVisibility(listName, isVisible)
   }
 
+  /** Demande au player de mettre en route tout les FBX */
+  clickOnFBXListPlayAction(event) {
+    if (this.iemIsBlocked) return
+    this.player.playFBXAnimation()
+  }
+
+  /** Demande au player de mettre en pause tout les FBX */
+  clickOnFBXListPauseAction(event) {
+    if (this.iemIsBlocked) return
+    this.player.pauseFBXAnimation()
+  }
+
+  /** Demande au player de relancer tout les FBX */
+  clickOnFBXListReplayAction(event) {
+    if (this.iemIsBlocked) return
+    this.player.restartFBXAnimation(false)
+  }
+
+  /** Demande au player de toggle la visibilité de tout les FBX */
+  toggleFBXListVisibilityCheckboxAction(event) {
+    if (this.iemIsBlocked) return
+    let isChecked = $(event.target).is(":checked")
+    this.player.toggleFBXVisibility(isChecked)
+    $("#fbxList .list .object .controlFunctions .display").prop('checked', isChecked)
+  }
+
   /** Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické */
   clickOnElementPlayPauseAction(event) {
     if (this.iemIsBlocked) return
