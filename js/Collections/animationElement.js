@@ -87,11 +87,21 @@ class AnimationElement {
    *    - Image de lecture si l'object passe en pause
    */
   _updatePlayPauseImg() {
-    let img = $('#' + this.uuid + " .playPause")[0].lastChild
+    let img = $('#' + this.uuid + " .playPause")[0].children[0]
     if (this.isPaused) {
       img.src = "./images/play_button.svg"
     } else {
       img.src = "./images/pause_button.svg"
+    }
+  }
+
+  /** Met à jour l'image du bouton de visibilité */
+  _updateVisibilityImg(){
+    let img = $('#' + this.uuid + " .display")[0].children[0]
+    if(this.isVisible){
+      img.src = "./images/eye_button.svg"
+    }else{
+      img.src = "./images/closed_eye_button.svg"
     }
   }
 

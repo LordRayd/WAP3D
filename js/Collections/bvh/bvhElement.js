@@ -42,12 +42,16 @@ class BVHAnimationElement extends AnimationElement {
   
     /** Rend le BVH invisible */
     hide() {
+      this.isVisible = false
       this.skeleton.visible = false
+      this._updateVisibilityImg()
     }
   
     /** Rend le BVH visible */
     show() {
+      this.isVisible = true
       this.skeleton.visible = true
+      this._updateVisibilityImg()
     }
   
     /** Si true alors le bvh produit des ombres */

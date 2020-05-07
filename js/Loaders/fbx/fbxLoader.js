@@ -69,7 +69,7 @@ class FBXLoader extends FileLoader {
           let fbxUuid = loadedFbxObject.uuid
           this.scene.add(loadedFbxObject);
           this.nbLoadedFiles += 1;
-          this._addFBXToObjectList(fbxUuid, fbxFile.name);
+          this._addElementToObjectList(fbxUuid, fbxFile.name, "fbx");
           this.animations.push(new FBXAnimationElement(fbxFile.name, fbxUuid, mixer))
           resolve();
         },
