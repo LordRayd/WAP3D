@@ -38,12 +38,6 @@ function _setAllEventListener() {
   $(".listReplay").on("click", event => inputEventManager.clickOnListReplayAction(event))
   $(".listDisplay").on("click", event => inputEventManager.clickOnListVisibilityAction(event))
 
-
-  $("#FBXListPlay").on("click", event => inputEventManager.clickOnListPlayAction(event));
-  $("#FBXListPause").on("click", event => inputEventManager.clickOnListPauseAction(event));
-  $("#FBXListReplay").on("click", event => inputEventManager.clickOnListReplayAction(event));
-  $("#FBXListdisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event));
-
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 

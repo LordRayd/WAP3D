@@ -14,7 +14,7 @@ class IEM {
 
   /** Ouvre la div de sélection d'élements */
   _openObjectListAction() {
-
+    if (this.iemIsBlocked) return
     $("#closeOpenButton img").attr("src", "./images/close_button.svg")
 
     $("#objectSelector").animate({ width: '30%', height: '100%', top: '0' }, {
@@ -56,6 +56,7 @@ class IEM {
    *  @param {*} keyEvent La touche pressée
    */
   keydownAction(keyEvent) {
+    if (this.iemIsBlocked) return
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
       case "Z":
@@ -94,6 +95,7 @@ class IEM {
    *  @param {*} keyEvent La touche relachée
    */
   keyupAction(keyEvent) {
+    if (this.iemIsBlocked) return
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
       case "Z":
@@ -115,13 +117,13 @@ class IEM {
   }
 
   /**Demande au player de toggle la mise en pose de la scène */
-  clickOnGlobalPlayPauseAction(){
+  clickOnGlobalPlayPauseAction() {
     if (this.iemIsBlocked) return
     this.player.toggleAnimation("all")
   }
 
   /**Demande au player de reset les animations de la scène */
-  clickOnGlobalReplayAction(){
+  clickOnGlobalReplayAction() {
     if (this.iemIsBlocked) return
     this.player.replayAnimation("all")
   }
@@ -153,32 +155,6 @@ class IEM {
     let isVisible = $(event.target).attr("src") != "./images/eye_button.svg"
     let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.toggleListVisibility(listName, isVisible)
-  }
-
-  /** Demande au player de mettre en route tout les FBX */
-  clickOnFBXListPlayAction(event) {
-    if (this.iemIsBlocked) return
-    this.player.playFBXAnimation()
-  }
-
-  /** Demande au player de mettre en pause tout les FBX */
-  clickOnFBXListPauseAction(event) {
-    if (this.iemIsBlocked) return
-    this.player.pauseFBXAnimation()
-  }
-
-  /** Demande au player de relancer tout les FBX */
-  clickOnFBXListReplayAction(event) {
-    if (this.iemIsBlocked) return
-    this.player.restartFBXAnimation(false)
-  }
-
-  /** Demande au player de toggle la visibilité de tout les FBX */
-  toggleFBXListVisibilityCheckboxAction(event) {
-    if (this.iemIsBlocked) return
-    let isChecked = $(event.target).is(":checked")
-    this.player.toggleFBXVisibility(isChecked)
-    $("#fbxList .list .object .controlFunctions .display").prop('checked', isChecked)
   }
 
   /** Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické */
@@ -215,6 +191,7 @@ class IEM {
    *  @param {event} event
    */
   selectElementFromListAction(event) {
+    if (this.iemIsBlocked) return
     let target = event.target
     let object = undefined
     if (target.tagName === "P") {
@@ -242,12 +219,12 @@ class IEM {
       }
     }
     let selectElementsArray = [...this.currentlySelectedElements]
-    if (selectElementsArray.every((uuid) => this.player.bvhAnimationsArray.contains(uuid))){
+    if (selectElementsArray.every((uuid) => this.player.bvhAnimationsArray.contains(uuid))) {
       this.player.bvhAnimationsArray.highlightElements(selectElementsArray)
-    }else if(selectElementsArray.every((uuid) => this.player.fbxAnimationsArray.contains(uuid))){
+    } else if (selectElementsArray.every((uuid) => this.player.fbxAnimationsArray.contains(uuid))) {
       this.player.fbxAnimationsArray.highlightElements(selectElementsArray)
-    }else{
-      throw new Error("invalid selection, rappel: les sélections hétérogène ne sont pas autorisées") 
+    } else {
+      throw new Error("invalid selection, rappel: les sélections hétérogène ne sont pas autorisées")
     }
   }
 
@@ -262,6 +239,7 @@ class IEM {
    *  @param {event} event
    */
   openAdvancedControlsAction(event) {
+    if (this.iemIsBlocked) return
     let target = event.target
     if (target.tagName === "P") {
       $(target.parentNode.parentNode).css("background-color", "darkgrey")
