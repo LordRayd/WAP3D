@@ -89,7 +89,6 @@ class FileLoader {
         </div>\
       </div>\
     ')
-    console.log(listElement)
     $("#"+type+"List .list").append(listElement)
   }
 
