@@ -141,17 +141,19 @@ class FBXAnimationElement {
   /** TODO */
   playAnimation() {
     this.isPaused = false;
-    this.resumeAnimationValue = this.isPaused
     this.clock.start();
+    this.clock = new THREE.Clock();
     this._updatePlayPauseImg()
   }
 
   /** TODO */
   pauseAnimation() {
-    this.isPaused = true;
-    this.resumeAnimationValue = this.isPaused
-    this.clock.stop();
-    this._updatePlayPauseImg();
+    if(!this.isPaused){
+      this.isPaused = true;
+      this.clock.stop();
+      this.diff = this.calculTimeSlider();
+      this._updatePlayPauseImg();
+    }
   }
 
   /** TODO */
@@ -174,7 +176,7 @@ class FBXAnimationElement {
   /** TODO */
   replayAnimation(resetResumeAnim){
     if (resetResumeAnim == true) this.resumeAnimationValue = false;
-    this.clip.update(-(this.clock.getElapsedTime()+this.diff));
+    this.clip.update(-this.calculTimeSlider());
     this.diff = 0;
     this.clock = new THREE.Clock();
     this.timeSlider.valueAsNumber = this.timeSlider.min
@@ -185,11 +187,11 @@ class FBXAnimationElement {
   modifyTimeSlider(target) {
     if (target) {
       this.timeSlider.valueAsNumber = target;
-      let val = target - ( (this.diff + this.clock.getElapsedTime() )% this.nbSecondesOfAnimations);
+      let val = target - this.calculTimeSlider();
       this.diff +=  val;
       this.clip.update(val);
     } else {
-      this.timeSlider.valueAsNumber = (this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations;
+      this.timeSlider.valueAsNumber = this.calculTimeSlider();
     }
   }
   
@@ -222,6 +224,10 @@ class FBXAnimationElement {
   /** Retourne l'uuid du FBX */
   get uuid() {
     return this.clip._root.uuid;
+  }
+
+  calculTimeSlider(){
+    return (this.diff + this.clock.getElapsedTime()) % this.nbSecondesOfAnimations;
   }
 
   _update(){
