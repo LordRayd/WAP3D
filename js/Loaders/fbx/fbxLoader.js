@@ -91,7 +91,7 @@ class FBXLoader extends FileLoader {
     $(divToAppendTo).append('<div class="controlFunctions"></div>')
 
     let controlDivToAppendTo = "#fbxList .list #" + uuid_ + " .controlFunctions"
-
+    
     $(controlDivToAppendTo).append('<div   class="playPause"><img src="./images/pause_button.svg"></div>')
     $(controlDivToAppendTo).append('<input class="timeSlider" step="any" type="range">')
     $(controlDivToAppendTo).append('<div   class="replay"> <img src="./images/replay_button.svg"></div>')

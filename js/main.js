@@ -36,7 +36,7 @@ function _setAllEventListener() {
   $("#BVHListPlay").on("click", event => inputEventManager.clickOnListPlayAction(event))
   $("#BVHListPause").on("click", event => inputEventManager.clickOnListPauseAction(event))
   $("#BVHListReplay").on("click", event => inputEventManager.clickOnListReplayAction(event))
-  $("#BVHListdisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event))
+  $("#BVHListDisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event))
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
@@ -50,10 +50,10 @@ function updateEventListener() {
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 
   $(".playPause").off("click")
-  $(".replay").off("click")
-  $(".timeSlider").off("input")
   $(".playPause").on("click", event => inputEventManager.clickOnElementPlayPauseAction(event))
+  $(".replay").off("click")
   $(".replay").on("click", event => inputEventManager.clickOnElementReplayAction(event))
+  $(".timeSlider").off("input")
   $(".timeSlider").on("input", event => inputEventManager.modifyElementTimeSliderAction(event))
   $(".display").on("click", event => inputEventManager.toggleElementVisibilityCheckboxAction(event))
 

@@ -35,7 +35,6 @@ class FileLoader {
     })
   }
 
-
   /** Fonction Abstraite (Promesse)
    *  Retourne une liste de promesses correspondant à l'ensemble des chargements de fichiers entrés en paramètre
    * 

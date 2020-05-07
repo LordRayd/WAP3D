@@ -66,6 +66,15 @@ class AnimationArray extends Array {
     });
   }
 
+  /** Retourne vrai s'il y a au moins un élément contenu dans la liste qui est toujours en lecture, faux sinon.
+   * 
+   * @returns true : si au moins un élément de la liste est en lecture
+   * @returns false : si tous les élément de la liste sont en pause
+   */
+  atLeastOneAnimationToPlay() {
+    return this.some(elt => ! elt.isPaused)
+  }
+
   /** Met en pause lelement entré en parametre s'il est en lecture, le met en lecture sinon.
    * 
    *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection

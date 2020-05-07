@@ -128,10 +128,10 @@ class Player {
     this.animating = true
 
     // BVH ---
-    this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray)
+    this._updateAnimation(this.bvhLoader, this.bvhAnimationsArray, "bvh")
 
     // FBX ---
-    this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray)
+    this._updateAnimation(this.fbxLoader, this.fbxAnimationsArray, "fbx")
 
     this.animating = false
     this.renderer.render(this.scene, this.camera)
@@ -143,11 +143,11 @@ class Player {
    *  @param {FileLoader} loader
    *  @param {AnimationArray} animationArray tableau d'animation
    */
-  _updateAnimation(loader, animationArray) {
+  _updateAnimation(loader, animationArray, listName) {
     if (loader.loadingState === "loaded") {
       let atLeastOneElementToAnimate = animationArray.updateAllElementsAnimation()
       if (this.animationIsPaused == false && atLeastOneElementToAnimate == false) {
-        this.pauseAnimation() // toutes les animations ont fini de jouer
+        this.pauseAnimation(listName) // toutes les animations ont fini de jouer
       } else if (this.animationIsPaused && atLeastOneElementToAnimate) {
         // reprise de la lecture => le lecteur est en pause mais un ou plusieur BVH de la liste ont été remis en lecture
         this.animationIsPaused = false
@@ -231,23 +231,24 @@ class Player {
 
   /** TODO */
   playAnimation(listName) {
-    this.animationIsPaused = false
     switch (listName) {
       case "bvh":
         this.bvhAnimationsArray.playAllAnimations()
+        if (this.fbxAnimationsArray.atLeastOneAnimationToPlay() == false) { this.animationIsPaused = false }
         break
       case "fbx":
         this.fbxAnimationsArray.playAllAnimations()
+        if (this.bvhAnimationsArray.atLeastOneAnimationToPlay() == false) { this.animationIsPaused = false }
         break
       default:
         this.animationsArrays.forEach(playAllAnimations)
         this._updateGeneralPlayPauseImg()
     }
+    this.animationIsPaused = false
   }
 
   /** TODO */
   pauseAnimation(listName) {
-    this.animationIsPaused = true
     switch (listName) {
       case "bvh":
         this.bvhAnimationsArray.pauseAllAnimations()
@@ -259,11 +260,21 @@ class Player {
         this.animationsArrays.forEach(list => list.pauseAllAnimations())
         this._updateGeneralPlayPauseImg()
     }
+    let allEltsPaused = false
+    this.animationsArrays.some(list => {
+      if (list.atLeastOneAnimationToPlay() == true) {
+        this.animationIsPaused = false
+        allEltsPaused = false
+      } else {
+        allEltsPaused = true
+      }
+      return !allEltsPaused
+    })
+    if (allEltsPaused) { this.animationIsPaused = true }
   }
 
   /** TODO */
   resumeAnimation(listName) {
-    this.animationIsPaused = false
     let allEltsPaused = true
     switch (listName) {
       case "bvh":
@@ -278,6 +289,7 @@ class Player {
         })
         this._updateGeneralPlayPauseImg()
     }
+    this.animationIsPaused = false
     if (allEltsPaused) this.playAnimation(listName)
   }
 
