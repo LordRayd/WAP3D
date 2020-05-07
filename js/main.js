@@ -45,8 +45,8 @@ function _setAllEventListener() {
 function updateEventListener() {
 
   $("#globalPlayPause").off("click",)
-  $("#globalReplay").off("click")
   $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction())
+  $("#globalReplay").off("click")
   $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction())
 
   $(".fileSelector").off("change")
@@ -58,6 +58,7 @@ function updateEventListener() {
   $(".replay").on("click", event => inputEventManager.clickOnElementReplayAction(event))
   $(".timeSlider").off("input")
   $(".timeSlider").on("input", event => inputEventManager.modifyElementTimeSliderAction(event))
+  $(".display").off("click")
   $(".display").on("click", event => inputEventManager.clickOnElementVisibilityAction(event))
 
   // Sélection unique d'éléments de liste
