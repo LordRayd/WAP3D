@@ -83,7 +83,7 @@ class Player {
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
     this.scene.add(mainLight)
-    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+      //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
 
     //Plan de présentation
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
@@ -161,7 +161,7 @@ class Player {
    *  @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
       try {
         if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
@@ -313,10 +313,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -495,6 +495,7 @@ class Player {
     let arrayClone = [...objectUuids_]
 
     if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
+
       if ($("#advancedControlForBVH").length == 0) {
 
         arrayClone.forEach((uuid) => {
@@ -520,6 +521,9 @@ class Player {
 
           $("#advancedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + graphsHierarchyString + '</div>')
           $("#advancedControlForBVH #selection").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
+
+          $("#renderModeWireFrame").on("click", event => { this.bvhAnimationsArray.getByUUID(uuid).wireframe = $("#renderModeWireFrame")[0].checked })
+          $("#renderModeCubic").on("click", event => { this.bvhAnimationsArray.getByUUID(uuid).wireframe = $("#renderModeWireFrame")[0].checked })
         })
 
         $("#advancedControlForBVH .BVHCtrlList input").on("click", (event) => {
@@ -536,7 +540,7 @@ class Player {
 
         $("#advancedControlForBVH .BVHCtrlList div").on("dblclick", (event) => {
           let nodeName = event.target.textContent
-          //TODO Déplacer tout ça dans IEM
+            //TODO Déplacer tout ça dans IEM
           $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
           $("#nodeGraph").dialog({
             height: 640,
@@ -568,7 +572,6 @@ class Player {
             this.bvhAnimationsArray.highlightElements()
           }
         })
-
       }
     } else { //if arrayClone.every((value) => this.fbxAnimationsArray.contains(value)) ...
       //FBX ----

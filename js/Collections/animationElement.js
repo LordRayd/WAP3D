@@ -11,9 +11,6 @@ class AnimationElement {
     // Etat en pause ou non
     this.isPaused = false;
 
-    // Rend tous les element totalement opaque
-    this.opacity = 1;
-
     // boolean dertiminant si l'animation reprend a sa position ou non après une pause
     this.resumeAnimationValue = this.isPaused;
 
@@ -23,8 +20,12 @@ class AnimationElement {
     // Pause/Play
     this.playPauseButton = $("#" + this.uuid + " .playPause")[0];
 
+    // TODO REGLER PROBLEME DANS BVH POUR POUVOIR DECOMMENTER
     // Affiche l'élément normalement (sans le mode wireframe)
-    this.wireframe = false
+    //this.wireframe = false
+    // TODO REGLER PROBLEME DANS BVH POUR POUVOIR DECOMMENTER
+    // Rend tous les element totalement opaque
+    //this.opacity = 1;
 
     //Time Slider
     this.timeSlider = $("#" + this.uuid + " .timeSlider")[0];
