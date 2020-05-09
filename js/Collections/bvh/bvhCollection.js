@@ -15,35 +15,6 @@ class BVHAnimationArray extends AnimationArray {
     })
   }
 
-  /** Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
-   *  
-   *  @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
-   */
-  highlightElements(Uuids_) {
-    let amount = 0
-    if (Uuids_) {
-      if (Uuids_.constructor.name === "Set") {
-        amount = Uuids_.size
-      } else {
-        amount = Uuids_.length
-      }
-    }
-
-    if (amount > 0) {
-      this.forEach((elem) => {
-        elem.opacity = 0.3
-      })
-
-      Uuids_.forEach((uuid) => {
-        this.getByUUID(uuid).opacity = 1.0
-      })
-    } else {
-      this.forEach((elem) => {
-        elem.opacity = 1.0
-      })
-    }
-  }
-
   /** met à jour l'image du bouton de visibilité de la liste BVH */
   _updateListVisibilityImg(value){
     let img = $("#bvhList .listDisplay")[0].children[0]
