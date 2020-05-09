@@ -96,11 +96,11 @@ class AnimationElement {
   }
 
   /** Met à jour l'image du bouton de visibilité */
-  _updateVisibilityImg(){
+  _updateVisibilityImg() {
     let img = $('#' + this.uuid + " .display")[0].children[0]
-    if(this.isVisible){
+    if (this.isVisible) {
       img.src = "./images/eye_button.svg"
-    }else{
+    } else {
       img.src = "./images/closed_eye_button.svg"
     }
   }
@@ -120,6 +120,24 @@ class AnimationElement {
     this.clip.update(this.clock.getDelta() * this.speedRatio);
   }
 
+  /** 
+   * @returns {AnimationElement} l'OBJET ayant le plus grand nombre de frames dans la collection 
+   */
+  getByMaxNbOfFrames() {
+    return this.reduce((elt0, elt1) => {
+      return elt0.nbFrames > elt1.nbFrames ? elt0 : elt1
+    })
+  }
+
+  /**
+   * @returns {AnimationElement} l'OBJET ayant l'animation la plus longue (en secondes) de la collection 
+   * */
+  getByMaxOverallTime() {
+    return this.reduce((elt0, elt1) => {
+      return (elt0.nbFrames * elt0.frameTime) > (elt1.nbFrames * elt1.frameTime) ? elt : elt1
+    })
+  }
+
   /** Methode abstraite */
   hide() { throw new Error("hide() Abstract : not Implemented") }
 
@@ -137,4 +155,10 @@ class AnimationElement {
 
   /** Methode abstraite */
   set opacity(value_) { throw new Error("set opacity() Abstract : not Implemented") }
+
+  /** Methode abstraite */
+  showWireframe() { throw new Error("showWireframe() Abstract : not Implemented") }
+
+  /** Methode abstraite */
+  hideWireframe() { throw new Error("hideWireframe() Abstract : not Implemented") }
 }

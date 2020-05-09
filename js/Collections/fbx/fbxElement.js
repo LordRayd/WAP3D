@@ -8,11 +8,12 @@ class FBXAnimationElement extends AnimationElement {
   constructor(name_, uuid_, animationMixer_) {
     super(name_, uuid_, animationMixer_, 0, animationMixer_._root.animations[0].duration);
     this._opacity = 1.0;
-    
+
     // rend le FBX transparent afin de pouvoir changer son opacité
     this.clip._root.children.forEach(elt => {
       if (elt.material) console.log(elt.material.transparent = true)
     })
+    
     this.frameTime = 1;
   }
 
@@ -38,14 +39,14 @@ class FBXAnimationElement extends AnimationElement {
   }
 
   /**
-    * @param {Boolean} value_ Si true alors le fbx produit des ombres
-    */
+   * @param {Boolean} value_ Si true alors le fbx produit des ombres
+   */
   set shadowEnabled(value_) {
     this.clip._root.children.forEach(elt => elt.castShadow = value_)
   }
 
   /** L'opacité de l'élément, compris entre 0 et 1 */
-  get opacity() { 
+  get opacity() {
     return this._opacity
   }
 
@@ -55,7 +56,7 @@ class FBXAnimationElement extends AnimationElement {
    */
   set opacity(value_) {
     this.clip._root.children.forEach(elt => {
-      if(elt.material) console.log(elt.material.opacity = value_)
+      if (elt.material) elt.material.opacity = value_
     })
     this._opacity = value_
   }
