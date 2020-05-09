@@ -7,8 +7,13 @@ class FBXAnimationElement extends AnimationElement {
    */
   constructor(name_, uuid_, animationMixer_) {
     super(name_, uuid_, animationMixer_, 0, animationMixer_._root.animations[0].duration);
-    this.frameTime = 1;
     this._opacity = 1.0;
+    
+    // rend le FBX transparent afin de pouvoir changer son opacité
+    this.clip._root.children.forEach(elt => {
+      if (elt.material) console.log(elt.material.transparent = true)
+    })
+    this.frameTime = 1;
   }
 
   /** Rend le FBX invisible */
