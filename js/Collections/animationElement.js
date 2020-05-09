@@ -11,6 +11,9 @@ class AnimationElement {
     // Etat en pause ou non
     this.isPaused = false;
 
+    // Rend tous les element totalement opaque
+    this.opacity = 1;
+
     // boolean dertiminant si l'animation reprend a sa position ou non après une pause
     this.resumeAnimationValue = this.isPaused;
 
@@ -19,6 +22,9 @@ class AnimationElement {
 
     // Pause/Play
     this.playPauseButton = $("#" + this.uuid + " .playPause")[0];
+
+    // Affiche l'élément normalement (sans le mode wireframe)
+    this.wireframe = false
 
     //Time Slider
     this.timeSlider = $("#" + this.uuid + " .timeSlider")[0];
@@ -120,24 +126,6 @@ class AnimationElement {
     this.clip.update(this.clock.getDelta() * this.speedRatio);
   }
 
-  /** 
-   * @returns {AnimationElement} l'OBJET ayant le plus grand nombre de frames dans la collection 
-   */
-  getByMaxNbOfFrames() {
-    return this.reduce((elt0, elt1) => {
-      return elt0.nbFrames > elt1.nbFrames ? elt0 : elt1
-    })
-  }
-
-  /**
-   * @returns {AnimationElement} l'OBJET ayant l'animation la plus longue (en secondes) de la collection 
-   * */
-  getByMaxOverallTime() {
-    return this.reduce((elt0, elt1) => {
-      return (elt0.nbFrames * elt0.frameTime) > (elt1.nbFrames * elt1.frameTime) ? elt : elt1
-    })
-  }
-
   /** Methode abstraite */
   hide() { throw new Error("hide() Abstract : not Implemented") }
 
@@ -148,17 +136,20 @@ class AnimationElement {
   get shadowEnabled() { throw new Error("get shadowEnabled() Abstract : not Implemented") }
 
   /** Methode abstraite */
-  set shadowEnabled(value_) { throw new Error("set shadowEnabled() Abstract : not Implemented") }
+  set shadowEnabled(value_) { throw new Error("set shadowEnabled(value_) Abstract : not Implemented") }
 
   /** Methode abstraite */
   get opacity() { throw new Error("get opacity() Abstract : not Implemented") }
 
   /** Methode abstraite */
-  set opacity(value_) { throw new Error("set opacity() Abstract : not Implemented") }
+  set opacity(value_) { throw new Error("set opacity(value_) Abstract : not Implemented") }
 
   /** Methode abstraite */
-  showWireframe() { throw new Error("showWireframe() Abstract : not Implemented") }
+  get wireframe() { throw new Error("get wireframe() Abstract : not Implemented") }
 
-  /** Methode abstraite */
-  hideWireframe() { throw new Error("hideWireframe() Abstract : not Implemented") }
+  /** Methode abstraite 
+   * 
+   *  @param {Boolean} render : true pour afficher le wireframe, false pour le retirer
+   */
+  set wireframe(render) { throw new Error("set wireframe(value_) Abstract : not Implemented") }
 }

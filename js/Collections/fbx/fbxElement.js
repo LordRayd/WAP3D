@@ -7,13 +7,14 @@ class FBXAnimationElement extends AnimationElement {
    */
   constructor(name_, uuid_, animationMixer_) {
     super(name_, uuid_, animationMixer_, 0, animationMixer_._root.animations[0].duration);
-    this._opacity = 1.0;
 
-    // rend le FBX transparent afin de pouvoir changer son opacité
+    this.overallTime = this.clip._root.animations[0].duration
+
+      // rend le FBX transparent afin de pouvoir changer son opacité
     this.clip._root.children.forEach(elt => {
       if (elt.material) console.log(elt.material.transparent = true)
     })
-    
+
     this.frameTime = 1;
   }
 
@@ -59,5 +60,21 @@ class FBXAnimationElement extends AnimationElement {
       if (elt.material) elt.material.opacity = value_
     })
     this._opacity = value_
+  }
+
+  /** Methode abstraite */
+  get wireframe() {
+    return this._wireframe
+  }
+
+  /** Methode abstraite 
+   * 
+   *  @param {Boolean} render : true pour afficher le wireframe, false pour le retirer
+   */
+  set wireframe(render) {
+    this.clip._root.children.forEach(elt => {
+      if (elt.material) elt.material.wireframe = render
+    })
+    this._wireframe = render
   }
 }

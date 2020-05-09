@@ -72,7 +72,7 @@ class AnimationArray extends Array {
    * @returns false : si tous les élément de la liste sont en pause
    */
   atLeastOneAnimationToPlay() {
-    return this.some(elt => ! elt.isPaused)
+    return this.some(elt => !elt.isPaused)
   }
 
   /** Met en pause lelement entré en parametre s'il est en lecture, le met en lecture sinon.
@@ -179,5 +179,14 @@ class AnimationArray extends Array {
         elem.opacity = 1.0
       })
     }
+  }
+
+  /**
+   * @returns {AnimationElement} l'OBJET ayant l'animation la plus longue (en secondes) de la collection 
+   * */
+  getByMaxOverallTime() {
+    return this.reduce((elt0, elt1) => {
+      return (elt0.overallTime > elt1.overallTime) ? elt0 : elt1
+    })
   }
 }

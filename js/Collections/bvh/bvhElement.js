@@ -18,6 +18,8 @@ class BVHAnimationElement extends AnimationElement {
       this.frameTime = bvhFile_.getFrameTime()
       this.nbFrames = bvhFile_.getNbFrames()
   
+      this.overallTime = this.clip.nbFrames * this.frameTime
+
       //prototype sur les bones du skeleton pour ajouter des repères sur chaque node
       this.skeleton.bones.forEach(elem => {
         elem.axis = new THREE.AxesHelper(1) //création et initialisation de l'attribut axis
