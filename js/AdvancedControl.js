@@ -1,6 +1,5 @@
 class AdvancedControlWindow {
 
-    //Calculé qu'une seule fois, peut amélioré le temps de réponse du lancement de fenêtre
     static HTMLcontent = $('\
             <div>\
                 <ul> \
@@ -29,7 +28,7 @@ class AdvancedControlWindow {
                 <div id="advancedCtrl-selection">\
                 </div>\
             </div>\
-        ').tabs().ajaxSuccess()[0]
+        ')
 
     constructor(uuidCollection_, windowType_, playerContext_) {
         this.player = playerContext_
@@ -48,7 +47,7 @@ class AdvancedControlWindow {
                 if (this.UUIDs.length == 1) $("body").append('<div id="advancedControlForBVH" title="Advanced Controls"></div>')
                 else $("body").append('<div id="advancedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
 
-                $("#advancedControlForBVH").append(AdvancedControlWindow.HTMLcontent)
+                $("#advancedControlForBVH").append($(AdvancedControlWindow.HTMLcontent).clone().tabs())
                 break
 
             case "fbx":
@@ -61,7 +60,7 @@ class AdvancedControlWindow {
                 if (this.UUIDs.length == 1) $("body").append('<div id="advancedControlForFBX" title="Advanced Controls"></div>')
                 else $("body").append('<div id="advancedControlForFBX" title="Advanced Controls (multiple elements)"></div>')
 
-                $("#advancedControlForFBX").append(AdvancedControlWindow.HTMLcontent)
+                $("#advancedControlForFBX").append($(AdvancedControlWindow.HTMLcontent).clone().tabs())
                 break
 
             default:
@@ -81,7 +80,7 @@ class AdvancedControlWindow {
         } else if (this.type === "fbx") {
             targetedCollection = this.player.fbxAnimationsArray
             windowID = "#advancedControlForFBX"
-        }else {
+        } else {
             throw new Error("unsupported type for launching advanced controls");
         }
 
@@ -107,12 +106,12 @@ class AdvancedControlWindow {
 
         $("#advancedCtrl-rendering #orthoEnabled").on("click", (event) => {
             let isEnabled = $(event.target).is(":checked")
-            if(this.type == "bvh"){
+            if (this.type == "bvh") {
                 this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).skeleton.bones.forEach(elem => elem.axis.visible = isEnabled))
-            }else if(this.type == "fbx"){
+            } else if (this.type == "fbx") {
                 //todo rajouter axis sur FBX
                 this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).clip._root.children.forEach(elem => elem.axis.visible = isEnabled))
-            }            
+            }
         })
 
         $("#advancedCtrl-graphs .CtrlList div").on("dblclick", (event) => {
@@ -128,7 +127,7 @@ class AdvancedControlWindow {
                 }
             })
             let targetUUID = $(event.target.parentElement).attr("data-uuid")
-            if (nodeName === "Hips") {
+            if (nodeName === "Hips" || nodeName === "ROOT") {
                 Plotly.react($("#nodeGraph")[0], this._translationGraphData(targetUUID, targetedCollection));
             } else {
                 Plotly.react($("#nodeGraph")[0], this._rotationGraphData(nodeName, targetUUID, targetedCollection));
@@ -161,9 +160,8 @@ class AdvancedControlWindow {
         let recursiveNavigationForBVH = (object) => {
             let result = ""
             object.children.forEach((obj) => {
-                if (!(obj.name === "ENDSITE")) {
-                    if (obj.children[0] === "ENDSITE") result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div></li>"
-                    else result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigationForBVH(obj) + "</ul>" + "</li>"
+                if (obj.name != "ENDSITE"){
+                    if (obj.children.length > 0) result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigationForBVH(obj) + "</ul>" + "</li>"
                 }
             })
             return result
@@ -171,10 +169,8 @@ class AdvancedControlWindow {
         let recursiveNavigationForFBX = (object) => {
             let result = ""
             object.children.forEach((obj) => {
-                if (obj.length > 0) {
-                    if (obj.children[0].length == 0) result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div></li>"
-                    else result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigationForFBX(obj) + "</ul>" + "</li>"
-                }
+                if (obj.children.length == 0) result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div></li>"
+                else result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigationForFBX(obj) + "</ul>" + "</li>"
             })
             return result
         }
@@ -182,7 +178,7 @@ class AdvancedControlWindow {
         if (this.type === "bvh") {
             return '<div data-uuid="' + uuid_ + '"><p>Hips</p>' + additionalTag_ + '</div><ul>' + recursiveNavigationForBVH(object_.skeleton.bones[0]) + "</ul>"
         } else if (this.type === "fbx") {
-            return '<div data-uuid="' + uuid_ + '"><p>Hips</p>' + additionalTag_ + '</div><ul>' + recursiveNavigationForFBX(object_.clip._root.children[0]) + "</ul>"
+            return '<div data-uuid="' + uuid_ + '"><p>ROOT</p>' + additionalTag_ + '</div><ul>' + recursiveNavigationForFBX(object_.clip._root.children[0]) + "</ul>"
         }
 
     }
