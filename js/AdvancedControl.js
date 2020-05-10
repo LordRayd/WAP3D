@@ -61,7 +61,7 @@ class AdvancedControlWindow {
                 if (this.UUIDs.length == 1) $("body").append('<div id="advancedControlForFBX" title="Advanced Controls"></div>')
                 else $("body").append('<div id="advancedControlForFBX" title="Advanced Controls (multiple elements)"></div>')
 
-                $("#advancedControlForFBX").append(this.HTMLcontent)
+                $("#advancedControlForFBX").append(AdvancedControlWindow.HTMLcontent)
                 break
 
             default:
@@ -73,10 +73,17 @@ class AdvancedControlWindow {
     /** Remplie la fenêtre de son contenu et associe les actions liés à chaque éléments de la fenêtre */
     launch() {
         let targetedCollection
+        let windowID
 
-        if (this.type === "bvh") targetedCollection = this.player.bvhAnimationsArray
-        else if (this.type === "fbx") targetedCollection = this.player.fbxAnimationsArray
-        else throw new Error("unsupported type for launching advanced controls");
+        if (this.type === "bvh") {
+            targetedCollection = this.player.bvhAnimationsArray
+            windowID = "#advancedControlForBVH"
+        } else if (this.type === "fbx") {
+            targetedCollection = this.player.fbxAnimationsArray
+            windowID = "#advancedControlForFBX"
+        }else {
+            throw new Error("unsupported type for launching advanced controls");
+        }
 
         this.UUIDs.forEach((uuid) => {
             this.player.toggleObjectInListVisibility(uuid, true)
@@ -88,8 +95,8 @@ class AdvancedControlWindow {
         })
 
         this.UUIDs.forEach((uuid) => {
-            let graphsHierarchyString = this._browseThroughSkeleton(targetedCollection.getByUUID(uuid).skeleton)
-            let displayHierarchyString = this._browseThroughSkeleton(targetedCollection.getByUUID(uuid).skeleton, '<input type="checkbox" checked>')
+            let graphsHierarchyString = this._browseThroughSkeleton(targetedCollection.getByUUID(uuid), uuid)
+            let displayHierarchyString = this._browseThroughSkeleton(targetedCollection.getByUUID(uuid), uuid, '<input type="checkbox" checked>')
 
             $("#advancedCtrl-graphs").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + graphsHierarchyString + '</div>')
             $("#advancedCtrl-selection").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
@@ -100,9 +107,12 @@ class AdvancedControlWindow {
 
         $("#advancedCtrl-rendering #orthoEnabled").on("click", (event) => {
             let isEnabled = $(event.target).is(":checked")
-            this.UUIDs.forEach((uuid) => {
-                targetedCollection.getByUUID(uuid).skeleton.bones.forEach(elem => elem.axis.visible = isEnabled)
-            })
+            if(this.type == "bvh"){
+                this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).skeleton.bones.forEach(elem => elem.axis.visible = isEnabled))
+            }else if(this.type == "fbx"){
+                //todo rajouter axis sur FBX
+                this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).clip._root.children.forEach(elem => elem.axis.visible = isEnabled))
+            }            
         })
 
         $("#advancedCtrl-graphs .CtrlList div").on("dblclick", (event) => {
@@ -125,15 +135,15 @@ class AdvancedControlWindow {
             }
         })
 
-        $("#advancedControlForBVH").dialog({
+        $(windowID).dialog({
             height: 480,
             width: 640,
             close: (event, ui) => {
                 this.UUIDs.forEach((uuid) => {
                     $("#" + uuid).css("background-color", "white")
                 })
-                $("#advancedControlForBVH").empty()
-                $("#advancedControlForBVH").remove()
+                $(windowID).empty()
+                $(windowID).remove()
                 targetedCollection.highlightElements()
             }
         })
@@ -141,25 +151,40 @@ class AdvancedControlWindow {
 
     /** Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
      * 
-     *  @param {THREE.Skeleton}
+     *  @param {Object3D} object_ squelette pour un bvh ou le root pour un fbx
+     *  @param {UUID}
      *  @param {String} additionalTag_ Balise supplémentaire optionnelle
      * 
      *  @returns {String} le squelette sous forme de liste de liste HTML
      */
-    _browseThroughSkeleton(skeleton_, additionalTag_ = "") {
-        let uuid = skeleton_.uuid
-        let recursiveNavigation = (object) => {
+    _browseThroughSkeleton(object_, uuid_, additionalTag_ = "") {
+        let recursiveNavigationForBVH = (object) => {
             let result = ""
             object.children.forEach((obj) => {
                 if (!(obj.name === "ENDSITE")) {
-                    if (obj.children[0] === "ENDSITE") result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div></li>"
-                    else result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
+                    if (obj.children[0] === "ENDSITE") result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div></li>"
+                    else result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigationForBVH(obj) + "</ul>" + "</li>"
+                }
+            })
+            return result
+        }
+        let recursiveNavigationForFBX = (object) => {
+            let result = ""
+            object.children.forEach((obj) => {
+                if (obj.length > 0) {
+                    if (obj.children[0].length == 0) result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div></li>"
+                    else result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigationForFBX(obj) + "</ul>" + "</li>"
                 }
             })
             return result
         }
 
-        return '<div data-uuid="' + uuid + '"><p>Hips</p>' + additionalTag_ + '</div><ul>' + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
+        if (this.type === "bvh") {
+            return '<div data-uuid="' + uuid_ + '"><p>Hips</p>' + additionalTag_ + '</div><ul>' + recursiveNavigationForBVH(object_.skeleton.bones[0]) + "</ul>"
+        } else if (this.type === "fbx") {
+            return '<div data-uuid="' + uuid_ + '"><p>Hips</p>' + additionalTag_ + '</div><ul>' + recursiveNavigationForFBX(object_.clip._root.children[0]) + "</ul>"
+        }
+
     }
 
     /** Renvoie le graph des translations X Y Z de la node "Hips" du BVH correspondant au UUID donné, exploitable par plotly.js
@@ -204,7 +229,7 @@ class AdvancedControlWindow {
     _rotationGraphData(nodeName_, targetUUID_, targetedCollection_) {
 
         let nameInClipIfBVH = ".bones[" + nodeName_ + "].quaternion"
-        let nameInClipIfFBX = nodeName_+".quaternion"
+        let nameInClipIfFBX = nodeName_ + ".quaternion"
         let graphData = targetedCollection_.getByUUID(targetUUID_).clip._actions[0]._clip.tracks.filter((elem) => elem.name == nameInClipIfBVH || elem.name == nameInClipIfFBX).flatMap((elem) => [...elem.values.values()])
         let xAxis = Array(Math.floor(graphData.length / 3)).keys()
 

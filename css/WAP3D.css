@@ -137,7 +137,6 @@ img {
   border-color: #8e8e8e;
   margin-bottom: 20px;
 }
-
 #advancedControlForBVH .CtrlList .title {
   text-align: center;
   border-style: solid;
@@ -146,8 +145,25 @@ img {
   color: #ffffff;
   margin-top: -10px;
 }
-
 #advancedControlForBVH .CtrlList div:hover {
+  background-color: #7e7e7e;
+}
+
+#advancedControlForFBX .CtrlList {
+  width: 100%;
+  border-style: none solid solid solid;
+  border-color: #8e8e8e;
+  margin-bottom: 20px;
+}
+#advancedControlForFBX .CtrlList .title {
+  text-align: center;
+  border-style: solid;
+  border-color: #8e8e8e;
+  background-color: #8e8e8e;
+  color: #ffffff;
+  margin-top: -10px;
+}
+#advancedControlForFBX .CtrlList div:hover {
   background-color: #7e7e7e;
 }
 
