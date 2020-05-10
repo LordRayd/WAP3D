@@ -83,7 +83,7 @@ class Player {
     mainLight.shadow.mapSize.height = 2048
     mainLight.shadow.mapSize.width = 2048
     this.scene.add(mainLight)
-      //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
+    //this.scene.add(new THREE.SpotLightHelper(light)) //Pour visualiser la main light
 
     //Plan de présentation
     let plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 1, 1), new THREE.MeshPhongMaterial({ color: 0xffffff }))
@@ -161,7 +161,7 @@ class Player {
    *  @param event evenement de selection de fichier
    */
   loadFile(event, objectType) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         if (objectType.toLowerCase() == "bvh") {
           await this.bvhLoader.loadBVH(event)
@@ -313,10 +313,10 @@ class Player {
     if (this.animationIsPaused == true) {
       this.framerateTimeReference = -1
       $("#globalPlayPause").children().replaceWith(playDiv)
-        // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.playDiv).show(500).hide(500)
     } else {
       $("#globalPlayPause").children().replaceWith(pauseDiv)
-        // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
+      // $("#messagePlayer").html(this.pauseDiv).show(500).hide(500)
     }
   }
 
@@ -388,194 +388,20 @@ class Player {
     })
   }
 
-  /** Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
-   * 
-   *  @param {THREE.Skeleton}
-   *  @param {String} additionalTag_ Balise supplémentaire optionnelle
-   * 
-   *  @returns {String} le squelette sous forme de liste de liste HTML
-   */
-  _browseThroughBVHSkeleton(skeleton_, additionalTag_ = "") {
-    let uuid = skeleton_.uuid
-    let recursiveNavigation = (object) => {
-      let result = ""
-      object.children.forEach((obj) => {
-        if (!(obj.name === "ENDSITE")) {
-          if (obj.children[0] === "ENDSITE") result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div></li>"
-          else result = result + '<li><div data-uuid="' + uuid + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigation(obj) + "</ul>" + "</li>"
-        }
-      })
-      return result
-    }
-
-    return '<div data-uuid="' + uuid + '"><p>Hips</p>' + additionalTag_ + '</div><ul>' + recursiveNavigation(skeleton_.bones[0]) + "</ul>"
-  }
-
-  /** Renvoie le graph des translations X Y Z de la node "Hips" du BVH correspondant au UUID donné, exploitable par plotly.js
-   * 
-   *  @param {UUID} targetUUID_ Le UUID du BVH cible
-   */
-  _bvhTranslationGraphData(targetUUID_) {
-    let graphData = [...this.bvhAnimationsArray.getByUUID(targetUUID_).clip._actions[0]._clip.tracks[0].values.values()]
-    let xAxis = Array(Math.floor(graphData.length / 3)).keys()
-
-    return [{
-      x: xAxis,
-      y: graphData.map((val, index) => { if (index % 3 === 0) return val }),
-      marker: { color: 'red' },
-      name: 'X',
-      mode: 'markers',
-      simplify: true
-    }, {
-      x: xAxis,
-      y: graphData.map((val, index) => { if (index % 3 === 1) return val }),
-      marker: { color: 'green' },
-      name: 'Y',
-      mode: 'markers',
-      simplify: true
-    }, {
-      x: xAxis,
-      y: graphData.map((val, index) => { if (index % 3 === 2) return val }),
-      marker: { color: 'blue' },
-      name: 'Z',
-      mode: 'markers',
-      simplify: true
-    }]
-  }
-
-  /** Renvoie le graph des rotations X Y Z de la node donnée du BVH correspondant au UUID donné, exploitable par plotly.js
-   * 
-   *  @param {UUID} targetUUID_ Le UUID du BVH cible
-   *  @param {String} nodeName_ le nom du noeud à observer
-   */
-  _bvhRotationGraphData(nodeName_, targetUUID_) {
-
-    let nameInClip = ".bones[" + nodeName_ + "].quaternion"
-    let graphData = this.bvhAnimationsArray.getByUUID(targetUUID_).clip._actions[0]._clip.tracks.filter((elem) => elem.name == nameInClip).flatMap((elem) => [...elem.values.values()])
-    let xAxis = Array(Math.floor(graphData.length / 3)).keys()
-
-    return [{
-      x: xAxis,
-      y: graphData.map((val, index) => { if (index % 4 === 0) return val }),
-      marker: { color: 'red' },
-      name: 'X',
-      mode: 'markers',
-      simplify: true
-    }, {
-      x: xAxis,
-      y: graphData.map((val, index) => { if (index % 4 === 1) return val }),
-      marker: { color: 'green' },
-      name: 'Y',
-      mode: 'markers',
-      simplify: true
-    }, {
-      x: xAxis,
-      y: graphData.map((val, index) => { if (index % 4 === 2) return val }),
-      marker: { color: 'blue' },
-      name: 'Z',
-      mode: 'markers',
-      simplify: true
-    }, {
-      x: xAxis,
-      y: graphData.map((val, index) => { if (index % 4 === 3) return val }),
-      marker: { color: 'grey' },
-      name: 'W',
-      mode: 'markers',
-      simplify: true
-    }]
-  }
-
   /** Lance la fenêtre de contrôle avancé qui agira sur l'ensemble des éléments correspondants aux UUIDs donnés
    *  Attention ne pas l'utiliser en hétérogène avec des BVH et des FBX
    * 
    *  @param {UUID} objectUuids_ 
    */
   launchAdvancedControls(objectUuids_) {
-
-    let arrayClone = [...objectUuids_]
-
-    if (arrayClone.every((value) => this.bvhAnimationsArray.contains(value))) {
-
-      if ($("#advancedControlForBVH").length == 0) {
-
-        arrayClone.forEach((uuid) => {
-          this.toggleObjectInListVisibility(uuid, true)
-          $("#" + uuid + " .display").prop("checked", true)
-        })
-
-        if (arrayClone.length == 1) $("body").append('<div id="advancedControlForBVH" title="Advanced Controls"></div>')
-        else $("body").append('<div id="advancedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
-
-        $("#advancedControlForBVH").append(this.bvhAdvancedCtrlContent)
-
-        $("#speedRatioSelector").change((object) => {
-          let newTimeScaleValue = object.target.valueAsNumber
-          arrayClone.forEach((uuid) => {
-            this.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue
-          })
-        })
-
-        arrayClone.forEach((uuid) => {
-          let graphsHierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton)
-          let displayHierarchyString = this._browseThroughBVHSkeleton(this.bvhAnimationsArray.getByUUID(uuid).skeleton, '<input type="checkbox" checked>')
-
-          $("#advancedControlForBVH #graphs").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + graphsHierarchyString + '</div>')
-          $("#advancedControlForBVH #selection").append('<div class="BVHCtrlList"><p class="title">' + this.bvhAnimationsArray.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
-
-          $("#renderModeWireFrame").on("click", event => { this.bvhAnimationsArray.getByUUID(uuid).wireframe = $("#renderModeWireFrame")[0].checked })
-          $("#renderModeCubic").on("click", event => { this.bvhAnimationsArray.getByUUID(uuid).wireframe = $("#renderModeWireFrame")[0].checked })
-        })
-
-        $("#advancedControlForBVH .BVHCtrlList input").on("click", (event) => {
-          //TODO à bouger dans IEM
-          //TODO trouver un moyen de le faire marcher
-        })
-
-        $("#advancedControlForBVH #orthoEnabled").on("click", (event) => {
-          let isEnabled = $(event.target).is(":checked")
-          arrayClone.forEach((uuid) => {
-            this.bvhAnimationsArray.getByUUID(uuid).skeleton.bones.forEach(elem => elem.axis.visible = isEnabled)
-          })
-        })
-
-        $("#advancedControlForBVH .BVHCtrlList div").on("dblclick", (event) => {
-          let nodeName = event.target.textContent
-            //TODO Déplacer tout ça dans IEM
-          $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
-          $("#nodeGraph").dialog({
-            height: 640,
-            width: 640,
-            close: (event, ui) => {
-              $("#nodeGraph").empty()
-              $("#nodeGraph").remove()
-            }
-          })
-          let targetUUID = $(event.target.parentElement).attr("data-uuid")
-          if (nodeName == "Hips") {
-            Plotly.react($("#nodeGraph")[0], this._bvhTranslationGraphData(targetUUID));
-          } else {
-            Plotly.react($("#nodeGraph")[0], this._bvhRotationGraphData(nodeName, targetUUID));
-          }
-        })
-
-        $("#advancedControlsTabsForBVH").tabs()
-
-        $("#advancedControlForBVH").dialog({
-          height: 480,
-          width: 640,
-          close: (event, ui) => {
-            arrayClone.forEach((uuid) => {
-              $("#" + uuid).css("background-color", "white")
-            })
-            $("#advancedControlForBVH").empty()
-            $("#advancedControlForBVH").remove()
-            this.bvhAnimationsArray.highlightElements()
-          }
-        })
-      }
-    } else { //if arrayClone.every((value) => this.fbxAnimationsArray.contains(value)) ...
-      //FBX ----
-      console.log("FBX !")
+    //à voir si c'est mieux de faire la vérification de validité ici ou dans les advanced controls
+    if (this.bvhAnimationsArray.contains(objectUuids_[0])) {
+      let acw = new AdvancedControlWindow(objectUuids_, "bvh", this)
+      acw.launch()
+    } else if (this.fbxAnimationsArray.contains(objectUuids_[0])) {
+      let acw = new AdvancedControlWindow(objectUuids_, "fbx", this)
+      acw.launch()
     }
   }
+
 }

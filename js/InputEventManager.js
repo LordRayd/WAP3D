@@ -241,12 +241,17 @@ class IEM {
   openAdvancedControlsAction(event) {
     if (this.iemIsBlocked) return
     let target = event.target
+    let listType
     if (target.tagName === "P") {
+      listType = target.parentNode.parentNode.parentNode.parentNode.id.slice(0, 3).toLowerCase()
+      
       $(target.parentNode.parentNode).css("background-color", "darkgrey")
-      this.player.launchAdvancedControls([target.parentNode.parentNode.id])
+      this.player.launchAdvancedControls([target.parentNode.parentNode.id], listType)
     } else if (target.className === "titleArea" || target.className === "controlFunctions") {
+      listType = target.parentNode.parentNode.parentNode.id.slice(0, 3).toLowerCase()
+
       $(target.parentNode).css("background-color", "darkgrey")
-      this.player.launchAdvancedControls([target.parentNode.id])
+      this.player.launchAdvancedControls([target.parentNode.id], listType)
     }
   }
 

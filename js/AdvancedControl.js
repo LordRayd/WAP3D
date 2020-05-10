@@ -29,7 +29,7 @@ class AdvancedControlWindow {
                 <div id="advancedCtrl-selection">\
                 </div>\
             </div>\
-        ').tabs()
+        ').tabs().ajaxSuccess()[0]
 
     constructor(uuidCollection_, windowType_, playerContext_) {
         this.player = playerContext_
@@ -41,20 +41,20 @@ class AdvancedControlWindow {
             case "bvh":
                 if ($("#advancedControlForBVH").length > 0) throw new Error("bvh controls currently launched")
 
-                if (!(this.UUIDs.every((value) => this.bvhAnimationsArray.contains(value)))) {
+                if (!(this.UUIDs.every((value) => this.player.bvhAnimationsArray.contains(value)))) {
                     throw new Error("1 or more bvh UUID invalid, have you mixed FBX and BVH in selection ?")
                 }
 
                 if (this.UUIDs.length == 1) $("body").append('<div id="advancedControlForBVH" title="Advanced Controls"></div>')
                 else $("body").append('<div id="advancedControlForBVH" title="Advanced Controls (multiple elements)"></div>')
 
-                $("#advancedControlForBVH").append(this.HTMLcontent)
+                $("#advancedControlForBVH").append(AdvancedControlWindow.HTMLcontent)
                 break
 
             case "fbx":
                 if ($("#advancedControlForFBX").length > 0) throw new Error("fbx controls currently launched")
 
-                if (!(this.UUIDs.every((value) => this.fbxAnimationsArray.contains(value)))) {
+                if (!(this.UUIDs.every((value) => this.player.fbxAnimationsArray.contains(value)))) {
                     throw new Error("1 or more fbx UUID invalid, have you mixed FBX and BVH in selection ?")
                 }
 
@@ -84,7 +84,7 @@ class AdvancedControlWindow {
 
         $("#speedRatioSelector").change((object) => {
             let newTimeScaleValue = object.target.valueAsNumber
-            this.UUIDs.forEach((uuid) => targetedCollection.bvhAnimationsArray.getByUUID(uuid).speedRatio = newTimeScaleValue)
+            this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).speedRatio = newTimeScaleValue)
         })
 
         this.UUIDs.forEach((uuid) => {
@@ -119,9 +119,9 @@ class AdvancedControlWindow {
             })
             let targetUUID = $(event.target.parentElement).attr("data-uuid")
             if (nodeName === "Hips") {
-                Plotly.react($("#nodeGraph")[0], this._translationGraphData(targetUUID));
+                Plotly.react($("#nodeGraph")[0], this._translationGraphData(targetUUID, targetedCollection));
             } else {
-                Plotly.react($("#nodeGraph")[0], this._rotationGraphData(nodeName, targetUUID));
+                Plotly.react($("#nodeGraph")[0], this._rotationGraphData(nodeName, targetUUID, targetedCollection));
             }
         })
 
@@ -129,14 +129,14 @@ class AdvancedControlWindow {
             height: 480,
             width: 640,
             close: (event, ui) => {
-              arrayClone.forEach((uuid) => {
-                $("#" + uuid).css("background-color", "white")
-              })
-              $("#advancedControlForBVH").empty()
-              $("#advancedControlForBVH").remove()
-              this.bvhAnimationsArray.highlightElements()
+                this.UUIDs.forEach((uuid) => {
+                    $("#" + uuid).css("background-color", "white")
+                })
+                $("#advancedControlForBVH").empty()
+                $("#advancedControlForBVH").remove()
+                targetedCollection.highlightElements()
             }
-          })
+        })
     }
 
     /** Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
@@ -164,10 +164,11 @@ class AdvancedControlWindow {
 
     /** Renvoie le graph des translations X Y Z de la node "Hips" du BVH correspondant au UUID donné, exploitable par plotly.js
      * 
-     *  @param {UUID} targetUUID_ Le UUID du BVH cible
+     *  @param {UUID} targetUUID_ Le UUID de la cible
+     *  @param {Array} targetedCollection_ La collection où se trouve l'animation
      */
-    _translationGraphData(targetUUID_) {
-        let graphData = [...this.player.bvhAnimationsArray.getByUUID(targetUUID_).clip._actions[0]._clip.tracks[0].values.values()]
+    _translationGraphData(targetUUID_, targetedCollection_) {
+        let graphData = [...targetedCollection_.getByUUID(targetUUID_).clip._actions[0]._clip.tracks[0].values.values()]
         let xAxis = Array(Math.floor(graphData.length / 3)).keys()
 
         return [{
@@ -198,11 +199,13 @@ class AdvancedControlWindow {
      * 
      *  @param {UUID} targetUUID_ Le UUID du BVH cible
      *  @param {String} nodeName_ le nom du noeud à observer
+     *  @param {Array} targetedCollection_ La collection où se trouve l'animation
      */
-    _rotationGraphData(nodeName_, targetUUID_) {
+    _rotationGraphData(nodeName_, targetUUID_, targetedCollection_) {
 
-        let nameInClip = ".bones[" + nodeName_ + "].quaternion"
-        let graphData = this.player.bvhAnimationsArray.getByUUID(targetUUID_).clip._actions[0]._clip.tracks.filter((elem) => elem.name == nameInClip).flatMap((elem) => [...elem.values.values()])
+        let nameInClipIfBVH = ".bones[" + nodeName_ + "].quaternion"
+        let nameInClipIfFBX = nodeName_+".quaternion"
+        let graphData = targetedCollection_.getByUUID(targetUUID_).clip._actions[0]._clip.tracks.filter((elem) => elem.name == nameInClipIfBVH || elem.name == nameInClipIfFBX).flatMap((elem) => [...elem.values.values()])
         let xAxis = Array(Math.floor(graphData.length / 3)).keys()
 
         return [{
