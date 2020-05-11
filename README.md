@@ -23,7 +23,7 @@ WAP3D est un projet dont le but est d'afficher des scènes définie par des fich
     
 - Méthodes/Fonctions :
     - Commenter chaque méthode/fonction à l'aide des commentaires /** Explication \*/ pour avoir la doc dynamique de VScode
-    - Écrire chaque paramètre sous la forme : unParam_, unAutreParam_ , ...
+    - Écrire chaque paramètre en camelCase : unParam_, unAutreParam_ , ...
     - Ne pas modifier les paramètre dans une fonction
     - Un seul *return* par fonction
     
