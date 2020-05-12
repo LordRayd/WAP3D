@@ -82,7 +82,9 @@ class IEM {
         this.isOnAppendSelectionMode = true
         break
       case 'ENTER':
-        if (this.currentlySelectedElements.size > 0) this.player.launchAdvancedControls(this.currentlySelectedElements)
+        if (this.currentlySelectedElements.size > 0 && $("#advancedControlForBVH").length == 0 && $("#advancedControlForFBX").length == 0) {
+          this.player.launchAdvancedControls([...this.currentlySelectedElements])
+        }
         break
       case 'DELETE':
         this.player.deleteObjectsFromPlayer(this.currentlySelectedElements)
@@ -244,7 +246,7 @@ class IEM {
     let listType
     if (target.tagName === "P") {
       listType = target.parentNode.parentNode.parentNode.parentNode.id.slice(0, 3).toLowerCase()
-      
+
       $(target.parentNode.parentNode).css("background-color", "darkgrey")
       this.player.launchAdvancedControls([target.parentNode.parentNode.id], listType)
     } else if (target.className === "titleArea" || target.className === "controlFunctions") {
