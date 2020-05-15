@@ -21,7 +21,7 @@ class IEM {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
-        $("#closeOpenButton").css({ "width": "1.5vw", "height": "3vh", "top": "50%" })
+        $("#closeOpenButton").css({ "width": "5%", "height": "5%", "top": "47.5%" })
       }
     })
 
