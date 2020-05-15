@@ -30,36 +30,6 @@ class Player {
     this.animationIsPaused = true
 
     this._animate()
-
-    //contenu de la fenêtre de contrôles avancés
-    this.bvhAdvancedCtrlContent = $('\
-      <div id="advancedControlsTabsForBVH">\
-        <ul> \
-          <li><a href="#graphs">Graphs</a></li>\
-          <li><a href="#rendering">Rendering Options</a></li>\
-          <li><a href="#selection">Display Selection</a></li>\
-        </ul>\
-        <div id="graphs">\
-        </div>\
-        <div id="rendering">\
-          <ul>\
-            <li><input id="speedRatioSelector" type="number" step="0.25" min="0" onkeypress="return event.charCode != 45"></li>\
-            <li>\
-              <label for="orthoEnabled"> Affichage d\'un repère orthonormé pour chaque articulation</label>\
-              <input type="checkbox" name="orthoEnabled" id="orthoEnabled">\
-            </li>\
-            <li>\
-              <p> Rendering mode: </p>\
-              <label for="WireFrame">WireFrame</label>\
-              <input type="radio" id="renderModeWireFrame" name="renderMode" value="WireFrame"><br>\
-              <label for="Cubic">Cubic</label>\
-              <input type="radio" id="renderModeCubic" name="renderMode" value="Cubic"><br>\
-            </li>\
-          </ul>\
-        </div>\
-        <div id="selection">\
-        </div>\
-      </div>')
   }
 
   /** Initialise le lecteur avec une grille de référence */
@@ -394,6 +364,7 @@ class Player {
    *  @param {UUID} objectUuids_ 
    */
   launchAdvancedControls(objectUuids_) {
+    console.log(objectUuids_)
     //à voir si c'est mieux de faire la vérification de validité ici ou dans les advanced controls
     if (this.bvhAnimationsArray.contains(objectUuids_[0])) {
       let acw = new AdvancedControlWindow(objectUuids_, "bvh", this)
