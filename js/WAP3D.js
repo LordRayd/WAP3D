@@ -166,6 +166,7 @@ class Player {
     let player = $("#player")[0]
     this.renderer.setSize(player.offsetWidth, player.offsetHeight)
     this.camera.aspect = player.offsetWidth / player.offsetHeight
+    this.camera.updateProjectionMatrix()
   }
 
   /** Modifie la visibilité de tout les bvh de la scène 
