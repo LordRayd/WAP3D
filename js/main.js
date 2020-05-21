@@ -30,38 +30,36 @@ function _setAllEventListener() {
 
   $("#closeOpenButton").one("click", event => inputEventManager.closeObjectListAction(event))
 
-  $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
-  $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
+  $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction())
+  $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction())
 
-  $("#BVHListPlay").on("click", event => inputEventManager.clickOnListPlayAction(event))
-  $("#BVHListPause").on("click", event => inputEventManager.clickOnListPauseAction(event))
-  $("#BVHListReplay").on("click", event => inputEventManager.clickOnListReplayAction(event))
-  $("#BVHListdisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event))
-
-
-  $("#FBXListPlay").on("click", event => inputEventManager.clickOnListPlayAction(event));
-  $("#FBXListPause").on("click", event => inputEventManager.clickOnListPauseAction(event));
-  $("#FBXListReplay").on("click", event => inputEventManager.clickOnListReplayAction(event));
-  $("#FBXListdisplay").on("click", event => inputEventManager.toggleListVisibilityCheckboxAction(event));
+  $(".listPlay").on("click", event => inputEventManager.clickOnListPlayAction(event))
+  $(".listPause").on("click", event => inputEventManager.clickOnListPauseAction(event))
+  $(".listReplay").on("click", event => inputEventManager.clickOnListReplayAction(event))
+  $(".listDisplay").on("click", event => inputEventManager.clickOnListVisibilityAction(event))
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 }
 
 /** Associe ou réassocie les méthodes liés aux modes d'interactions avec les objets de la page */
 function updateEventListener() {
-  $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction(event))
-  $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction(event))
+
+  $("#globalPlayPause").off("click",)
+  $("#globalPlayPause").on("click", event => inputEventManager.clickOnGlobalPlayPauseAction())
+  $("#globalReplay").off("click")
+  $("#globalReplay").on("click", event => inputEventManager.clickOnGlobalReplayAction())
 
   $(".fileSelector").off("change")
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 
   $(".playPause").off("click")
-  $(".replay").off("click")
-  $(".timeSlider").off("input")
   $(".playPause").on("click", event => inputEventManager.clickOnElementPlayPauseAction(event))
+  $(".replay").off("click")
   $(".replay").on("click", event => inputEventManager.clickOnElementReplayAction(event))
+  $(".timeSlider").off("input")
   $(".timeSlider").on("input", event => inputEventManager.modifyElementTimeSliderAction(event))
-  $(".display").on("click", event => inputEventManager.toggleElementVisibilityCheckboxAction(event))
+  $(".display").off("click")
+  $(".display").on("click", event => inputEventManager.clickOnElementVisibilityAction(event))
 
   // Sélection unique d'éléments de liste
   $(".objectList .list .object").off("dblclick")

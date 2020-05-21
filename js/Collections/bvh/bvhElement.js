@@ -18,6 +18,8 @@ class BVHAnimationElement extends AnimationElement {
       this.frameTime = bvhFile_.getFrameTime()
       this.nbFrames = bvhFile_.getNbFrames()
   
+      this.overallTime = this.clip.nbFrames * this.frameTime
+
       //prototype sur les bones du skeleton pour ajouter des repères sur chaque node
       this.skeleton.bones.forEach(elem => {
         elem.axis = new THREE.AxesHelper(1) //création et initialisation de l'attribut axis
@@ -42,12 +44,16 @@ class BVHAnimationElement extends AnimationElement {
   
     /** Rend le BVH invisible */
     hide() {
+      this.isVisible = false
       this.skeleton.visible = false
+      this._updateVisibilityImg()
     }
   
     /** Rend le BVH visible */
     show() {
+      this.isVisible = true
       this.skeleton.visible = true
+      this._updateVisibilityImg()
     }
   
     /** Si true alors le bvh produit des ombres */

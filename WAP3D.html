@@ -43,6 +43,7 @@
       <script src="./js/wap3DUtil.js"></script>
       <script src="./js/WAP3D.js"></script>
       <script src="./js/InputEventManager.js"></script>
+      <script src="./js/AdvancedControl.js"></script>
 
       <!-- Main -->
       <script src="./js/main.js"></script>
@@ -61,23 +62,29 @@
             <li><a href="#fbxList">FBX</a></li>
           </ul>
           <div class="objectList" id="bvhList">
-            <input class="fileSelector" type="file" multiple="multiple" accept=".bvh">
             <div class="title">
-              <div id="BVHListPlay"><img src="./images/play_button.svg"></div>
-              <div id="BVHListPause"><img src="./images/pause_button.svg"></div>
-              <div id="BVHListReplay"><img src="./images/replay_button.svg"></div>
-              <input id="BVHListdisplay" type="checkbox" checked>
+              <div class="listPlay"><img src="./images/play_button.svg"></div>
+              <div class="listPause"><img src="./images/pause_button.svg"></div>
+              <div class="listReplay"><img src="./images/replay_button.svg"></div>
+              <div class="listDisplay"><img src="./images/eye_button.svg"></div>
+              <label for="bvhFileSelector" class="stylisedFileSelector">
+                <img src="./images/upload_button.svg">
+              </label>
+              <input id="bvhFileSelector" class="fileSelector" type="file" multiple="multiple" accept=".bvh">
             </div>
             <div class="list"></div>
           </div>
 
           <div class="objectList" id="fbxList">
-            <input class="fileSelector" type="file" multiple="multiple" accept=".fbx">
             <div class="title">
-              <div id="FBXListPlay"><img src="./images/play_button.svg"></div>
-              <div id="FBXListPause"><img src="./images/pause_button.svg"></div>
-              <div id="FBXListReplay"><img src="./images/replay_button.svg"></div>
-              <input id="FBXListdisplay" type="checkbox" checked>
+              <div class="listPlay"><img src="./images/play_button.svg"></div>
+              <div class="listPause"><img src="./images/pause_button.svg"></div>
+              <div class="listReplay"><img src="./images/replay_button.svg"></div>
+              <div class="listDisplay"><img src="./images/eye_button.svg"></div>
+              <label for="fbxFileSelector" class="stylisedFileSelector">
+                <img src="./images/upload_button.svg">
+              </label>
+              <input id="fbxFileSelector" class="fileSelector" type="file" multiple="multiple" accept=".fbx">
             </div>
             <div class="list"></div>
           </div>

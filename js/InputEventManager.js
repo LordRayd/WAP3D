@@ -14,14 +14,14 @@ class IEM {
 
   /** Ouvre la div de sélection d'élements */
   _openObjectListAction() {
-
+    if (this.iemIsBlocked) return
     $("#closeOpenButton img").attr("src", "./images/close_button.svg")
 
     $("#objectSelector").animate({ width: '30%', height: '100%', top: '0' }, {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
-        $("#closeOpenButton").css({ "width": "1.5vw", "height": "3vh", "top": "50%" })
+        $("#closeOpenButton").css({ "width": "5%", "height": "5%", "top": "47.5%" })
       }
     })
 
@@ -56,6 +56,7 @@ class IEM {
    *  @param {*} keyEvent La touche pressée
    */
   keydownAction(keyEvent) {
+    if (this.iemIsBlocked) return
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
       case "Z":
@@ -81,7 +82,9 @@ class IEM {
         this.isOnAppendSelectionMode = true
         break
       case 'ENTER':
-        if (this.currentlySelectedElements.size > 0) this.openAdvancedControls(this.currentlySelectedElements)
+        if (this.currentlySelectedElements.size > 0 && $("#advancedControlForBVH").length == 0 && $("#advancedControlForFBX").length == 0) {
+          this.player.launchAdvancedControls([...this.currentlySelectedElements])
+        }
         break
       case 'DELETE':
         this.player.deleteObjectsFromPlayer(this.currentlySelectedElements)
@@ -94,6 +97,7 @@ class IEM {
    *  @param {*} keyEvent La touche relachée
    */
   keyupAction(keyEvent) {
+    if (this.iemIsBlocked) return
     let keyPressed = keyEvent.originalEvent.key.toUpperCase()
     switch (keyPressed) {
       case "Z":
@@ -114,76 +118,45 @@ class IEM {
     }
   }
 
-  /** Demande au Player de toggle entre pause et play */
-  //TODO à modifier pour être utilisé dans les listes
-  clickOnGlobalPlayPauseAction(event) {
+  /**Demande au player de toggle la mise en pose de la scène */
+  clickOnGlobalPlayPauseAction() {
     if (this.iemIsBlocked) return
-    this.playerAnimating = this.player.toggleAnimation()
+    this.player.toggleAnimation("all")
   }
 
-  /** Demande au player de mettre toutes les animations à leur première frames */
-  //TODO à modifier pour être utilisé dans les listes
-  clickOnGlobalReplayAction(event) {
+  /**Demande au player de reset les animations de la scène */
+  clickOnGlobalReplayAction() {
     if (this.iemIsBlocked) return
-    this.player.bvhAnimationsArray.setAllBvhTime(0)
-    this.player.fbxAnimationsArray.replayAllAnimations();
-    this.player.restartAnimation()
+    this.player.replayAnimation("all")
   }
 
   /** Demande au player de mettre en route tout les BVH */
   clickOnListPlayAction(event) {
     if (this.iemIsBlocked) return
-    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.playAnimation(listName)
   }
 
   /** Demande au player de mettre en pause tout les BVH */
   clickOnListPauseAction(event) {
     if (this.iemIsBlocked) return
-    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.pauseAnimation(listName)
   }
 
   /** Demande au player de relancer tout les BVH */
   clickOnListReplayAction(event) {
     if (this.iemIsBlocked) return
-    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
+    let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.replayAnimation(listName)
   }
 
   /** Demande au player de toggle la visibilité de tout les BVH */
-  toggleListVisibilityCheckboxAction(event) {
+  clickOnListVisibilityAction(event) {
     if (this.iemIsBlocked) return
-    let isChecked = $(event.target).is(":checked")
-    let listName = event.currentTarget.id.slice(0, 3).toLowerCase()
-    this.player.toggleListVisibility(listName, isChecked)
-    $("#" + listName + "List .list .object .controlFunctions .display").prop('checked', isChecked)
-  }
-
-  /** Demande au player de mettre en route tout les FBX */
-  clickOnFBXListPlayAction(event) {
-    if (this.iemIsBlocked) return
-    this.player.playFBXAnimation()
-  }
-
-  /** Demande au player de mettre en pause tout les FBX */
-  clickOnFBXListPauseAction(event) {
-    if (this.iemIsBlocked) return
-    this.player.pauseFBXAnimation()
-  }
-
-  /** Demande au player de relancer tout les FBX */
-  clickOnFBXListReplayAction(event) {
-    if (this.iemIsBlocked) return
-    this.player.restartFBXAnimation(false)
-  }
-
-  /** Demande au player de toggle la visibilité de tout les FBX */
-  toggleFBXListVisibilityCheckboxAction(event) {
-    if (this.iemIsBlocked) return
-    let isChecked = $(event.target).is(":checked")
-    this.player.toggleFBXVisibility(isChecked)
-    $("#fbxList .list .object .controlFunctions .display").prop('checked', isChecked)
+    let isVisible = $(event.target).attr("src") != "./images/eye_button.svg"
+    let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
+    this.player.toggleListVisibility(listName, isVisible)
   }
 
   /** Demande au player de mettre en pause l'animation correspondante à l'élément dans lequel le bouton pause à été clické */
@@ -209,10 +182,10 @@ class IEM {
   }
 
   /** Demande au player de toggle la visibilité de l'élément correspondant */
-  toggleElementVisibilityCheckboxAction(event) {
+  clickOnElementVisibilityAction(event) {
     if (this.iemIsBlocked) return
-    let objectId = event.target.parentNode.parentNode.id
-    this.player.toggleObjectInListVisibility(objectId, $(event.target).is(":checked"))
+    let objectId = event.target.parentNode.parentNode.parentNode.id
+    this.player.toggleObjectInListVisibility(objectId, $(event.target).attr("src") != "./images/eye_button.svg")
   }
 
   /** Demande au player de rajouter des éléments à la liste des éléments modifiable par la fenêtre de ctrl avancés
@@ -220,6 +193,7 @@ class IEM {
    *  @param {event} event
    */
   selectElementFromListAction(event) {
+    if (this.iemIsBlocked) return
     let target = event.target
     let object = undefined
     if (target.tagName === "P") {
@@ -246,7 +220,14 @@ class IEM {
         this.currentlySelectedElements.clear()
       }
     }
-    this.player.bvhAnimationsArray.highlightElements(this.currentlySelectedElements)
+    let selectElementsArray = [...this.currentlySelectedElements]
+    if (selectElementsArray.every((uuid) => this.player.bvhAnimationsArray.contains(uuid))) {
+      this.player.bvhAnimationsArray.highlightElements(selectElementsArray)
+    } else if (selectElementsArray.every((uuid) => this.player.fbxAnimationsArray.contains(uuid))) {
+      this.player.fbxAnimationsArray.highlightElements(selectElementsArray)
+    } else {
+      throw new Error("invalid selection, rappel: les sélections hétérogène ne sont pas autorisées")
+    }
   }
 
   /** TODO */
@@ -260,13 +241,19 @@ class IEM {
    *  @param {event} event
    */
   openAdvancedControlsAction(event) {
+    if (this.iemIsBlocked) return
     let target = event.target
+    let listType
     if (target.tagName === "P") {
+      listType = target.parentNode.parentNode.parentNode.parentNode.id.slice(0, 3).toLowerCase()
+
       $(target.parentNode.parentNode).css("background-color", "darkgrey")
-      this.player.launchAdvancedControls([target.parentNode.parentNode.id])
+      this.player.launchAdvancedControls([target.parentNode.parentNode.id], listType)
     } else if (target.className === "titleArea" || target.className === "controlFunctions") {
+      listType = target.parentNode.parentNode.parentNode.id.slice(0, 3).toLowerCase()
+
       $(target.parentNode).css("background-color", "darkgrey")
-      this.player.launchAdvancedControls([target.parentNode.id])
+      this.player.launchAdvancedControls([target.parentNode.id], listType)
     }
   }
 

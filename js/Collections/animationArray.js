@@ -66,6 +66,15 @@ class AnimationArray extends Array {
     });
   }
 
+  /** Retourne vrai s'il y a au moins un élément contenu dans la liste qui est toujours en lecture, faux sinon.
+   * 
+   * @returns true : si au moins un élément de la liste est en lecture
+   * @returns false : si tous les élément de la liste sont en pause
+   */
+  atLeastOneAnimationToPlay() {
+    return this.some(elt => !elt.isPaused)
+  }
+
   /** Met en pause lelement entré en parametre s'il est en lecture, le met en lecture sinon.
    * 
    *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
@@ -128,13 +137,56 @@ class AnimationArray extends Array {
     })
   }
 
+  /** Méthode abstraite */
+  _updateListVisibilityImg(value) { throw new Error("_updateListVisibilityImg Abstract : not Implemented") }
+
   /** TODO */
   hideAllAnimations() {
     this.forEach(elem => elem.hide())
+    this._updateListVisibilityImg(false)
   }
 
   /** TODO */
   showAllAnimations() {
     this.forEach(elem => elem.show())
+    this._updateListVisibilityImg(true)
+  }
+
+  /** Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+   *  
+   *  @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
+   */
+  highlightElements(Uuids_) {
+    let amount = 0
+    if (Uuids_) {
+      if (Uuids_.constructor.name === "Set") {
+        amount = Uuids_.size
+      } else {
+        amount = Uuids_.length
+      }
+    }
+
+    if (amount > 0) {
+      this.forEach((elem) => {
+        elem.opacity = 0.3
+      })
+
+      Uuids_.forEach((uuid) => {
+        this.getByUUID(uuid).opacity = 1.0
+      })
+    } else {
+      this.forEach((elem) => {
+        elem.opacity = 1.0
+      })
+    }
+  }
+
+  /**
+   * @returns {AnimationElement} l'OBJET ayant l'animation la plus longue (en secondes) de la collection 
+   * */
+  getByMaxOverallTime() {
+    return this.reduce((elt0, elt1) => {
+      return (elt0.overallTime > elt1.overallTime) ? elt0 : elt1
+    })
   }
 }
