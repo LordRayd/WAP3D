@@ -21,7 +21,7 @@ class IEM {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
-        $("#closeOpenButton").css({ "width": "5%", "height": "5%", "top": "47.5%" })
+        $("#closeOpenButton").css({ "width": "5%", "height": "5%", "top": "47.5%", "right": "-20px"})
       }
     })
 
@@ -41,7 +41,7 @@ class IEM {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this._openObjectListAction(event))
-        $("#closeOpenButton").css({ "width": "100%", "height": "100%", "top": "0" })
+        $("#closeOpenButton").css({ "width": "100%", "height": "100%", "top": "0", "right": "0"})
       }
     })
 
