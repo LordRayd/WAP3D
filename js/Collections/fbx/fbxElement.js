@@ -17,14 +17,14 @@ class FBXAnimationElement extends AnimationElement {
 
     this.frameTime = 1;
 
-    //this._initialiseAxesHelpers()
+    this._initialiseAxesHelpers()
   }
 
   /** Initialise les axes orthornormé sur chaques articulations du modèle à l'aide du prototypage javascript
    * ne marche pas en raison de la limite de récursion
   */
   _initialiseAxesHelpers() {
-    let recursiveNavigation = (object) => {
+    /*let recursiveNavigation = (object) => {
       object.children.forEach((obj) => {
         obj.axis = new THREE.AxesHelper(20) //création et initialisation de l'attribut axis
         obj.axis.material.linewidth = 2
@@ -33,7 +33,21 @@ class FBXAnimationElement extends AnimationElement {
         recursiveNavigation(obj)
       })
     }
-    recursiveNavigation(this.clip._root.children[0])
+    recursiveNavigation(this.clip._root.children[0])*/
+
+    function recursiveNavigation(object) {
+      let childs = object.children.flatMap(obj => recursiveNavigation(obj))
+      if (childs) return childs.concat(object)
+      else return [object]
+    }
+    let boneArray = recursiveNavigation(this.clip._root.children[0])
+    boneArray.forEach(obj => {
+      obj.axis = new THREE.AxesHelper(20) //création et initialisation de l'attribut axis
+      obj.axis.material.linewidth = 2
+      obj.axis.visible = false
+      obj.add(obj.axis)
+    })
+    console.log(boneArray)
   }
 
   /** Rend le FBX invisible */
