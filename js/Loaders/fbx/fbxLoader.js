@@ -29,7 +29,7 @@ class FBXLoader extends FileLoader {
     } else {
       return new Promise(async (resolve, reject) => {
         try {
-          this.nbFileToLoad = 1;
+          this.nbFileToLoad = filesToLoadEvent.currentTarget.length;
           this.loadingState = "loading"
           $("#messagePlayer").text("Chargement en cours : " + this.nbFileToLoad + " fichiers.")
           this.oldNbLoadedFiles = this.nbLoadedFiles // sauvegarde du nombre de ficheir déjà chargé
@@ -99,6 +99,7 @@ class FBXLoader extends FileLoader {
       loader.load(animationFile.name,
         (loadedFbxObject) => {
           this._loadModel(modelFile, loadedFbxObject.animations).then(resolve);
+          this.nbLoadedFiles += 1;
         },
         null,
         error => reject(error));
