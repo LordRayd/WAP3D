@@ -10,12 +10,30 @@ class FBXAnimationElement extends AnimationElement {
 
     this.overallTime = this.clip._root.animations[0].duration
 
-      // rend le FBX transparent afin de pouvoir changer son opacité
+    // rend le FBX transparent afin de pouvoir changer son opacité
     this.clip._root.children.forEach(elt => {
       if (elt.material) console.log(elt.material.transparent = true)
     })
 
     this.frameTime = 1;
+
+    //this._initialiseAxesHelpers()
+  }
+
+  /** Initialise les axes orthornormé sur chaques articulations du modèle à l'aide du prototypage javascript
+   * ne marche pas en raison de la limite de récursion
+  */
+  _initialiseAxesHelpers() {
+    let recursiveNavigation = (object) => {
+      object.children.forEach((obj) => {
+        obj.axis = new THREE.AxesHelper(20) //création et initialisation de l'attribut axis
+        obj.axis.material.linewidth = 2
+        obj.axis.visible = false
+        obj.add(obj.axis)
+        recursiveNavigation(obj)
+      })
+    }
+    recursiveNavigation(this.clip._root.children[0])
   }
 
   /** Rend le FBX invisible */

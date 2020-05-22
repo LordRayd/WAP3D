@@ -26,10 +26,6 @@ class IEM {
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeIn(100)
-
-    $("#messagePlayer").animate({ width: '59%' }, {
-      duration: 100,
-    })
   }
 
   /** Minimise la div de sélection d'élements */
@@ -46,10 +42,6 @@ class IEM {
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeOut(100)
-
-    $("#messagePlayer").animate({ width: '84%' }, {
-      duration: 100,
-    })
   }
 
   /** 
