@@ -81,10 +81,9 @@
               <div class="listPause"><img src="./images/pause_button.svg"></div>
               <div class="listReplay"><img src="./images/replay_button.svg"></div>
               <div class="listDisplay"><img src="./images/eye_button.svg"></div>
-              <label for="fbxFileSelector" class="stylisedFileSelector">
+              <label id='fbxFileSelector' class="stylisedFileSelector">
                 <img src="./images/upload_button.svg">
               </label>
-              <input id="fbxFileSelector" class="fileSelector" type="file" multiple="multiple" accept=".fbx">
             </div>
             <div class="list"></div>
           </div>
@@ -101,6 +100,37 @@
         <div id="globalReplay"><img src="./images/replay_button.svg"></div>
       </div>
     </div>
+
+    <!-- Gestion de la selection des FBX-->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <button id="1fbx">Fichier Fbx contenant le modele et l'animation</button>
+          <button id="2fbx">Chargement en 2 fichiers séparés</button>
+      </div>
+  </div>
+  <div id="div1Fbx" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <input id="1FileFbx" type="file" multiple="multiple" accept=".fbx">
+      </div>
+  </div>
+  <div id="div2Fbx" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <form id='form2FileFbx'>
+              <label for="model">Le modele</label>
+              <input id="model" type="file" accept=".fbx">
+              <br>
+              <label for="animation">L'animation</label>
+              <input id="animation" type="file" accept=".fbx">
+              <br>
+              <input type="submit" value="Charger l'objet">
+          </form>
+      </div>
+  </div>
+
   </body>
 
 </html>

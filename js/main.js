@@ -39,6 +39,34 @@ function _setAllEventListener() {
   $(".listDisplay").on("click", event => inputEventManager.clickOnListVisibilityAction(event))
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
+
+  $('#fbxFileSelector').on("click", event => $('#myModal').css("display", "block"));
+
+  // Get the <span> element that closes the modal
+  $('.close').click(function() {
+    $('.modal').hide();
+  });
+
+  $('#1fbx').click(function() {
+    $('.modal').hide();
+    $('#div1Fbx').show();
+  });
+
+  $('#2fbx').click(function() {
+    $('.modal').hide();
+    $('#div2Fbx').show();
+  });
+
+  $("#1FileFbx").one("change", event => {
+    $('.modal').hide();
+    inputEventManager.fbx2FileSelectedAction(event)
+  });
+
+  $("#form2FileFbx").on("submit", event => {
+    $('.modal').hide();
+    inputEventManager.fbx2FileSelectedAction(event)
+    return false
+  });
 }
 
 /** Associe ou réassocie les méthodes liés aux modes d'interactions avec les objets de la page */

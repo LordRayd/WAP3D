@@ -265,4 +265,11 @@ class IEM {
       this.iemIsBlocked = false
     )
   }
+
+  fbx2FileSelectedAction(event){
+    this.iemIsBlocked = true
+    this.player.loadFile(event, "fbx").then(
+      this.iemIsBlocked = false
+    )
+  }
 }
