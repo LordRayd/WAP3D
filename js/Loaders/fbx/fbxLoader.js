@@ -110,9 +110,15 @@ class FBXLoader extends FileLoader {
           loadedFbxObject.name = loadedFbxObject.uuid;
           let fbxUuid = loadedFbxObject.uuid
           this.scene.add(loadedFbxObject);
+
+          let skeletonHelper = new THREE.SkeletonHelper(loadedFbxObject);
+          skeletonHelper.material.linewidth = 2;
+          skeletonHelper.visible = false
+          this.scene.add(skeletonHelper);
+
           this.nbLoadedFiles += 1;
           this._addElementToObjectList(fbxUuid, file_.name, "fbx");
-          this.animations.push(new FBXAnimationElement(fbxUuid, fbxUuid, mixer));
+          this.animations.push(new FBXAnimationElement(fbxUuid, fbxUuid, mixer, skeletonHelper));
           resolve();
         },
         null,

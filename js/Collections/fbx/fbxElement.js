@@ -5,7 +5,7 @@ class FBXAnimationElement extends AnimationElement {
   /**
    *  @param {*} name_ le nom du FBX
    */
-  constructor(name_, uuid_, animationMixer_) {
+  constructor(name_, uuid_, animationMixer_, skeletonHelper_) {
     super(name_, uuid_, animationMixer_, 0, animationMixer_._root.animations[0].duration);
 
     this.overallTime = this.clip._root.animations[0].duration
@@ -16,7 +16,8 @@ class FBXAnimationElement extends AnimationElement {
     })
 
     this.frameTime = 1;
-
+    
+    this.skeletonHelper = skeletonHelper_
     this._initialiseAxesHelpers()
   }
 
