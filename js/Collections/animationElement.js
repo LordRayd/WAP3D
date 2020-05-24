@@ -48,7 +48,7 @@ class AnimationElement {
     }
   }
 
-  /**  */
+  /** Met à jour ou en pause l'animation suivant son état */
   toggleAnimation() {
     if (this.isPaused) this.playAnimation()
     else this.pauseAnimation()
@@ -56,21 +56,21 @@ class AnimationElement {
     this._updatePlayPauseImg()
   }
 
-  /** TODO */
+  /** joue l'animation, fait redémarrer son horloge et met à jour le bouton play/pause */
   playAnimation() {
     this.isPaused = false;
     this.clock.start();
     this._updatePlayPauseImg()
   }
 
-  /** TODO */
+  /** Met en pause l'élément, arrête sont horloge et met à jour le bouton play/pause */
   pauseAnimation() {
     this.isPaused = true;
     this.clock.stop();
     this._updatePlayPauseImg();
   }
 
-  /** Replace le timeSlider du BVH au début et rejoue ou non lanimation en fonction du paramètre
+  /** Replace le timeSlider de l'élément au début et rejoue ou non lanimation en fonction du paramètre
    * 
    *  @param {Boolean} resetResumeAnim True si l'animation se rejoue, False si l'animation reste en pause.
    */
@@ -112,17 +112,20 @@ class AnimationElement {
     }
   }
 
-  /** Retourne si le FBX est en pause ou non */
+  /** Retourne si l'élément est en pause ou non */
   get isPaused() {
     return this._isPaused
   }
 
-  /**  */
+  /** Met l'élément en pause si la valeur donné est vrai
+   * 
+   * @param {boolean} newValue True si l'on souhaite mettre l'element en pause, false autrement
+   */
   set isPaused(newValue) {
     if (typeof newValue === "boolean") { this._isPaused = newValue }
   }
 
-  /** TODO */
+  /** Met a jour l'animation en fonction du temps écoulé et de la vitesse */
   updateAnimation() {
     this.clip.update(this.clock.getDelta() * this.speedRatio);
   }
