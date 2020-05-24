@@ -10,12 +10,27 @@ class FBXAnimationElement extends AnimationElement {
 
     this.overallTime = this.clip._root.animations[0].duration
 
-      // rend le FBX transparent afin de pouvoir changer son opacité
+    // rend le FBX transparent afin de pouvoir changer son opacité
     this.clip._root.children.forEach(elt => {
       if (elt.material) console.log(elt.material.transparent = true)
     })
 
     this.frameTime = 1;
+
+    this._initialiseAxesHelpers()
+  }
+
+  /** Initialise et associe les axes orthornormés sur chaques articulations du modèle*/
+  _initialiseAxesHelpers() {
+    this.clip._root.children[0].traverse((obj) => {
+      obj.axis = new THREE.AxesHelper(1) //création et initialisation de l'attribut axis
+      obj.axis.material.linewidth = 2
+      obj.axis.visible = false
+    })
+    //appels séparés afin d'éviter de dépasser la limite de récursivité imposé par certains navigateurs
+    this.clip._root.children[0].traverse((obj) => {
+      if(obj.type == "Bone") obj.add(obj.axis)
+    })
   }
 
   /** Rend le FBX invisible */

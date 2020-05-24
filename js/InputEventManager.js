@@ -21,15 +21,11 @@ class IEM {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
-        $("#closeOpenButton").css({ "width": "5%", "height": "5%", "top": "47.5%" })
+        $("#closeOpenButton").css({ "width": "5%", "height": "5%", "top": "47.5%", "right": "-20px"})
       }
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeIn(100)
-
-    $("#messagePlayer").animate({ width: '59%' }, {
-      duration: 100,
-    })
   }
 
   /** Minimise la div de sélection d'élements */
@@ -41,15 +37,11 @@ class IEM {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this._openObjectListAction(event))
-        $("#closeOpenButton").css({ "width": "100%", "height": "100%", "top": "0" })
+        $("#closeOpenButton").css({ "width": "100%", "height": "100%", "top": "0", "right": "0"})
       }
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeOut(100)
-
-    $("#messagePlayer").animate({ width: '84%' }, {
-      duration: 100,
-    })
   }
 
   /** 
