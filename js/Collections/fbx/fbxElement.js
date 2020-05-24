@@ -24,7 +24,7 @@ class FBXAnimationElement extends AnimationElement {
   /** Initialise et associe les axes orthornormés sur chaques articulations du modèle*/
   _initialiseAxesHelpers() {
     this.clip._root.children[0].traverse((obj) => {
-      obj.axis = new THREE.AxesHelper(1) //création et initialisation de l'attribut axis
+      obj.axis = new THREE.AxesHelper(5) //création et initialisation de l'attribut axis
       obj.axis.material.linewidth = 2
       obj.axis.visible = false
     })
@@ -107,6 +107,7 @@ class FBXAnimationElement extends AnimationElement {
    */
   set skeletonHelper(render){
     this.skeleton.visible = render
-    this.clip._root.children.forEach(elt => elt.visible = !render)
+    this.clip._root.children[1].material.opacity = render ? 0 : 1
+    this.clip._root.children[2].material.opacity = render ? 0 : 1
   }
 }
