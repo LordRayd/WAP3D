@@ -88,7 +88,7 @@ class FBXLoader extends FileLoader {
   /** Charge le model et change son animation par celle donné en paramètre
    *
    * @param {file} file_ Le fichier contenant le modèle
-   * @param {array} animationArray_ Les animations à changé ou undefined si le fichier contient deja l'animation
+   * @param {AnimationArray} animationArray_ Les animations à changé ou undefined si le fichier contient deja l'animation
    *
    * @returns une promesse
    *  - resolue si le chargement du modèle s'est bien déroulé
