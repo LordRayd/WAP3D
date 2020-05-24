@@ -1,9 +1,12 @@
-/** Objet contenant l'ensembles des données nécéssaires aux traitement d'un BVH.
- *  Utilisé dans BVHAnimationArray
+/** Objet contenant l'ensembles des données et méthodes nécéssaires aux traitement d'un FBX.
+ *  Utilisé dans FBXAnimationArray
  */
 class FBXAnimationElement extends AnimationElement {
   /**
-   *  @param {*} name_ le nom du FBX
+   *  @param {String} name_ le nom du FBX
+   *  @param {UUID} uuid_ le UUID qui sera associé à l'élément
+   *  @param {THREE.AnimationMixer} animationMixer_
+   *  @param {THREE.SkeletonHelper} skeletonHelper_
    */
   constructor(name_, uuid_, animationMixer_, skeletonHelper_) {
     super(name_, uuid_, animationMixer_, 0, animationMixer_._root.animations[0].duration);
@@ -21,7 +24,7 @@ class FBXAnimationElement extends AnimationElement {
     this._initialiseAxesHelpers()
   }
 
-  /** Initialise et associe les axes orthornormés sur chaques articulations du modèle*/
+  /** Initialise et associe des axes orthornormés sur chaques articulations du modèle*/
   _initialiseAxesHelpers() {
     this.clip._root.children[0].traverse((obj) => {
       obj.axis = new THREE.AxesHelper(5) //création et initialisation de l'attribut axis
@@ -56,9 +59,7 @@ class FBXAnimationElement extends AnimationElement {
     return shadow
   }
 
-  /**
-   * @param {Boolean} value_ Si true alors le fbx produit des ombres
-   */
+  /** @param {Boolean} value_ Si true alors le fbx produit des ombres */
   set shadowEnabled(value_) {
     this.clip._root.children.forEach(elt => elt.castShadow = value_)
   }
@@ -77,21 +78,18 @@ class FBXAnimationElement extends AnimationElement {
       this.clip._root.children.forEach(elt => {
         if (elt.material) elt.material.opacity = value_
       })
-    }else{
+    } else {
       this.skeleton.material.opacity = value_
     }
     this._opacity = value_
   }
 
-  /** Methode abstraite implémentée*/
+  /** true si le mode wireframe est activé, false sinon*/
   get wireframe() {
     return this._wireframe
   }
 
-  /** Methode abstraite implémentée
-   * 
-   *  @param {Boolean} render : true pour afficher le wireframe, false pour le retirer
-   */
+  /** @param {Boolean} render : true pour afficher le wireframe, false pour le retirer*/
   set wireframe(render) {
     this.skeletonHelper = false
     this.clip._root.children.forEach(elt => {
@@ -100,15 +98,12 @@ class FBXAnimationElement extends AnimationElement {
     this._wireframe = render
   }
 
-  /** Methode abstraite implémentée */
+  /** si true le mode SkeletonHelper ou Node est activé */
   get skeletonHelper() {
     return this.skeleton.visible
   }
 
-  /** Methode abstraite implémentée
-   * 
-   *  @param {Boolean} render : true pour afficher uniquement le SkeletonHelper, false pour revenir en normal
-   */
+  /** @param {Boolean} render : true pour afficher uniquement le SkeletonHelper, false pour revenir en normal */
   set skeletonHelper(render) {
     this.skeleton.visible = render
     this.clip._root.children.forEach(elt => {
