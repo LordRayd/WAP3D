@@ -272,4 +272,22 @@ class IEM {
       this.iemIsBlocked = false
     )
   }
+
+  /** Affiche la fenetre de selection de fbx */
+  clickOnFbxFileSelector(){
+    $('#selectionFbx').css("display", "block");
+  }
+
+  /** Cache la partie qui nous permet de choisir entre les 2 types de Fbx   */
+  clickCloseFbxWindowFileSelector(){
+    $('.fbxWindowSelector').hide();
+  }
+  /** Cache la partie qui nous permet de choisir entre les 2 types de Fbx et affiche l'elem donné
+   * 
+   * @param {object} elem L'élément à afficher
+   */
+  hideFBXWindowSelectorAndShow(elem){
+    this.clickCloseFbxWindowFileSelector();
+    $('#'+elem).show();
+  }
 }

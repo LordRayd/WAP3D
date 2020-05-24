@@ -354,7 +354,9 @@ class Player {
         this.bvhAnimationsArray.removeByUUID(uuid)
         $("#" + uuid).remove()
       } else {
-        //FBX if ...
+        this.scene.remove( this.scene.getObjectByProperty( 'uuid', uuid ) );
+        this.fbxAnimationsArray.removeByUUID(uuid)
+        $("#" + uuid).remove()
       }
     })
   }
