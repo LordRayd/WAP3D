@@ -101,16 +101,16 @@ class AdvancedControlWindow {
 
             $("#advancedCtrl-graphs").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + graphsHierarchyString + '</div>')
             $("#advancedCtrl-selection").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
+        })
 
-            $("#advancedCtrl-rendering #renderModeWireFrame").on("click", event => { 
-                targetedCollection.getByUUID(uuid).wireframe = true
-            })
-            $("#advancedCtrl-rendering #renderModeCubic").on("click", event => { 
-                targetedCollection.getByUUID(uuid).wireframe = false
-            })
-            $("#advancedCtrl-rendering #renderModeNode").on("click", event => { 
-                targetedCollection.getByUUID(uuid).skeletonHelper = true
-            })
+        $("#advancedCtrl-rendering #renderModeWireFrame").on("click", _ => { 
+            this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).wireframe = true)
+        })
+        $("#advancedCtrl-rendering #renderModeCubic").on("click", _ => { 
+            this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).wireframe = false)
+        })
+        $("#advancedCtrl-rendering #renderModeNode").on("click", _ => { 
+            this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).skeletonHelper = true)
         })
 
         $("#advancedCtrl-rendering #orthoEnabled").on("click", (event) => {
@@ -118,7 +118,6 @@ class AdvancedControlWindow {
             if (this.type == "bvh") {
                 this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).skeleton.bones.forEach(elem => elem.axis.visible = isEnabled))
             } else if (this.type == "fbx") {
-                //todo rajouter axis sur FBX
                 this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).clip._root.children[0].traverse(elem => {
                     if(elem.type == "Bone") elem.axis.visible = isEnabled
                 }))
@@ -127,7 +126,6 @@ class AdvancedControlWindow {
 
         $("#advancedCtrl-graphs .CtrlList div").on("dblclick", (event) => {
             let nodeName = event.target.textContent
-            //TODO Déplacer tout ça dans IEM
             $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
             $("#nodeGraph").dialog({
                 height: 640,
@@ -143,6 +141,17 @@ class AdvancedControlWindow {
             } else {
                 Plotly.react($("#nodeGraph")[0], this._rotationGraphData(nodeName, targetUUID, targetedCollection));
             }
+        })
+
+        $("#advancedCtrl-selection .CtrlList input").on("click", event =>{
+            console.log(event.target.parentNode)
+            let uuid = event.target.parentNode.attributes["data-uuid"].nodeValue
+            let nodeName = event.target.parentNode.firstChild.innerText
+            let isChecked = event.target.checked
+            console.log(uuid)
+            targetedCollection.getByUUID(uuid).clip._root.children[0].traverse(elem => {
+                if(nodeName == elem.name) elem.visible = isChecked
+            })
         })
 
         $(windowID).dialog({
