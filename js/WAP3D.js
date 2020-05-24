@@ -1,3 +1,7 @@
+/**
+ * Object principal de WAP3D, gère les animations, l'affichage de la scène et la gestion des objets en mémoire
+ *  
+ */
 class Player {
 
   /** Joue les animations quand elles existent
@@ -7,8 +11,8 @@ class Player {
    * @param {THREE.WebGLRenderer} renderer Le rendu
    * @param {THREE.PerspectiveCamera} camera La camera utilisé
    * @param {THREE.OrbitControls} cameraControls Les controles caméra qui seront utilisés
-   * @param {AnimationArray} bvhAnimationsArray La liste qui contiendra les animations bvh
-   * @param {AnimationArray} fbxAnimationsArray La liste qui contiendra les animations fbx
+   * @param {BVHAnimationArray} bvhAnimationsArray La liste qui contiendra les animations bvh
+   * @param {FBXAnimationArray} fbxAnimationsArray La liste qui contiendra les animations fbx
    */
   constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray, fbxAnimationsArray) {
     this.scene = scene
@@ -51,7 +55,6 @@ class Player {
 
     //Éclairage
     this.renderer.shadowMap.enabled = true
-    this.renderer.shadowMap.renderSingleSided = false; // permet d'avoir des accumulation d'ombres
     let minimumLight = new THREE.AmbientLight(0xffffff, 0.5)
     this.scene.add(minimumLight)
     let mainLight = new THREE.SpotLight(0xffffff, 0.5, 0)
@@ -383,7 +386,7 @@ class Player {
         this.bvhAnimationsArray.removeByUUID(uuid)
         $("#" + uuid).remove()
       } else {
-        this.scene.remove( this.scene.getObjectByProperty( 'uuid', uuid ) );
+        this.scene.remove(this.scene.getObjectByProperty('uuid', uuid));
         this.fbxAnimationsArray.removeByUUID(uuid)
         $("#" + uuid).remove()
       }
@@ -396,8 +399,6 @@ class Player {
    *  @param {UUID} objectUuids_ 
    */
   launchAdvancedControls(objectUuids_) {
-    console.log(objectUuids_)
-    //à voir si c'est mieux de faire la vérification de validité ici ou dans les advanced controls
     if (this.bvhAnimationsArray.contains(objectUuids_[0])) {
       let acw = new AdvancedControlWindow(objectUuids_, "bvh", this)
       acw.launch()

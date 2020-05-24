@@ -1,3 +1,6 @@
+/** Classe abstraite contenant une partie des données et méthodes nécéssaires aux traitements d'une animation.
+ *  Utilisé par AnimationArray
+ */
 class AnimationElement {
   constructor(name_, uuid_, animationMixer_, timeSliderMin, timeSliderMax) {
     this.name = name_;
@@ -11,21 +14,14 @@ class AnimationElement {
     // Etat en pause ou non
     this.isPaused = false;
 
-    // boolean dertiminant si l'animation reprend a sa position ou non après une pause
+    // boolean determinant si l'animation reprend a sa position ou non après une pause
     this.resumeAnimationValue = this.isPaused;
 
-    // Affichage a lecran
+    // Affichage à l'écran
     this.isVisible = true
 
     // Pause/Play
     this.playPauseButton = $("#" + this.uuid + " .playPause")[0];
-
-    // TODO REGLER PROBLEME DANS BVH POUR POUVOIR DECOMMENTER
-    // Affiche l'élément normalement (sans le mode wireframe)
-    //this.wireframe = false
-    // TODO REGLER PROBLEME DANS BVH POUR POUVOIR DECOMMENTER
-    // Rend tous les element totalement opaque
-    //this.opacity = 1;
 
     //Time Slider
     this.timeSlider = $("#" + this.uuid + " .timeSlider")[0];
@@ -35,9 +31,9 @@ class AnimationElement {
   }
 
   /** Incrémente la position du time slider si aucun parametre n'est renseigné.
-   *  Sinon la valeur du time slider prendre la valeur entrée en paramètre.
+   *  Sinon la valeur du time slider prendra la valeur entrée en paramètre.
    *  
-   *  @param {Number} target : Option, noubelle valeur du time slider
+   *  @param {Number} target : Option, nouvelle valeur du time slider
    */
   updateTimeSlider(newTime = null) {
     if (newTime) {
@@ -48,7 +44,7 @@ class AnimationElement {
     }
   }
 
-  /** Met à jour ou en pause l'animation suivant son état */
+  /** Met en lecture ou en pause l'animation suivant son état */
   toggleAnimation() {
     if (this.isPaused) this.playAnimation()
     else this.pauseAnimation()
@@ -56,21 +52,21 @@ class AnimationElement {
     this._updatePlayPauseImg()
   }
 
-  /** joue l'animation, fait redémarrer son horloge et met à jour le bouton play/pause */
+  /** Met en lecture et met à jour son bouton play/pause */
   playAnimation() {
     this.isPaused = false;
     this.clock.start();
     this._updatePlayPauseImg()
   }
 
-  /** Met en pause l'élément, arrête sont horloge et met à jour le bouton play/pause */
+  /** Met en pause l'élément et met à jour son bouton play/pause */
   pauseAnimation() {
     this.isPaused = true;
     this.clock.stop();
     this._updatePlayPauseImg();
   }
 
-  /** Replace le timeSlider de l'élément au début et rejoue ou non lanimation en fonction du paramètre
+  /** Remet l'animation au début et reprend ou non l'animation en fonction du paramètre
    * 
    *  @param {Boolean} resetResumeAnim True si l'animation se rejoue, False si l'animation reste en pause.
    */
@@ -81,7 +77,9 @@ class AnimationElement {
     this._updatePlayPauseImg()
   }
 
-  /** TODO */
+  /** 
+   * @returns {Boolean} true si l'animation se met en lecture après l'appel
+   */
   resumeAnimation() {
     this.isPaused = this.resumeAnimationValue
     this._updatePlayPauseImg()
@@ -90,8 +88,8 @@ class AnimationElement {
   }
 
   /** Met a jour l'image du bouton playPause
-   *    - Image de pause si l'object passe en lecture
-   *    - Image de lecture si l'object passe en pause
+   *    - Image de pause si l'object est en lecture
+   *    - Image de lecture si l'object est en pause
    */
   _updatePlayPauseImg() {
     let img = $('#' + this.uuid + " .playPause")[0].children[0]
@@ -112,20 +110,20 @@ class AnimationElement {
     }
   }
 
-  /** Retourne si l'élément est en pause ou non */
+  /** Retourne true si l'élément est en pause */
   get isPaused() {
     return this._isPaused
   }
 
-  /** Met l'élément en pause si la valeur donné est vrai
+  /** Met l'élément en pause si la valeur donné est true
    * 
-   * @param {boolean} newValue True si l'on souhaite mettre l'element en pause, false autrement
+   * @param {Boolean} newValue True si l'on souhaite mettre l'element en pause, false autrement
    */
   set isPaused(newValue) {
     if (typeof newValue === "boolean") { this._isPaused = newValue }
   }
 
-  /** Met a jour l'animation en fonction du temps écoulé et de la vitesse */
+  /** Met à jour l'animation en fonction du temps écoulé et de la vitesse */
   updateAnimation() {
     this.clip.update(this.clock.getDelta() * this.speedRatio);
   }
@@ -151,9 +149,12 @@ class AnimationElement {
   /** Methode abstraite */
   get wireframe() { throw new Error("get wireframe() Abstract : not Implemented") }
 
-  /** Methode abstraite 
-   * 
-   *  @param {Boolean} render : true pour afficher le wireframe, false pour le retirer
-   */
+  /** Methode abstraite */
   set wireframe(render) { throw new Error("set wireframe(value_) Abstract : not Implemented") }
+
+  /** Methode abstraite */
+  get skeletonHelper(){throw new Error("get skeletonHelper() Abstract : not Implemented")}
+
+  /** Methode abstraite */
+  set skeletonHelper(render){throw new Error("set skeletonHelper(value_) Abstract : not Implemented")}
 }

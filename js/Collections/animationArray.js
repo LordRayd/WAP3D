@@ -1,7 +1,11 @@
+/**
+ * Classe abstraite héritant de Array et offrant des fonctionnalités de gestions d'une collection d'animations
+ * @extends Array
+ */
 class AnimationArray extends Array {
   /** Retire l'élément de uuid correspondant de la collection
    *  
-   *  @param {*} uuid_ 
+   *  @param {UUID} uuid_ 
    */
   removeByUUID(uuid_) {
     this.some((elem, index) => {
@@ -13,10 +17,9 @@ class AnimationArray extends Array {
     })
   }
 
-  /** 
-   *  @param {*} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
+  /** @param {UUID} uuid_ Le UUID pour lequel on cherche à trouver un élément correspondant
    *  
-   *  @returns {BVHAnimationElement} l'élément correspondant au UUID donné si il existe
+   *  @returns {AnimationElement} l'élément correspondant au UUID donné si il existe
    */
   getByUUID(uuid_) {
     for (let elem of this) {
@@ -24,7 +27,7 @@ class AnimationArray extends Array {
     }
   }
 
-  /** Retourne si l'object entré en paramaetre est présent o non dans la liste. 
+  /** True si l'object entré en paramaetre est présent dans la liste. 
    * 
    *  @param {UUID} objectUuid_ le UUID à rechercher
    * 
@@ -36,7 +39,7 @@ class AnimationArray extends Array {
     })
   }
 
-  /** Avance l'animation de chacun des éléments de la collection dans le temps s'il ne sont pas en pause.
+  /** Rafraichi l'animation de l'ensemble des éléments dans la collection s'il ne sont pas en pause ou déjà terminé.
    * 
    *  @returns {Boolean} True si au moins un élément de la collection est toujours en lecture, False sinon
    */
@@ -54,7 +57,7 @@ class AnimationArray extends Array {
     return atLeastOneElementToAnimate
   }
 
-  /** Set la frame entree en parametre comme frame courante pour tous les éléments de la collection.
+  /** Set la frame courante pour tous les éléments de la collection.
    *  Si la frame est supérieur à la longueur réel d'un élément alors sa frame courante deviendra sa dernière.
    *  
    *  @param {Number} frame L'index de frame souhaité
@@ -66,8 +69,7 @@ class AnimationArray extends Array {
     });
   }
 
-  /** Retourne vrai s'il y a au moins un élément contenu dans la liste qui est toujours en lecture, faux sinon.
-   * 
+  /**  
    * @returns true : si au moins un élément de la liste est en lecture
    * @returns false : si tous les élément de la liste sont en pause
    */
@@ -75,7 +77,7 @@ class AnimationArray extends Array {
     return this.some(elt => !elt.isPaused)
   }
 
-  /** Met en pause lelement entré en parametre s'il est en lecture, le met en lecture sinon.
+  /** Met en pause l'élément s'il est en lecture, le met en lecture sinon.
    * 
    *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
    */
@@ -83,7 +85,7 @@ class AnimationArray extends Array {
     this.getByUUID(objectUuid_).toggleAnimation()
   }
 
-  /** Replace un élément entré en paramètre à sa première frame.
+  /** Replace un élément à sa première frame.
    * 
    *  @param {UUID} objectUuid_ Le UUID de l'élément de la collection
    */
@@ -100,23 +102,21 @@ class AnimationArray extends Array {
     this.getByUUID(objectUuid_).updateTimeSlider(newValue_)
   }
 
-  /**  */
+  /** Met en pause l'ensemble des animations de la collection */
   pauseAllAnimations() {
     this.forEach((elem) => {
       elem.pauseAnimation()
     })
   }
 
-  /**  */
+  /** Met en lecture l'ensemble des animations de la collection */
   playAllAnimations() {
     this.forEach((elem) => {
       elem.playAnimation()
     })
   }
 
-  /** 
-   *  @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation, False sinon.
-   */
+  /** @returns {Boolean} True si au moins un élément de l'ensemble reprend effectivement son animation. */
   resumeAllAnimations() {
     let atLeastOneAnimationToPlay = false
     this.forEach((elem) => {
@@ -127,7 +127,7 @@ class AnimationArray extends Array {
     return atLeastOneAnimationToPlay
   }
 
-  /** Replace l'ensemble des éléments de la collection à leur première frame.
+  /** Remet l'ensemble des éléments de la collection à leur première frame.
    * 
    *  @param {Boolean} resetResumeAnim si True alors les animations se rejouent, sinon ils restent à la frame 0 (False par défaut).
    */
@@ -140,21 +140,21 @@ class AnimationArray extends Array {
   /** Méthode abstraite */
   _updateListVisibilityImg(value) { throw new Error("_updateListVisibilityImg Abstract : not Implemented") }
 
-  /** cache tous les éléments dans la scene */
+  /** cache tous les éléments de la collection dans la scène */
   hideAllAnimations() {
     this.forEach(elem => elem.hide())
     this._updateListVisibilityImg(false)
   }
 
-  /** affiche tous les élément dans la scene */
+  /** affiche tous les éléments de la collection dans la scène */
   showAllAnimations() {
     this.forEach(elem => elem.show())
     this._updateListVisibilityImg(true)
   }
 
-  /** Highlight la collection d'élément donné, si aucune collection n'est fourni ou si elle est vide alors tout les éléments de la scène reprennent leur opacité normale
+  /** Highlight l'ensemble des éléments donnés, si l'ensemble fourni est vide ou si aucun paramètre n'est fourni alors tout les éléments de la scène reprennent leur opacité normale (1)
    *  
-   *  @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut être laissé vide
+   *  @param {Set|Array|null} Uuids_ La collection d'éléments à highlight dans la scène, peut également être une collection vide, null ou undefined
    */
   highlightElements(Uuids_) {
     let amount = 0

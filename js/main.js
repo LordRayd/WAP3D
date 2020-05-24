@@ -4,7 +4,7 @@ const playDiv = $('<div><img src="./images/play_button.svg"></div>')
 let player
 let inputEventManager
 
-/** Code exécuté après le chargement complet de WAP3D.html */
+/** Code exécuté après le chargement complet de la page */
 $(_ => {
   $("#listTabs").tabs()
 
@@ -21,7 +21,7 @@ $(_ => {
   _setAllEventListener()
 })
 
-/** Associe toutes les méthodes liés aux modes d'interactions avec les objets de la page */
+/** Associe toutes les méthodes liées aux modes d'interactions avec les objets de la page */
 function _setAllEventListener() {
   $(document).on("keydown", event => inputEventManager.keydownAction(event))
   $(document).on("keyup", event => inputEventManager.keyupAction(event))
@@ -51,7 +51,7 @@ function _setAllEventListener() {
 
 }
 
-/** Associe ou réassocie les méthodes liés aux modes d'interactions avec les objets de la page */
+/** Associe ou réassocie les méthodes liées aux modes d'interactions avec les objets de la page */
 function updateEventListener() {
 
   $("#globalPlayPause").off("click",)

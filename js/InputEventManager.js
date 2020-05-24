@@ -1,9 +1,12 @@
 /**
- * Objet responsable de gérer l'ensemble des interactions au clavier ou à la souris
+ * Objet responsable de gérer l'ensemble des interactions au clavier ou à la souris, exception faite sur AdvancedControlWindow.
  */
 class IEM {
 
-  /**  */
+  /**
+   * @param {Player} player 
+   * @param {THREE.OrbitControls} cameraControls 
+   */
   constructor(player, cameraControls) {
     this.player = player
     this.cameraControls = cameraControls
@@ -12,7 +15,7 @@ class IEM {
     this.isOnAppendSelectionMode = false
   }
 
-  /** Ouvre la div de sélection d'élements */
+  /** Ouvre le volet de contrôle */
   _openObjectListAction() {
     if (this.iemIsBlocked) return
     $("#closeOpenButton img").attr("src", "./images/close_button.svg")
@@ -21,18 +24,14 @@ class IEM {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this.closeObjectListAction(event))
-        $("#closeOpenButton").css({ "width": "5%", "height": "5%", "top": "47.5%" })
+        $("#closeOpenButton").css({ "width": "5%", "height": "5%", "top": "47.5%", "right": "-20px" })
       }
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeIn(100)
-
-    $("#messagePlayer").animate({ width: '59%' }, {
-      duration: 100,
-    })
   }
 
-  /** Minimise la div de sélection d'élements */
+  /** ferme le volet de contrôle */
   closeObjectListAction() {
 
     $("#closeOpenButton img").attr("src", "./images/open_button.svg")
@@ -41,15 +40,11 @@ class IEM {
       duration: 100,
       complete: _ => {
         $("#closeOpenButton").one("click", event => this._openObjectListAction(event))
-        $("#closeOpenButton").css({ "width": "100%", "height": "100%", "top": "0" })
+        $("#closeOpenButton").css({ "width": "100%", "height": "100%", "top": "0", "right": "0" })
       }
     })
 
     $("#objectSelector").children().not("#closeOpenButton").fadeOut(100)
-
-    $("#messagePlayer").animate({ width: '84%' }, {
-      duration: 100,
-    })
   }
 
   /** 
@@ -130,28 +125,28 @@ class IEM {
     this.player.replayAnimation("all")
   }
 
-  /** Demande au player de mettre en route tout les BVH */
+  /** Demande au player de mettre en route toute les animations d'une liste donnée */
   clickOnListPlayAction(event) {
     if (this.iemIsBlocked) return
     let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.playAnimation(listName)
   }
 
-  /** Demande au player de mettre en pause tout les BVH */
+  /** Demande au player de mettre en pause toute les animations d'une liste donnée */
   clickOnListPauseAction(event) {
     if (this.iemIsBlocked) return
     let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.pauseAnimation(listName)
   }
 
-  /** Demande au player de relancer tout les BVH */
+  /** Demande au player de relancer toute les animations d'une liste donnée */
   clickOnListReplayAction(event) {
     if (this.iemIsBlocked) return
     let listName = event.currentTarget.parentElement.parentElement.id.slice(0, 3).toLowerCase()
     this.player.replayAnimation(listName)
   }
 
-  /** Demande au player de toggle la visibilité de tout les BVH */
+  /** Demande au player de toggle la visibilité de toute les animations d'une liste donnée */
   clickOnListVisibilityAction(event) {
     if (this.iemIsBlocked) return
     let isVisible = $(event.target).attr("src") != "./images/eye_button.svg"
@@ -173,7 +168,7 @@ class IEM {
     this.player.replayObjectInListAnimation(objectId)
   }
 
-  /** Demande au player de mettre à la frame correspondante l'animation correspondante à l'élément dans lequel le time slider à été clické */
+  /** Demande au player de mettre à la frame correspondante l'animation correspondante à l'élément dans lequel le time slider à été modifié */
   modifyElementTimeSliderAction(event) {
     if (this.iemIsBlocked) return
     let newValue = event.target.valueAsNumber
@@ -181,14 +176,14 @@ class IEM {
     this.player.updateObjectInListTimeSlider(objectId, newValue)
   }
 
-  /** Demande au player de toggle la visibilité de l'élément correspondant */
+  /** Demande au player de toggle la visibilité de l'animation correspondant à l'élément dans lequel le bouton de visibilité à été clické */
   clickOnElementVisibilityAction(event) {
     if (this.iemIsBlocked) return
     let objectId = event.target.parentNode.parentNode.parentNode.id
     this.player.toggleObjectInListVisibility(objectId, $(event.target).attr("src") != "./images/eye_button.svg")
   }
 
-  /** Demande au player de rajouter des éléments à la liste des éléments modifiable par la fenêtre de ctrl avancés
+  /** Demande au player de rajouter des éléments à la liste des éléments modifiable par la fenêtre de controles avancés ou supprimable
    * 
    *  @param {event} event
    */
@@ -230,13 +225,13 @@ class IEM {
     }
   }
 
-  /** Redimensionne la fenetre de rendu en cas de modification de la fenetre web */
+  /** Demande au player de mettre à jour les dimensions de la fenetre de rendu */
   modifyWindowSizeAction() {
     if (this.iemIsBlocked) return
     this.player.updateRendererSize()
   }
 
-  /** Demande au player de lancer la fenêtre de contrôles avancés normalement appelé pour un "enter" ou un "dblClick"
+  /** Demande au player de lancer la fenêtre de contrôles avancés
    *  
    *  @param {event} event
    */
@@ -257,7 +252,7 @@ class IEM {
     }
   }
 
-  /** S'occupe du chargement des fichiers */
+  /** Appel le chargement de fichiers et bloque les entrées utilisateur jusqu'à la fin du chargement*/
   fileSelectedAction(event) {
     let objectType = event.target.accept.lastOf('\.')
     this.iemIsBlocked = true
@@ -270,7 +265,7 @@ class IEM {
    * 
    * @param {*} event Le click sur le bouton charger l'objet dans la selection de fbx
    */
-  fbx2FileSelectedAction(event){
+  fbx2FileSelectedAction(event) {
     this.iemIsBlocked = true
     this.player.loadFile(event, "fbx").then(
       this.iemIsBlocked = false
@@ -278,20 +273,21 @@ class IEM {
   }
 
   /** Affiche la fenetre de selection de fbx */
-  clickOnFbxFileSelector(){
+  clickOnFbxFileSelector() {
     $('#selectionFbx').css("display", "block");
   }
 
   /** Cache la partie qui nous permet de choisir entre les 2 types de Fbx   */
-  clickCloseFbxWindowFileSelector(){
+  clickCloseFbxWindowFileSelector() {
     $('.fbxWindowSelector').hide();
   }
-  /** Cache la partie qui nous permet de choisir entre les 2 types de Fbx et affiche l'elem donné
+
+  /** Cache la partie qui nous permet de choisir entre les 2 types de Fbx et affiche l'element donné
    * 
    * @param {object} elem L'élément à afficher
    */
-  hideFBXWindowSelectorAndShow(elem){
+  hideFBXWindowSelectorAndShow(elem) {
     this.clickCloseFbxWindowFileSelector();
-    $('#'+elem).show();
+    $('#' + elem).show();
   }
 }
