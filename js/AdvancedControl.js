@@ -11,7 +11,8 @@ class AdvancedControlWindow {
                 </div>\
                 <div id="advancedCtrl-rendering">\
                     <ul>\
-                    <li><input id="speedRatioSelector" type="number" step="0.25" min="0" onkeypress="return event.charCode != 45"></li>\
+                    <li><label for="speedRatioSelector">Vitesse de l\'animation:</label>\
+                    <input id="speedRatioSelector" type="number" step="0.25" min="0" onkeypress="return event.charCode != 45"></li>\
                     <li>\
                         <label for="orthoEnabled"> Affichage d\'un repère orthonormé pour chaque articulation</label>\
                         <input type="checkbox" name="orthoEnabled" id="orthoEnabled">\
