@@ -35,11 +35,12 @@ class AdvancedControlWindow {
         this.UUIDs = [...uuidCollection_]
         this.type = windowType_
 
+        if ($("#advancedControlForBVH").length > 0) throw new Error("bvh controls currently launched")
+        if ($("#advancedControlForFBX").length > 0) throw new Error("fbx controls currently launched")
+
         switch (this.type) {
             //TODO système pour avoir plusieur fenêtre de ctrl avancé par type de modèle
             case "bvh":
-                if ($("#advancedControlForBVH").length > 0) throw new Error("bvh controls currently launched")
-
                 if (!(this.UUIDs.every((value) => this.player.bvhAnimationsArray.contains(value)))) {
                     throw new Error("1 or more bvh UUID invalid, have you mixed FBX and BVH in selection ?")
                 }
@@ -51,8 +52,6 @@ class AdvancedControlWindow {
                 break
 
             case "fbx":
-                if ($("#advancedControlForFBX").length > 0) throw new Error("fbx controls currently launched")
-
                 if (!(this.UUIDs.every((value) => this.player.fbxAnimationsArray.contains(value)))) {
                     throw new Error("1 or more fbx UUID invalid, have you mixed FBX and BVH in selection ?")
                 }
