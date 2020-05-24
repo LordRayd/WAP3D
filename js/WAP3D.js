@@ -366,8 +366,6 @@ class Player {
    *  @param {UUID} objectUuids_ 
    */
   launchAdvancedControls(objectUuids_) {
-    console.log(objectUuids_)
-    //à voir si c'est mieux de faire la vérification de validité ici ou dans les advanced controls
     if (this.bvhAnimationsArray.contains(objectUuids_[0])) {
       let acw = new AdvancedControlWindow(objectUuids_, "bvh", this)
       acw.launch()

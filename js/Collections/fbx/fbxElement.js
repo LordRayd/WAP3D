@@ -12,7 +12,7 @@ class FBXAnimationElement extends AnimationElement {
 
     // rend le FBX transparent afin de pouvoir changer son opacité
     this.clip._root.children.forEach(elt => {
-      if (elt.material) console.log(elt.material.transparent = true)
+      if (elt.material) elt.material.transparent = true
     })
 
     this.frameTime = 1;
