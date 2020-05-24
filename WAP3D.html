@@ -102,34 +102,47 @@
     </div>
 
     <!-- Gestion de la selection des FBX-->
-    <div id="myModal" class="modal">
-      <!-- Modal content -->
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <button id="1fbx">Fichier Fbx contenant le modele et l'animation</button>
-          <button id="2fbx">Chargement en 2 fichiers séparés</button>
+    <div id="selectionFbx" class="fbxWindowSelector">
+      <div class="fbxWindowSelector-content">
+        <span class="close">&times;</span>
+        <button id="1fbx">Fichier Fbx contenant le modele et l'animation</button>
+        <br><br>
+        <button id="2fbx">Chargement en 2 fichiers séparés</button>
       </div>
-  </div>
-  <div id="div1Fbx" class="modal">
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <input id="1FileFbx" type="file" multiple="multiple" accept=".fbx">
+    </div>
+    <div id="div1Fbx" class="fbxWindowSelector">
+      <div class="fbxWindowSelector-content">
+        <span class='back'>&larr;</span>
+        <span class="close">&times;</span>
+        <label for="1FileFbx" class="stylisedFileSelector">
+          <img src="./images/upload_button.svg">
+        </label>
+        <input id="1FileFbx" type="file" multiple="multiple" accept=".fbx">
       </div>
-  </div>
-  <div id="div2Fbx" class="modal">
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <form id='form2FileFbx'>
-              <label for="model">Le modele</label>
-              <input id="model" type="file" accept=".fbx">
-              <br>
-              <label for="animation">L'animation</label>
-              <input id="animation" type="file" accept=".fbx">
-              <br>
-              <input type="submit" value="Charger l'objet">
-          </form>
+    </div>
+    <div id="div2Fbx" class="fbxWindowSelector">
+      <div class="fbxWindowSelector-content">
+        <span class='back'>&larr;</span>
+        <span class="close">&times;</span>
+        <form id='form2FileFbx'>
+          <label for="model">Le modele</label>
+          <br>
+          <label for="model" class="stylisedFileSelector">
+            <img src="./images/upload_button.svg">
+          </label>
+          <input id="model" type="file" accept=".fbx">
+          <br><br>
+          <label for="animation">L'animation</label>
+          <br>
+          <label for="animation" class="stylisedFileSelector">
+            <img src="./images/upload_button.svg">
+          </label>
+          <input id="animation" type="file" accept=".fbx">
+          <br><br>
+          <input type="submit" value="Charger l'objet">
+        </form>
       </div>
-  </div>
+    </div>
 
   </body>
 

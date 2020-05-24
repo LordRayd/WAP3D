@@ -40,33 +40,15 @@ function _setAllEventListener() {
 
   $(".fileSelector").one("change", event => inputEventManager.fileSelectedAction(event))
 
-  $('#fbxFileSelector').on("click", event => $('#myModal').css("display", "block"));
+  /* Selection des Fichiers FBX */
+  $('#fbxFileSelector').on("click", event => inputEventManager.clickOnFbxFileSelector());
+  $('.close').on("click", event => inputEventManager.clickCloseFbxWindowFileSelector());
+  $('.back').on("click", event => inputEventManager.hideFBXWindowSelectorAndShow("selectionFbx"));
+  $('#1fbx').on("click", event => inputEventManager.hideFBXWindowSelectorAndShow("div1Fbx"));
+  $('#2fbx').on("click", event => inputEventManager.hideFBXWindowSelectorAndShow("div2Fbx"));
+  $("#1FileFbx").one("change", event => {    $('.fbxWindowSelector').hide(); inputEventManager.fbx2FileSelectedAction(event); });
+  $("#form2FileFbx").on("submit", event => { $('.fbxWindowSelector').hide(); inputEventManager.fbx2FileSelectedAction(event); return false });
 
-  // Get the <span> element that closes the modal
-  $('.close').click(function() {
-    $('.modal').hide();
-  });
-
-  $('#1fbx').click(function() {
-    $('.modal').hide();
-    $('#div1Fbx').show();
-  });
-
-  $('#2fbx').click(function() {
-    $('.modal').hide();
-    $('#div2Fbx').show();
-  });
-
-  $("#1FileFbx").one("change", event => {
-    $('.modal').hide();
-    inputEventManager.fbx2FileSelectedAction(event)
-  });
-
-  $("#form2FileFbx").on("submit", event => {
-    $('.modal').hide();
-    inputEventManager.fbx2FileSelectedAction(event)
-    return false
-  });
 }
 
 /** Associe ou réassocie les méthodes liés aux modes d'interactions avec les objets de la page */

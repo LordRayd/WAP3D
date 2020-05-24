@@ -4,8 +4,8 @@ class AnimationArray extends Array {
    *  @param {*} uuid_ 
    */
   removeByUUID(uuid_) {
-    this.some((bvhAnimationElem, index) => {
-      if (bvhAnimationElem.uuid === uuid_) {
+    this.some((elem, index) => {
+      if (elem.uuid === uuid_) {
         //TODO supprimer l'élément dans la scène
         this.splice(index, 1)
         return true

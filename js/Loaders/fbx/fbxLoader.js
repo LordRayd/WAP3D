@@ -7,91 +7,65 @@ class FBXLoader extends FileLoader {
     super(scene, fbxAnimationsArray);
   }
 
-  /** TODO */
+  /** Charge des fichier FBX
+   * 
+   *  @param filesToLoadEvent : evenement lié au clic sur un bouton de chargement de fichier
+   */
   loadFBX(filesToLoadEvent) {
-    if(event.currentTarget.id == '1FileFbx'){
-      return new Promise(async(resolve, reject) => {
-        let files = filesToLoadEvent.currentTarget.files;
-        this.nbFileToLoad = files.length;
+    return new Promise(async(resolve, reject) => {
+      let files = undefined;
 
-        if (this.nbFileToLoad === 0) {
-          reject(new Error('No file is selected'));
-        } else {
-          console.info('Start loading ', this.nbFileToLoad, ' files');
-          try {
-            await this.loadNewFiles(files);
-            resolve();
-          } catch (error) {
-            reject(error);
-          }
-        }
-      })
-    } else {
-      return new Promise(async (resolve, reject) => {
+      if(event.currentTarget.id == '1FileFbx'){
+        files = filesToLoadEvent.currentTarget.files;
+        this.nbFileToLoad = files.length;
+      } else {
+        files = [0, filesToLoadEvent.currentTarget[0].files[0], filesToLoadEvent.currentTarget[1].files[0]];
+        this.nbFileToLoad = 2;
+      }
+
+      if (this.nbFileToLoad === 0) {
+        reject(new Error('No file is selected'));
+      } else {
+        console.info('Start loading ', this.nbFileToLoad, ' files');
         try {
-          this.nbFileToLoad = filesToLoadEvent.currentTarget.length;
-          this.loadingState = "loading"
-          $("#messagePlayer").text("Chargement en cours : " + this.nbFileToLoad + " fichiers.")
-          this.oldNbLoadedFiles = this.nbLoadedFiles // sauvegarde du nombre de ficheir déjà chargé
-          // Barre de chargement
-          this._savePlayerContext()
-          $("#control").replaceWith(this.progressBar)
-          this._updateProgressBar(0)
-          await this.load2Files(filesToLoadEvent.currentTarget[0].files[0], filesToLoadEvent.currentTarget[1].files[0])
-          //await this.load2Files('./ressources/fbx/'+filesToLoadEvent.currentTarget[1].files[0].name, './ressources/fbx/'+filesToLoadEvent.currentTarget[0].files[0].name)
-          this._restorePlayerContext()
-          resolve()
+          await this.loadNewFiles(files);
+          resolve();
         } catch (error) {
-          reject(error)
+          reject(error);
         }
-      })
-    }
+      }
+    })
   }
 
-  /** Retourne une liste de promesses correspondant à l'ensemble des chargement de fichier BVH entré en paramètre
+  /** Retourne une liste de promesses correspondant à l'ensemble des chargement de fichier FBX entré en paramètre
    * 
    * @param files la liste des fichiers à charger
    * 
    * @returns une liste de promesse
    *  - resolue lorsque l'ensemble des promesses de la liste sont resolues
    *  - rejetée lorsqu'une des promesse de la liste est rejeté
+   *  ou une seul promesse
    */
   _load(files) {
-    return Promise.all([...files].map((file) => {
-      return this.loadFbxFile(file);
-    }))
+    if(files[0] != 0){
+      return Promise.all([...files].map((file) => {
+        return this._loadModel(file);
+      }))
+    } else {
+      return this.load2Files(files[1], files[2]);
+    }
   }
 
-  /** TODO */
-  loadFbxFile(fbxFile) {
-    return new Promise((resolve, reject) => {
-      let loader = new THREE.FBXLoader(this._createManager(fbxFile));
-
-      // loader.load(url, onLoad, onProgress, onError)
-      let mixer;
-      loader.load(fbxFile.name,
-        (loadedFbxObject) => {
-          mixer = new THREE.AnimationMixer(loadedFbxObject);
-          mixer.clipAction(loadedFbxObject.animations[0]).play();
-          loadedFbxObject.traverse(function(child) {
-            if (child.isMesh) {
-              child.castShadow = true;
-              child.receiveShadow = true;
-            }
-          });
-          loadedFbxObject.name = loadedFbxObject.uuid;
-          let fbxUuid = loadedFbxObject.uuid
-          this.scene.add(loadedFbxObject);
-          this.nbLoadedFiles += 1;
-          this._addElementToObjectList(fbxUuid, fbxFile.name, "fbx");
-          this.animations.push(new FBXAnimationElement(fbxFile.name, fbxUuid, mixer))
-          resolve();
-        },
-        null,
-        error => reject(error));
-    });
-  }
-
+  /** Charge un objet à partir de 2 Fichiers Fbx
+   * Charge le fichier de l'animation
+   * 
+   * @param {*} modelFile Le fichier contenant le modèle
+   * @param {*} animationFile Le fichier contenant l'animation
+   * 
+   * @returns une promesse
+   *  - resolue si le chargement s'est bien déroulé
+   *  - rejetée si le chargement à rencontrer un problème
+   */
   load2Files(modelFile, animationFile) {
     return new Promise((resolve, reject) => {
       //let loader = new THREE.FBXLoader();
@@ -106,8 +80,16 @@ class FBXLoader extends FileLoader {
     });
   }
 
+  /** Charge le model et change son animation par celle donné en paramètre
+   * 
+   * @param {*} file_ Le fichier contenant le modèle
+   * @param {*} animationArray_ Les animations à changé ou undefined si le fichier contient deja l'animation
+   * 
+   * @returns une promesse
+   *  - resolue si le chargement du modèle s'est bien déroulé
+   *  - rejetée si le chargement du modèle rencontrer un problème
+   */
   _loadModel(file_, animationArray_) {
-    console.log(file_)
     return new Promise((resolve, reject) => {
       //let loader = new THREE.FBXLoader();
       let loader = new THREE.FBXLoader(this._createManager(file_));
@@ -138,6 +120,12 @@ class FBXLoader extends FileLoader {
     });
   }
 
+  /** Renvoie un LoadingManager qui gère la lecture de fichier par le Loader
+   * 
+   * @param {*} fbxFile Le fichier dont le manager doit permettre le chargement 
+   * 
+   * @returns Le Manager à donner au Loader 
+   */
   _createManager(fbxFile){
     var extraFiles = [];
       extraFiles[fbxFile.name] = fbxFile;
