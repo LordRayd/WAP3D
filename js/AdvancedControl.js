@@ -133,6 +133,7 @@ class AdvancedControlWindow {
 
         $("#advancedCtrl-graphs .CtrlList div").on("dblclick", (event) => {
             let nodeName = event.target.textContent
+            if($("#nodeGraph").length > 0) throw new Error("Graph currently open, cannot open several graphs at once yet.")
             $("body").append('<div id="nodeGraph" title="Node Observation Window (' + nodeName + ')"></div>')
             $("#nodeGraph").dialog({
                 height: 640,
