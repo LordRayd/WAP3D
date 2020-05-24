@@ -16,7 +16,7 @@ class FBXAnimationElement extends AnimationElement {
     })
 
     this.frameTime = 1;
-    
+
     this.skeleton = skeletonHelper_
     this._initialiseAxesHelpers()
   }
@@ -30,7 +30,7 @@ class FBXAnimationElement extends AnimationElement {
     })
     //appels séparés afin d'éviter de dépasser la limite de récursivité imposé par certains navigateurs
     this.clip._root.children[0].traverse((obj) => {
-      if(obj.type == "Bone") obj.add(obj.axis)
+      if (obj.type == "Bone") obj.add(obj.axis)
     })
   }
 
@@ -73,9 +73,13 @@ class FBXAnimationElement extends AnimationElement {
    *  @param {Number} 
    */
   set opacity(value_) {
-    this.clip._root.children.forEach(elt => {
-      if (elt.material) elt.material.opacity = value_
-    })
+    if (!this.skeletonHelper) {
+      this.clip._root.children.forEach(elt => {
+        if (elt.material) elt.material.opacity = value_
+      })
+    }else{
+      this.skeleton.material.opacity = value_
+    }
     this._opacity = value_
   }
 
@@ -97,7 +101,7 @@ class FBXAnimationElement extends AnimationElement {
   }
 
   /** Methode abstraite implémentée */
-  get skeletonHelper(){
+  get skeletonHelper() {
     return this.skeleton.visible
   }
 
@@ -105,9 +109,10 @@ class FBXAnimationElement extends AnimationElement {
    * 
    *  @param {Boolean} render : true pour afficher uniquement le SkeletonHelper, false pour revenir en normal
    */
-  set skeletonHelper(render){
+  set skeletonHelper(render) {
     this.skeleton.visible = render
-    this.clip._root.children[1].material.opacity = render ? 0 : 1
-    this.clip._root.children[2].material.opacity = render ? 0 : 1
+    this.clip._root.children.forEach(elt => {
+      if (elt.material) elt.material.opacity = render ? 0 : 1
+    })
   }
 }

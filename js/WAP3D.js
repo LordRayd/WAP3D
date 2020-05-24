@@ -44,7 +44,6 @@ class Player {
 
     //Éclairage
     this.renderer.shadowMap.enabled = true
-    this.renderer.shadowMap.renderSingleSided = false; // permet d'avoir des accumulation d'ombres
     let minimumLight = new THREE.AmbientLight(0xffffff, 0.5)
     this.scene.add(minimumLight)
     let mainLight = new THREE.SpotLight(0xffffff, 0.5, 0)
