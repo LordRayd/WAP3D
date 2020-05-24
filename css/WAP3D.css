@@ -10,7 +10,6 @@ body {
   position: relative;
 }
 
-
 /*les images font la taille des buttons dans lequelles elles se trouvent */
 
 img {
@@ -158,6 +157,10 @@ img {
 }
 #advancedControlForBVH .CtrlList div:hover {
   background-color: #7e7e7e;
+}
+#advancedControlForBVH .renderMode {
+  text-decoration: line-through;
+  color: red;
 }
 
 #advancedControlForFBX .CtrlList {

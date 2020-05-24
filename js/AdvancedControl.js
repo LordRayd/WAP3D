@@ -15,7 +15,7 @@ class AdvancedControlWindow {
                         <label for="orthoEnabled"> Affichage d\'un repère orthonormé pour chaque articulation</label>\
                         <input type="checkbox" name="orthoEnabled" id="orthoEnabled">\
                     </li>\
-                    <li>\
+                    <li class="renderMode" >\
                         <p> Rendering mode: </p>\
                         <label for="WireFrame">WireFrame</label>\
                         <input type="radio" id="renderModeWireFrame" name="renderMode" value="WireFrame"><br>\
