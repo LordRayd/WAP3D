@@ -17,7 +17,7 @@ class FBXAnimationElement extends AnimationElement {
 
     this.frameTime = 1;
     
-    this.skeletonHelper = skeletonHelper_
+    this.skeleton = skeletonHelper_
     this._initialiseAxesHelpers()
   }
 
@@ -37,6 +37,7 @@ class FBXAnimationElement extends AnimationElement {
   /** Rend le FBX invisible */
   hide() {
     this.isVisible = false
+    this.skeleton.visible = false
     this.clip._root.children.forEach(elt => elt.visible = false)
     this._updateVisibilityImg()
   }
@@ -78,19 +79,34 @@ class FBXAnimationElement extends AnimationElement {
     this._opacity = value_
   }
 
-  /** Methode abstraite */
+  /** Methode abstraite implémentée*/
   get wireframe() {
     return this._wireframe
   }
 
-  /** Methode abstraite 
+  /** Methode abstraite implémentée
    * 
    *  @param {Boolean} render : true pour afficher le wireframe, false pour le retirer
    */
   set wireframe(render) {
+    this.skeletonHelper = false
     this.clip._root.children.forEach(elt => {
       if (elt.material) elt.material.wireframe = render
     })
     this._wireframe = render
+  }
+
+  /** Methode abstraite implémentée */
+  get skeletonHelper(){
+    return this.skeleton.visible
+  }
+
+  /** Methode abstraite implémentée
+   * 
+   *  @param {Boolean} render : true pour afficher uniquement le SkeletonHelper, false pour revenir en normal
+   */
+  set skeletonHelper(render){
+    this.skeleton.visible = render
+    this.clip._root.children.forEach(elt => elt.visible = !render)
   }
 }

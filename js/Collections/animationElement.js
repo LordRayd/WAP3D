@@ -153,4 +153,13 @@ class AnimationElement {
    *  @param {Boolean} render : true pour afficher le wireframe, false pour le retirer
    */
   set wireframe(render) { throw new Error("set wireframe(value_) Abstract : not Implemented") }
+
+  /** Methode abstraite */
+  get skeletonHelper(){throw new Error("get skeletonHelper() Abstract : not Implemented")}
+
+  /** Methode abstraite 
+   * 
+   *  @param {Boolean} render : true pour afficher uniquement le SkeletonHelper, false pour revenir en normal
+   */
+  set skeletonHelper(render){throw new Error("set skeletonHelper(value_) Abstract : not Implemented")}
 }

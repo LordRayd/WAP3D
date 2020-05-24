@@ -22,6 +22,8 @@ class AdvancedControlWindow {
                         <input type="radio" id="renderModeWireFrame" name="renderMode" value="WireFrame"><br>\
                         <label for="Cubic">Cubic</label>\
                         <input type="radio" id="renderModeCubic" name="renderMode" value="Cubic"><br>\
+                        <label for="Node">Node</label>\
+                        <input type="radio" id="renderModeNode" name="renderMode" value="Node"><br>\
                     </li>\
                     </ul>\
                 </div>\
@@ -100,8 +102,15 @@ class AdvancedControlWindow {
             $("#advancedCtrl-graphs").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + graphsHierarchyString + '</div>')
             $("#advancedCtrl-selection").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
 
-            $("#advancedCtrl-rendering #renderModeWireFrame").on("click", event => { targetedCollection.getByUUID(uuid).wireframe = $("#renderModeWireFrame")[0].checked })
-            $("advancedCtrl-rendering #renderModeCubic").on("click", event => { targetedCollection.getByUUID(uuid).wireframe = $("#renderModeWireFrame")[0].checked })
+            $("#advancedCtrl-rendering #renderModeWireFrame").on("click", event => { 
+                targetedCollection.getByUUID(uuid).wireframe = true
+            })
+            $("#advancedCtrl-rendering #renderModeCubic").on("click", event => { 
+                targetedCollection.getByUUID(uuid).wireframe = false
+            })
+            $("#advancedCtrl-rendering #renderModeNode").on("click", event => { 
+                targetedCollection.getByUUID(uuid).skeletonHelper = true
+            })
         })
 
         $("#advancedCtrl-rendering #orthoEnabled").on("click", (event) => {
