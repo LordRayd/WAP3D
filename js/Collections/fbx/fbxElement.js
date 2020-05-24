@@ -20,34 +20,17 @@ class FBXAnimationElement extends AnimationElement {
     this._initialiseAxesHelpers()
   }
 
-  /** Initialise les axes orthornormé sur chaques articulations du modèle à l'aide du prototypage javascript
-   * ne marche pas en raison de la limite de récursion
-  */
+  /** Initialise et associe les axes orthornormés sur chaques articulations du modèle*/
   _initialiseAxesHelpers() {
-    /*let recursiveNavigation = (object) => {
-      object.children.forEach((obj) => {
-        obj.axis = new THREE.AxesHelper(20) //création et initialisation de l'attribut axis
-        obj.axis.material.linewidth = 2
-        obj.axis.visible = false
-        obj.add(obj.axis)
-        recursiveNavigation(obj)
-      })
-    }
-    recursiveNavigation(this.clip._root.children[0])*/
-
-    function recursiveNavigation(object) {
-      let childs = object.children.flatMap(obj => recursiveNavigation(obj))
-      if (childs) return childs.concat(object)
-      else return [object]
-    }
-    let boneArray = recursiveNavigation(this.clip._root.children[0])
-    boneArray.forEach(obj => {
-      obj.axis = new THREE.AxesHelper(20) //création et initialisation de l'attribut axis
+    this.clip._root.children[0].traverse((obj) => {
+      obj.axis = new THREE.AxesHelper(1) //création et initialisation de l'attribut axis
       obj.axis.material.linewidth = 2
       obj.axis.visible = false
-      obj.add(obj.axis)
     })
-    console.log(boneArray)
+    //appels séparés afin d'éviter de dépasser la limite de récursivité imposé par certains navigateurs
+    this.clip._root.children[0].traverse((obj) => {
+      if(obj.type == "Bone") obj.add(obj.axis)
+    })
   }
 
   /** Rend le FBX invisible */

@@ -110,7 +110,9 @@ class AdvancedControlWindow {
                 this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).skeleton.bones.forEach(elem => elem.axis.visible = isEnabled))
             } else if (this.type == "fbx") {
                 //todo rajouter axis sur FBX
-                this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).clip._root.children[0].traverse(elem => elem.axis.visible = isEnabled))
+                this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).clip._root.children[0].traverse(elem => {
+                    if(elem.type == "Bone") elem.axis.visible = isEnabled
+                }))
             }
         })
 
