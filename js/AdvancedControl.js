@@ -5,7 +5,6 @@ class AdvancedControlWindow {
                 <ul> \
                     <li><a href="#advancedCtrl-graphs">Graphs</a></li>\
                     <li><a href="#advancedCtrl-rendering">Rendering Options</a></li>\
-                    <li><a href="#advancedCtrl-selection">Display Selection</a></li>\
                 </ul>\
                 <div id="advancedCtrl-graphs">\
                 </div>\
@@ -26,8 +25,6 @@ class AdvancedControlWindow {
                         <input type="radio" id="renderModeNode" name="renderMode" value="Node"><br>\
                     </li>\
                     </ul>\
-                </div>\
-                <div id="advancedCtrl-selection">\
                 </div>\
             </div>\
         ')
@@ -100,7 +97,7 @@ class AdvancedControlWindow {
             let displayHierarchyString = this._browseThroughSkeleton(targetedCollection.getByUUID(uuid), uuid, '<input type="checkbox" checked>')
 
             $("#advancedCtrl-graphs").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + graphsHierarchyString + '</div>')
-            $("#advancedCtrl-selection").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
+            //$("#advancedCtrl-selection").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
         })
 
         $("#advancedCtrl-rendering #renderModeWireFrame").on("click", _ => { 
@@ -143,7 +140,7 @@ class AdvancedControlWindow {
             }
         })
 
-        $("#advancedCtrl-selection .CtrlList input").on("click", event =>{
+        /*$("#advancedCtrl-selection .CtrlList input").on("click", event =>{
             console.log(event.target.parentNode)
             let uuid = event.target.parentNode.attributes["data-uuid"].nodeValue
             let nodeName = event.target.parentNode.firstChild.innerText
@@ -152,7 +149,7 @@ class AdvancedControlWindow {
             targetedCollection.getByUUID(uuid).clip._root.children[0].traverse(elem => {
                 if(nodeName == elem.name) elem.visible = isChecked
             })
-        })
+        })*/
 
         $(windowID).dialog({
             height: 480,
