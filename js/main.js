@@ -46,7 +46,7 @@ function _setAllEventListener() {
   $('.back').on("click", event => inputEventManager.hideFBXWindowSelectorAndShow("selectionFbx"));
   $('#1fbx').on("click", event => inputEventManager.hideFBXWindowSelectorAndShow("div1Fbx"));
   $('#2fbx').on("click", event => inputEventManager.hideFBXWindowSelectorAndShow("div2Fbx"));
-  $("#1FileFbx").one("change", event => {    $('.fbxWindowSelector').hide(); inputEventManager.fbx2FileSelectedAction(event); });
+  $("#1FileFbx").on("change", event => {    $('.fbxWindowSelector').hide(); inputEventManager.fbx2FileSelectedAction(event); });
   $("#form2FileFbx").on("submit", event => { $('.fbxWindowSelector').hide(); inputEventManager.fbx2FileSelectedAction(event); return false });
 
 }
