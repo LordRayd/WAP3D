@@ -1,5 +1,12 @@
+/**
+ * Objet responsable de l'affichage et de la gestion de la fenêtre de contrôle, à la fois dans sa version BVH et sa version FBX.
+ * L'objet n'est pas dépendant de IEM
+ */
 class AdvancedControlWindow {
 
+    /**
+     * Le squelette de base de la fenêtre de contrôle avancé, contient l'ensemble des éléments qui n'y change pas entre 2 ouvertures
+     */
     static HTMLcontent = $('\
             <div>\
                 <ul> \
@@ -30,6 +37,11 @@ class AdvancedControlWindow {
             </div>\
         ')
 
+    /**
+     * @param {Set|Array} uuidCollection_ 
+     * @param {String} windowType_ "bvh" ou "fbx"
+     * @param {Player} playerContext_ l'instance de Player courante
+     */
     constructor(uuidCollection_, windowType_, playerContext_) {
         this.player = playerContext_
         this.UUIDs = [...uuidCollection_]
@@ -39,7 +51,6 @@ class AdvancedControlWindow {
         if ($("#advancedControlForFBX").length > 0) throw new Error("fbx controls currently launched")
 
         switch (this.type) {
-            //TODO système pour avoir plusieur fenêtre de ctrl avancé par type de modèle
             case "bvh":
                 if (!(this.UUIDs.every((value) => this.player.bvhAnimationsArray.contains(value)))) {
                     throw new Error("1 or more bvh UUID invalid, have you mixed FBX and BVH in selection ?")
@@ -68,7 +79,7 @@ class AdvancedControlWindow {
 
     }
 
-    /** Remplie la fenêtre de son contenu et associe les actions liés à chaque éléments de la fenêtre */
+    /** Rempli la fenêtre de son contenu et associe les actions liés à chaque éléments de la fenêtre */
     launch() {
         let targetedCollection
         let windowID
@@ -97,16 +108,15 @@ class AdvancedControlWindow {
             let displayHierarchyString = this._browseThroughSkeleton(targetedCollection.getByUUID(uuid), uuid, '<input type="checkbox" checked>')
 
             $("#advancedCtrl-graphs").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + graphsHierarchyString + '</div>')
-            //$("#advancedCtrl-selection").append('<div class="CtrlList"><p class="title">' + targetedCollection.getByUUID(uuid).name + '</p>' + displayHierarchyString + '</div>')
         })
 
-        $("#advancedCtrl-rendering #renderModeWireFrame").on("click", _ => { 
+        $("#advancedCtrl-rendering #renderModeWireFrame").on("click", _ => {
             this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).wireframe = true)
         })
-        $("#advancedCtrl-rendering #renderModeCubic").on("click", _ => { 
+        $("#advancedCtrl-rendering #renderModeCubic").on("click", _ => {
             this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).wireframe = false)
         })
-        $("#advancedCtrl-rendering #renderModeNode").on("click", _ => { 
+        $("#advancedCtrl-rendering #renderModeNode").on("click", _ => {
             this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).skeletonHelper = true)
         })
 
@@ -116,7 +126,7 @@ class AdvancedControlWindow {
                 this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).skeleton.bones.forEach(elem => elem.axis.visible = isEnabled))
             } else if (this.type == "fbx") {
                 this.UUIDs.forEach((uuid) => targetedCollection.getByUUID(uuid).clip._root.children[0].traverse(elem => {
-                    if(elem.type == "Bone") elem.axis.visible = isEnabled
+                    if (elem.type == "Bone") elem.axis.visible = isEnabled
                 }))
             }
         })
@@ -140,17 +150,6 @@ class AdvancedControlWindow {
             }
         })
 
-        /*$("#advancedCtrl-selection .CtrlList input").on("click", event =>{
-            console.log(event.target.parentNode)
-            let uuid = event.target.parentNode.attributes["data-uuid"].nodeValue
-            let nodeName = event.target.parentNode.firstChild.innerText
-            let isChecked = event.target.checked
-            console.log(uuid)
-            targetedCollection.getByUUID(uuid).clip._root.children[0].traverse(elem => {
-                if(nodeName == elem.name) elem.visible = isChecked
-            })
-        })*/
-
         $(windowID).dialog({
             height: 480,
             width: 640,
@@ -165,9 +164,9 @@ class AdvancedControlWindow {
         })
     }
 
-    /** Parse le skelette et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
+    /** Parse le modèle et fourni une liste de listes HTML correspondant au squelette (sous forme de string)
      * 
-     *  @param {Object3D} object_ squelette pour un bvh ou le root pour un fbx
+     *  @param {Object3D} object_ squelette pour un bvh ou clip._root pour un fbx
      *  @param {UUID}
      *  @param {String} additionalTag_ Balise supplémentaire optionnelle
      * 
@@ -177,7 +176,7 @@ class AdvancedControlWindow {
         let recursiveNavigationForBVH = (object) => {
             let result = ""
             object.children.forEach((obj) => {
-                if (obj.name != "ENDSITE"){
+                if (obj.name != "ENDSITE") {
                     if (obj.children.length > 0) result = result + '<li><div data-uuid="' + uuid_ + '"><p>' + obj.name + "</p>" + additionalTag_ + "</div><ul>" + recursiveNavigationForBVH(obj) + "</ul>" + "</li>"
                 }
             })
@@ -200,10 +199,12 @@ class AdvancedControlWindow {
 
     }
 
-    /** Renvoie le graph des translations X Y Z de la node "Hips" du BVH correspondant au UUID donné, exploitable par plotly.js
+    /** Renvoie le graph des translations X Y Z de la node "Hips" du modèle correspondant au UUID donné, exploitable par plotly.js
      * 
      *  @param {UUID} targetUUID_ Le UUID de la cible
      *  @param {Array} targetedCollection_ La collection où se trouve l'animation
+     * 
+     *  @returns {Array} une Array de 3 objects contenants dans l'ordre les données de translations sur l'axe X, Y et Z
      */
     _translationGraphData(targetUUID_, targetedCollection_) {
         let graphData = [...targetedCollection_.getByUUID(targetUUID_).clip._actions[0]._clip.tracks[0].values.values()]
@@ -233,11 +234,13 @@ class AdvancedControlWindow {
         }]
     }
 
-    /** Renvoie le graph des rotations X Y Z de la node donnée du BVH correspondant au UUID donné, exploitable par plotly.js
+    /** Renvoie le graph des rotations X Y Z W de la node de nom donnée du modèle de UUID donné, exploitable par plotly.js
      * 
-     *  @param {UUID} targetUUID_ Le UUID du BVH cible
+     *  @param {UUID} targetUUID_ Le UUID du modèle cible
      *  @param {String} nodeName_ le nom du noeud à observer
      *  @param {Array} targetedCollection_ La collection où se trouve l'animation
+     * 
+     *  @returns {Array} une Array de 4 objects contenants dans l'ordre les données de rotations sur l'axe X, Y, Z et W
      */
     _rotationGraphData(nodeName_, targetUUID_, targetedCollection_) {
 

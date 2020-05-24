@@ -1,7 +1,17 @@
+/**
+ * Object principal de WAP3D, gère les animations, l'affichage de la scène et la gestion des objets en mémoire
+ *  
+ */
 class Player {
 
-  /** Joue les animations quand elles existent
-   *  Initialise les interactions à la souris et au clavier
+  /**
+   * 
+   * @param {THREE.Scene} scene 
+   * @param {THREE.WebGLRenderer} renderer 
+   * @param {THREE.PerspectiveCamera} camera 
+   * @param {THREE.OrbitControls} cameraControls 
+   * @param {BVHAnimationArray} bvhAnimationsArray 
+   * @param {FBXAnimationArray} fbxAnimationsArray 
    */
   constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray, fbxAnimationsArray) {
     this.scene = scene
@@ -353,7 +363,7 @@ class Player {
         this.bvhAnimationsArray.removeByUUID(uuid)
         $("#" + uuid).remove()
       } else {
-        this.scene.remove( this.scene.getObjectByProperty( 'uuid', uuid ) );
+        this.scene.remove(this.scene.getObjectByProperty('uuid', uuid));
         this.fbxAnimationsArray.removeByUUID(uuid)
         $("#" + uuid).remove()
       }
