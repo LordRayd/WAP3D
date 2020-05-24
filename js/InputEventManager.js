@@ -230,7 +230,7 @@ class IEM {
     }
   }
 
-  /** TODO */
+  /** Redimensionne la fenetre de rendu en cas de modification de la fenetre web */
   modifyWindowSizeAction() {
     if (this.iemIsBlocked) return
     this.player.updateRendererSize()
@@ -257,7 +257,7 @@ class IEM {
     }
   }
 
-  /** TODO */
+  /** S'occupe du chargement des fichiers */
   fileSelectedAction(event) {
     let objectType = event.target.accept.lastOf('\.')
     this.iemIsBlocked = true
@@ -266,6 +266,10 @@ class IEM {
     )
   }
 
+  /** S'occupe de la selection de 2 fichiers fbx
+   * 
+   * @param {*} event Le click sur le bouton charger l'objet dans la selection de fbx
+   */
   fbx2FileSelectedAction(event){
     this.iemIsBlocked = true
     this.player.loadFile(event, "fbx").then(
