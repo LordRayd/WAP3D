@@ -2,14 +2,19 @@ class FBXLoader extends FileLoader {
 
   /**
    * @param scene La scene associer
+   * @param {array} fbxAnimationsArray Le tableau contenant les éléments fbx chargés
    */
   constructor(scene, fbxAnimationsArray) {
     super(scene, fbxAnimationsArray);
   }
 
   /** Charge des fichier FBX
-   * 
+   *
    *  @param filesToLoadEvent : evenement lié au clic sur un bouton de chargement de fichier
+   *
+   *  @returns Une promesse
+   *  - resolue lorsque l'ensemble des fichiers ont été bien chargés
+   *  - rejetée lorsqu'un fichier n'a pas été correctement chargé
    */
   loadFBX(filesToLoadEvent) {
     return new Promise(async(resolve, reject) => {
@@ -59,8 +64,8 @@ class FBXLoader extends FileLoader {
   /** Charge un objet à partir de 2 Fichiers Fbx
    * Charge le fichier de l'animation
    * 
-   * @param {*} modelFile Le fichier contenant le modèle
-   * @param {*} animationFile Le fichier contenant l'animation
+   * @param {file} modelFile Le fichier contenant le modèle
+   * @param {file} animationFile Le fichier contenant l'animation
    * 
    * @returns une promesse
    *  - resolue si le chargement s'est bien déroulé
@@ -81,10 +86,10 @@ class FBXLoader extends FileLoader {
   }
 
   /** Charge le model et change son animation par celle donné en paramètre
-   * 
-   * @param {*} file_ Le fichier contenant le modèle
-   * @param {*} animationArray_ Les animations à changé ou undefined si le fichier contient deja l'animation
-   * 
+   *
+   * @param {file} file_ Le fichier contenant le modèle
+   * @param {array} animationArray_ Les animations à changé ou undefined si le fichier contient deja l'animation
+   *
    * @returns une promesse
    *  - resolue si le chargement du modèle s'est bien déroulé
    *  - rejetée si le chargement du modèle rencontrer un problème
@@ -122,9 +127,9 @@ class FBXLoader extends FileLoader {
 
   /** Renvoie un LoadingManager qui gère la lecture de fichier par le Loader
    * 
-   * @param {*} fbxFile Le fichier dont le manager doit permettre le chargement 
+   * @param {*} fbxFile Le fichier dont le manager doit permettre le chargement
    * 
-   * @returns Le Manager à donner au Loader 
+   * @returns Le Manager à donner au Loader
    */
   _createManager(fbxFile){
     var extraFiles = [];
