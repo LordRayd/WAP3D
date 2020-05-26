@@ -1,0 +1,241 @@
+<!--Ce fichier a pour but de montrer un example d'utilisation de la fenêtre WAP3D, elle ne fait pas réellement partie du projet -->
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title>WAP3D</title>
+  <link rel="stylesheet" type="text/css" href="./css/WAP3D.css">
+
+  <!-- JQuery -->
+  <script src="./node_modules/jquery/dist/jquery.js"></script>
+
+  <!--JQuery UI-->
+  <link rel="stylesheet" href="./node_modules/jquery-ui-dist/jquery-ui.css">
+  <script src="./node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
+
+  <!-- Three JS -->
+  <script src="./node_modules/three/build/three.js"></script>
+  <script src="./node_modules/three/examples/js/controls/OrbitControls.js"></script>
+  <script src="./node_modules/three/examples/js/libs/inflate.min.js"></script>
+  <script src="./node_modules/three/examples/js/loaders/FBXLoader.js"></script>
+
+  <!-- Plotly -->
+  <script src="./node_modules/plotly.js-basic-dist-min/plotly-basic.min.js"></script>
+
+  <!-- WAP3D -->
+  <!-- Module -->
+  <script src="./js/Loaders/fileLoader.js"></script>
+  <script src="./js/Collections/animationArray.js"></script>
+  <script src="./js/Collections/animationElement.js"></script>
+
+  <!-- BVH -->
+  <script src="./js/Loaders/bvh/bvhParser.js"></script>
+  <script src="./js/Loaders/bvh/bvhLoader.js"></script>
+  <script src="./js/Collections/bvh/bvhCollection.js"></script>
+  <script src="./js/Collections/bvh/bvhElement.js"></script>
+
+  <!-- FBX -->
+  <script src="./js/Loaders/fbx/fbxLoader.js"></script>
+  <script src="./js/Collections/fbx/fbxCollection.js"></script>
+  <script src="./js/Collections/fbx/fbxElement.js"></script>
+
+  <!-- WAP3D -->
+  <script src="./js/wap3DUtil.js"></script>
+  <script src="./js/WAP3D.js"></script>
+  <script src="./js/InputEventManager.js"></script>
+  <script src="./js/AdvancedControl.js"></script>
+
+  <!-- Main -->
+  <script src="./js/main.js"></script>
+
+
+  <style>
+    body {
+      background-color: white !important;
+    }
+
+    #titleSection {
+      text-align: center;
+      background-color: rgb(29, 29, 29);
+      color: white;
+      width: 100%;
+      height: 10%;
+    }
+
+    #titleSection h1 {
+      padding-top: 30px;
+    }
+
+    #menuSection {
+      padding-left: 20%;
+      background-color: rgb(84, 163, 5);
+      width: 85%;
+      height: 5%;
+    }
+
+    #menuSection div {
+      float: left;
+      height: 100%;
+      margin-right: 2%;
+    }
+
+    #menuSection div:hover {
+      background-color: rgb(44, 87, 1);
+    }
+
+    #articleSection {
+      margin-left: 20%;
+      margin-right: 20%;
+    }
+
+    #articleSection h2 {
+      text-align: center;
+    }
+
+    #container {
+      width: 100% !important;
+      height: 480px !important;
+      float: left;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="titleSection">
+    <h1>WAP3D news official</h1>
+  </div>
+
+  <div id="menuSection">
+    <div class="items">
+      <h3>Accueil</h3>
+    </div>
+    <div class="items">
+      <h3>Forum</h3>
+    </div>
+    <div class="items">
+      <h3>Blog</h3>
+    </div>
+    <div class="items">
+      <h3>Shop</h3>
+    </div>
+
+  </div>
+
+  <div id="articleSection">
+    <h2>Article: What is "vibing" ? Should you prevent your teenager from practicing it ?</h2>
+    <p>A mood common among middle class teenagers, vibing is when you kick back, listen to some tunes (mainly slower rap
+      and alt, but vaporwave, lo-fi, and others are becoming popular) and just relax. Some people vibe while stoned,
+      some don't. An example of a person litterally just vibing can be seen below.</p>
+    <div id="container">
+      <div id="objectSelector">
+        <div id="closeOpenButton">
+          <img src="./images/close_button.svg">
+        </div>
+
+        <div id="listTabs" class="jqueryUIOverride">
+          <ul>
+            <li><a href="#bvhList">BVH</a></li>
+            <li><a href="#fbxList">FBX</a></li>
+          </ul>
+          <div class="objectList" id="bvhList">
+            <div class="title">
+              <div class="listPlay"><img src="./images/play_button.svg"></div>
+              <div class="listPause"><img src="./images/pause_button.svg"></div>
+              <div class="listReplay"><img src="./images/replay_button.svg"></div>
+              <div class="listDisplay"><img src="./images/eye_button.svg"></div>
+              <label for="bvhFileSelector" class="stylisedFileSelector">
+                <img src="./images/upload_button.svg">
+              </label>
+              <input id="bvhFileSelector" class="fileSelector" type="file" multiple="multiple" accept=".bvh">
+            </div>
+            <div class="list"></div>
+          </div>
+
+          <div class="objectList" id="fbxList">
+            <div class="title">
+              <div class="listPlay"><img src="./images/play_button.svg"></div>
+              <div class="listPause"><img src="./images/pause_button.svg"></div>
+              <div class="listReplay"><img src="./images/replay_button.svg"></div>
+              <div class="listDisplay"><img src="./images/eye_button.svg"></div>
+              <label id='fbxFileSelector' class="stylisedFileSelector">
+                <img src="./images/upload_button.svg">
+              </label>
+            </div>
+            <div class="list"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="player">
+        <div id="messagePlayer" hidden></div>
+        <!-- canvas ici -->
+        <!-- le canvas est créé par la classe Player définie dans WAP3D.js -->
+      </div>
+      <div id="control">
+        <div id="globalPlayPause"><img src="./images/pause_button.svg"></div>
+        <div id="globalReplay"><img src="./images/replay_button.svg"></div>
+      </div>
+
+    </div>
+
+    <!-- Gestion de la selection des FBX-->
+    <div id="selectionFbx" class="fbxWindowSelector">
+      <div class="fbxWindowSelector-content">
+        <span class="close">&times;</span>
+        <button id="1fbx">Fichier Fbx contenant le modele et l'animation</button>
+        <br><br>
+        <button id="2fbx">Chargement en 2 fichiers séparés</button>
+      </div>
+    </div>
+    <div id="div1Fbx" class="fbxWindowSelector">
+      <div class="fbxWindowSelector-content">
+        <span class='back'>&larr;</span>
+        <span class="close">&times;</span>
+        <label for="1FileFbx" class="stylisedFileSelector">
+          <img src="./images/upload_button.svg">
+        </label>
+        <input id="1FileFbx" type="file" multiple="multiple" accept=".fbx">
+      </div>
+    </div>
+    <div id="div2Fbx" class="fbxWindowSelector">
+      <div class="fbxWindowSelector-content">
+        <span class='back'>&larr;</span>
+        <span class="close">&times;</span>
+        <form id='form2FileFbx'>
+          <label for="model">Le modele</label>
+          <br>
+          <label for="model" class="stylisedFileSelector">
+            <img src="./images/upload_button.svg">
+          </label>
+          <input id="model" type="file" accept=".fbx">
+          <br><br>
+          <label for="animation">L'animation</label>
+          <br>
+          <label for="animation" class="stylisedFileSelector">
+            <img src="./images/upload_button.svg">
+          </label>
+          <input id="animation" type="file" accept=".fbx">
+          <br><br>
+          <input type="submit" value="Charger l'objet">
+        </form>
+      </div>
+    </div>
+    <br>
+    <p>"Jesus, it's been 3 hecking hours, what the heck is jessica doing?"</p>
+    <p>"Man, she's stoned and vibing to some music. Let her be"</p>
+    <p>"we just vibing in the basement"</p>
+    <p>“i’ve been doing really lately, i’ve been vibing.”</p>
+    <p>"That frog really be vibing"</p>
+    <h4>source: Urban Dictionnary, légèrement censuré</h4>
+    <br>
+    <br>
+    <p>Comme vous pouvez l'observer, le lecteur est facilement intégrable à une page, il est ici intégré avec une taille
+      verticale fixe (480 pixels) et une taille horizontale dynamique (100% de la largeur de la balise contenante).</p>
+    <p>La disposition du lecteur peut également être faite différemment, par exemple il peut être intégré dans une page
+      en étant encré sur la droite au format portrait, ou encore il pourrait être intégré comme fond d'écran dynamique.
+    </p>
+  </div>
+</body>
+
+</html>

@@ -11,7 +11,14 @@ class FileLoader {
     this.progressBar.append('<div id="currProgress"></div>')
   }
 
-  /**  */
+  /** Charge les nouveaux fichiers
+   * 
+   * @param {files} files Les fichiers à charger
+   * 
+   * @returns une promesse
+   *    - resolue lorsque les fichiers ont bien été chargé
+   *    - rejetée lorsqu'un fichier à eu une erreur de chargement
+   */
   loadNewFiles(files) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -92,12 +99,18 @@ class FileLoader {
     $("#"+type+"List .list").append(listElement)
   }
 
-  /** Retourne le nombre total dede fichier (bvh) chargé depuis le debut */
+  /** Retourne le nombre total de fichier chargé depuis le debut 
+   *
+   * @return Le nombre total de fichier chargé
+   */
   get nbLoadedFiles() {
     return this.totalNbLoadedFiles
   }
 
-  /**  */
+  /** Changement du nombre total de fichier chargé depuis le début 
+   *
+   * @param {number} value Le nouveau nombre de fichier chargé
+   */
   set nbLoadedFiles(value) {
     this.totalNbLoadedFiles = value
     this._updateProgressBar(value)
@@ -107,12 +120,18 @@ class FileLoader {
     }
   }
 
-  /** Retourne l'état actuel du chargment (false, loading, loaded) */
+  /** Retourne l'état actuel du chargement
+   * 
+   * @returns (false, loading, loaded) 
+   */
   get loadingState() {
     return this.bvhFilesloadingState
   }
 
-  /**  */
+  /** Change l'état actuel du chargement 
+   *
+   * @param {string} state (false, loading, loaded) 
+   */
   set loadingState(state) {
     this.bvhFilesloadingState = state
   }

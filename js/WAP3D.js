@@ -1,7 +1,18 @@
+/**
+ * Object principal de WAP3D, gère les animations, l'affichage de la scène et la gestion des objets en mémoire
+ *  
+ */
 class Player {
 
   /** Joue les animations quand elles existent
    *  Initialise les interactions à la souris et au clavier
+   * 
+   * @param {THREE.Scene} scene La scene qui sera utilisé
+   * @param {THREE.WebGLRenderer} renderer Le rendu
+   * @param {THREE.PerspectiveCamera} camera La camera utilisé
+   * @param {THREE.OrbitControls} cameraControls Les controles caméra qui seront utilisés
+   * @param {BVHAnimationArray} bvhAnimationsArray La liste qui contiendra les animations bvh
+   * @param {FBXAnimationArray} fbxAnimationsArray La liste qui contiendra les animations fbx
    */
   constructor(scene, renderer, camera, cameraControls, bvhAnimationsArray, fbxAnimationsArray) {
     this.scene = scene
@@ -44,7 +55,6 @@ class Player {
 
     //Éclairage
     this.renderer.shadowMap.enabled = true
-    this.renderer.shadowMap.renderSingleSided = false; // permet d'avoir des accumulation d'ombres
     let minimumLight = new THREE.AmbientLight(0xffffff, 0.5)
     this.scene.add(minimumLight)
     let mainLight = new THREE.SpotLight(0xffffff, 0.5, 0)
@@ -110,8 +120,9 @@ class Player {
   /** Demande la mise à jour des éléments contenu dans le tableau d'animation entré en paramètre
    *  Si il y a des fichiers chargé, et qu'il y a au moins un élément à animer, l'animation continue ou se relance si elle était en pause.
    * 
-   *  @param {FileLoader} loader
-   *  @param {AnimationArray} animationArray tableau d'animation
+   *  @param {FileLoader} loader Le module de chargement utilisé
+   *  @param {AnimationArray} animationArray Le tableau d'animation à mettre à jour
+   *  @param {string} listName bvh ou fbx
    */
   _updateAnimation(loader, animationArray, listName) {
     if (loader.loadingState === "loaded") {
@@ -129,6 +140,11 @@ class Player {
   /** Lance le chargement de fichier a partir d'un evenement de selectioner de fichier entre en parametre
    * 
    *  @param event evenement de selection de fichier
+   *  @param {string} objectType Le type de fichier à charger (bvh ou fbx)
+   *  
+   *  @return une promesse
+   *   - resolue si le(s) fichier(s) à bien été chargé(s)
+   *   - rejeté si un fichier à rencontrer un problème lors de son chargement
    */
   loadFile(event, objectType) {
     return new Promise(async (resolve, reject) => {
@@ -166,11 +182,13 @@ class Player {
     let player = $("#player")[0]
     this.renderer.setSize(player.offsetWidth, player.offsetHeight)
     this.camera.aspect = player.offsetWidth / player.offsetHeight
+    this.camera.updateProjectionMatrix()
   }
 
-  /** Modifie la visibilité de tout les bvh de la scène 
+  /** Modifie la visibilité de tout les éléments de la scène choisit par l'attribut listName
    * 
-   *  @param {Boolean} newValue Tout les BVH sont visible si true, ils sont tous invisible sinon
+   *  @param {string} listName fbx ou bvh
+   *  @param {Boolean} newValue Tout les éléments sont visible si true, ils sont tous invisible sinon
    */
   toggleListVisibility(listName, newValue) {
     switch (listName) {
@@ -193,13 +211,19 @@ class Player {
     }
   }
 
-  /** TODO */
+  /** Met les éléments definit par listName en pause si il sont en lecture et inversement
+   *
+   * @param {string} listName bvh ou fbx ou all
+   */
   toggleAnimation(listName) {
     if (this.animationIsPaused) this.resumeAnimation(listName)
     else this.pauseAnimation(listName)
   }
 
-  /** TODO */
+  /** Lance la lecture de tous les éléments choisit par listName
+   * 
+   * @param {string} listName bvh ou fbx ou all
+   */
   playAnimation(listName) {
     switch (listName) {
       case "bvh":
@@ -217,7 +241,10 @@ class Player {
     this.animationIsPaused = false
   }
 
-  /** TODO */
+  /** Met en pause tous les éléments choisit par listName
+   * 
+   * @param {string} listName bvh ou fbx ou all
+  */
   pauseAnimation(listName) {
     switch (listName) {
       case "bvh":
@@ -243,7 +270,10 @@ class Player {
     if (allEltsPaused) { this.animationIsPaused = true }
   }
 
-  /** TODO */
+  /** Fait reprendre la lecture à tous les éléments qui sont en pause de la listName chosit
+   * 
+   * @param {string} listName bvh ou fbx ou all
+   */
   resumeAnimation(listName) {
     let allEltsPaused = true
     switch (listName) {
@@ -263,7 +293,10 @@ class Player {
     if (allEltsPaused) this.playAnimation(listName)
   }
 
-  /** TODO */
+  /** Lance la réinitialisation de la lecture de tous les éléments de la listName chosit
+   * 
+   * @param {string} listName bvh ou fbx ou all
+   */
   replayAnimation(listName) {
     let animationWasPlaying = !this.animationIsPaused
     switch (listName) {
@@ -292,7 +325,7 @@ class Player {
 
   /** Lance l'animation si elle est nen pause. Met l'animation en pause sinon pour un element selectionner du player
    * 
-   *  @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   *  @param {UUID} objectUuid_ Identifiant de l'object selectionner dans la scene
    */
   toggleObjectInListAnimation(objectUuid_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
@@ -304,7 +337,7 @@ class Player {
 
   /** Relance l'animation depuis le debut pour un element selectionner du player
    * 
-   *  @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   *  @param {UUID} objectUuid_ Identifiant de l'object selectionner dans la scene
    */
   replayObjectInListAnimation(objectUuid_) {
     if (this.bvhAnimationsArray.contains(objectUuid_)) {
@@ -316,7 +349,7 @@ class Player {
 
   /** Met a jour le time slider d'un element du player slectionner avec la nouvelle valeur entré en paramètre
    * 
-   *  @param objectUuid_ Identifiant de l'object selectionner dans la scene
+   *  @param {UUID} objectUuid_ Identifiant de l'object selectionner dans la scene
    *  @param newValue Nouvelle valeur du time slider
    */
   updateObjectInListTimeSlider(objectUuid_, newValue_) {
@@ -353,7 +386,9 @@ class Player {
         this.bvhAnimationsArray.removeByUUID(uuid)
         $("#" + uuid).remove()
       } else {
-        //FBX if ...
+        this.scene.remove(this.scene.getObjectByProperty('uuid', uuid));
+        this.fbxAnimationsArray.removeByUUID(uuid)
+        $("#" + uuid).remove()
       }
     })
   }
@@ -364,8 +399,6 @@ class Player {
    *  @param {UUID} objectUuids_ 
    */
   launchAdvancedControls(objectUuids_) {
-    console.log(objectUuids_)
-    //à voir si c'est mieux de faire la vérification de validité ici ou dans les advanced controls
     if (this.bvhAnimationsArray.contains(objectUuids_[0])) {
       let acw = new AdvancedControlWindow(objectUuids_, "bvh", this)
       acw.launch()

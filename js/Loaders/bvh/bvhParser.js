@@ -1,3 +1,4 @@
+/** La hauteur du pelvis prise en référence pour une mise à l'echelle */
 const pelvisYReference = 75
 
 class BVHParser {
@@ -180,7 +181,10 @@ class BVHParser {
       clip: this._bvhBonesHierarchyToTHREEAnimation(bonesHierarchy)
     }
 
-    /** TODO */
+    /** Renvoie un objet contenant les os et le squelette
+     * 
+     * @return {array} Les os et le squelette
+     */
     function bvhThreeHierarchyToTHREEBonesRec(currBone, threeHierarchy) {
       let bone = new THREE.Bone()
       threeHierarchy.push(bone)
@@ -195,8 +199,10 @@ class BVHParser {
     }
   }
 
-  /** Renvoie l'animation correspondant à la hierarchy des os entree en parametre
-   * 
+  /** Renvoie l'animation correspondant à la hierarchy des os entrée en paramètre
+   *
+   * @param {object} bonesHierarchy La hierarchy d'os
+   *
    * @return objet THREE.AnimationClip()
    */
   _bvhBonesHierarchyToTHREEAnimation(bonesHierarchy) {
@@ -229,11 +235,22 @@ class BVHParser {
     return new THREE.AnimationClip("animation", -1, tracks)
   }
 
-  /** Renvoie la hierarchy des os dans un tableau a une dimension a partir de la hierarchy des os cree par readBvh */
+  /** Renvoie la hierarchy des os dans un tableau a une dimension a partir de la hierarchy des os crée par readBvh
+   *
+   * @param {object} bonesHierarchy La hierarchy d'os
+   *
+   * @returns Un tableau une dimension contenant les os de la hierarchy
+   */
   _flattenHierarchy(bonesHierarchy) {
     return flattenHierarchyRec(bonesHierarchy, [])
 
-    /** TODO */
+    /** Methode recursive qui met les os dans un tableau à une dimension
+     *
+     * @param {} currBone L'os observé
+     * @param {} flatHierachyList La liste à une dimension dans laquelle ajouté les os
+     *
+     * @returns Une liste à une dimension contenant les os de la hierarchy
+     */
     function flattenHierarchyRec(currBone, flatHierachyList) {
       flatHierachyList.push(currBone);
       if (currBone.type !== "ENDSITE") {

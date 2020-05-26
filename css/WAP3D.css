@@ -10,7 +10,6 @@ body {
   position: relative;
 }
 
-
 /*les images font la taille des buttons dans lequelles elles se trouvent */
 
 img {
@@ -23,20 +22,26 @@ img {
   background-color: white;
   width: 30%;
   height: 100%;
-  overflow: hidden;
   position: relative;
   z-index: 1;
+  min-width: 20px;
 }
 
 #listTabs {
-  width: 90%;
-  height: 96%;
-  margin-left: 2%;
-  margin-top: 2%;
+  width: 94%;
+  height: 98%;
+  margin-left: 0;
 }
 
 
 /* Nécessaire pour "override" le CSS par défaut des tabs*/
+.ui-widget.ui-widget-content{
+  border: none !important; /* le mot clef !important permet de passer outre le degré de spécificité et les nouvelle règles css*/
+}
+.ui-tabs .ui-tabs-nav{
+  height: 2.45em;
+  overflow: hidden;
+}
 
 #listTabs div {
   padding: 0.1em 0em;
@@ -44,8 +49,9 @@ img {
 
 .objectList {
   width: 100%;
-  height: 98%;
+  height: calc(98% - 3em);
   padding-left: 0%;
+  overflow-y: visible;
 }
 
 .objectList div.title {
@@ -65,15 +71,19 @@ img {
   background-color: #003c79;
 }
 
-.objectList div.title input {
-  float: left;
+.objectList div.title .stylisedFileSelector {
+  float: right;
   width: 9%;
-  height: 90%;
+  height: 100%;
+  margin-right: 5%;
+}
+.objectList div.title input {
+  display: none;
 }
 
 .objectList div.list {
   width: 100%;
-  height: 84%;
+  height: 93%;
   overflow-y: scroll;
 }
 
@@ -148,6 +158,10 @@ img {
 #advancedControlForBVH .CtrlList div:hover {
   background-color: #7e7e7e;
 }
+#advancedControlForBVH .renderMode {
+  text-decoration: line-through;
+  color: red;
+}
 
 #advancedControlForFBX .CtrlList {
   width: 100%;
@@ -169,16 +183,21 @@ img {
 
 #closeOpenButton {
   background-color: white;
-  width: 1.5vw;
-  height: 3vh;
-  top: 50%;
-  position: relative;
-  float: right;
+  width: 5%;
+  height: 5%;
+  top: 47.5%;
+  right: -20px;
+  position: absolute;
+  min-width: 20px;
+}
+#closeOpenButton img{
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 #player {
   position: absolute;
-  /*overflow: hidden;*/
   width: 100%;
   height: 100%;
   z-index: 0;
@@ -190,22 +209,20 @@ canvas {
 
 #messagePlayer {
   color: white;
-  right: 0;
-  width: 59%;
+  background-color: black;
+  left: 0;
+  width: 100%;
   text-align: center;
   position: absolute;
   margin-top: 28.125%;
-  /*TODO 9/16 * 50% (du au scaling du player par rapport à la page) */
-  margin-Left: 50%;
 }
 
 #control {
   position: absolute;
   bottom: 0;
-  margin-left: 45%;
-  height: 5%;
-  width: 10%;
-  text-align: center;
+  left: 40%;
+  height: 10%;
+  width: 20%;
   background-color: white;
   opacity: 0;
   transition: 0.3s;
@@ -235,7 +252,7 @@ canvas {
   background-color: black;
   position: absolute;
   bottom: 0;
-  height: 5%;
+  height: 10%;
   width: 100%;
   z-index: 2;
 }
@@ -252,4 +269,80 @@ canvas {
   /* 90%( * 90% */
   text-align: center;
   position: absolute;
+}
+
+/* La fenetre de selection des fichiers fbx */
+.fbxWindowSelector {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+}
+
+.fbxWindowSelector img {
+  width: 10%;
+  height: 10%;
+  background-color: #007fff;
+}
+
+.fbxWindowSelector button,
+.fbxWindowSelector input[type="submit"],
+.fbxWindowSelector input[type="file"]{
+  background-color: #007fff;
+  color: white;
+  border: none;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+.fbxWindowSelector input[type="file"]{
+  display: none;
+}
+/* Contenu de la fenetre de selection des fichiers fbx */
+.fbxWindowSelector-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%;
+  text-align: center;
+}
+
+/* Le Bouton de Fermeture de la fenetre */
+.fbxWindowSelector-content .close{
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.fbxWindowSelector-content .close:hover,
+.fbxWindowSelector-content .close:focus{
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fbxWindowSelector-content .back {
+  color: #aaaaaa;
+  float: left;
+  font-size: 28px;
+  font-weight: bold;
+}
+.fbxWindowSelector-content .back:hover,
+.fbxWindowSelector-content .back:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
 }
